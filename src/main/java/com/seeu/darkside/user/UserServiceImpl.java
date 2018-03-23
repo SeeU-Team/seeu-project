@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserDto getUser(Long id) throws UserNotFoundException {
-        UserEntity user = userRepository.findOne(id);
+        UserEntity user = userRepository.getOne(id);
         if(user == null)
             throw new UserNotFoundException();
         return userAdapter.entityToDto(user);
@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateDescription(Long id, String description) {
         Date now = new Date();
-        UserEntity userToUpdate = userRepository.findOne(id);
+        UserEntity userToUpdate = userRepository.getOne(id);
         userToUpdate.setDescription(description);
         userToUpdate.setUpdated(now);
         UserEntity save = userRepository.save(userToUpdate);
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) throws UserNotFoundException {
-        UserEntity userToDelete = userRepository.findOne(id);
+        UserEntity userToDelete = userRepository.getOne(id);
         if(userToDelete == null)
             throw new UserNotFoundException();
         userRepository.delete(userToDelete);

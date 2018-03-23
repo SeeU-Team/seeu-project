@@ -170,8 +170,8 @@ public class UserServiceTest {
         when(userRepository.findOneByEmail(user3.getEmail())).thenReturn(user3);
         when(userRepository.findOneByEmail(user4.getEmail())).thenReturn(null);
         when(bCryptPasswordEncoder.encode(user4.getPassword())).thenReturn("passwordEncoded");
-        when(userRepository.findOne(user2.getIdUser())).thenReturn(user2);
-        when(userRepository.findOne(4L)).thenReturn(null);
+        when(userRepository.getOne(user2.getIdUser())).thenReturn(user2);
+        when(userRepository.getOne(4L)).thenReturn(null);
         when(userRepository.save(any(UserEntity.class))).thenReturn(user4);
     }
 

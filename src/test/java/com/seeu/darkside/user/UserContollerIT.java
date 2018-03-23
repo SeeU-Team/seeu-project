@@ -1,12 +1,11 @@
 package com.seeu.darkside.user;
 
 import com.jayway.restassured.RestAssured;
-import jdk.nashorn.internal.runtime.QuotedStringTokenizer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
