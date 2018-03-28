@@ -6,11 +6,10 @@ services:
 language: java
 jdk: oraclejdk9
 
-#env:
-
 before_install:
   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu
+    $(lsb_release -cs) stable"
   - sudo apt-get update
   - sudo apt-get -y install docker-ce
   - sudo service docker stop
@@ -18,21 +17,20 @@ before_install:
   - chmod +x mvnw*
 
 script:
-  - ./mvnw clean install
-
-#before_cache:
+  - "./mvnw clean install"
 
 cache:
   directories:
-    - $HOME/.m2
+    - "$HOME/.m2"
 
 after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then
-    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-
-    docker build -t oncletom77/seeu-user-management .;
-    docker push oncletom77/seeu-user-management;
+  - |-
+    if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then 
+      docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+      docker build -t oncletom77/seeu-user-management .;
+      docker push oncletom77/seeu-user-management;
     fi
-
 notifications:
-  slack: seeu-workspace:"$SLACK_TOKEN"
+  slack:
+    rooms:
+      secure: rWLh5HzBAE+sC/R60+rdsD/zoIIJnDPbVLK1HhXVV0hEb0ElE/ZSR/xBEYc1mVWcEF3p3QR+VxtYfgbnwSP+/K61IikWmE+4sMq5gECjaLBYHh2CsxQrz+bwe9GAdopWSRAaYyBoHuWzfijB2yThpsBNLhRfw44jK/O6VHoolJDXAINZSimpVpSRymXxG1GFQ9sVQZvlDpBfipS/z3alw7LJXxuFmmtI+RcZMp0kwJ+G+GE8eXUILs8bAXQM/59deWQry8RieNPuxarmV47n8DfndnkqN0MldN+i4WkD4K9KsFrD9Zb3RFVDcRjU/dvwG3ES4Rp/pS3jgUVT2MhTQ7uLUjzRZL908ZbQCFD6aUTgij7Up67MxW0+A0xdDBJOGACWYOXXhdkqdSOiBtCNSy7Bb7SWxwHvYrQO2gkGoF5i+IZqsJ6jbMX/iwc+1JZddkLPHE5/LYgCCyVAxRTa3t8KmrNjVy30llYQzlu0Zq1LmKHdVV4LAAvqv5eApqFAdAt/CNab2T829+CVBZulv8zWF4/xMFqNFTHqZzvkP+rPMpaCRLbzBPQATFH/q/K3drdRfVexszkKFIwdelQXYloPexH/95O4uSUXrri4m8ztGfC36xL+q6lbybbPkHPvo4oCXRdIlElZH2ZXeSaAQwE685s2t4qiWQtsL/Fce2o=
