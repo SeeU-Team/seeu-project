@@ -27,9 +27,10 @@ after_success:
   - |-
     if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then 
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-      docker build -t oncletom77/seeu-user-management .;
+      docker build -t oncletom77/seeu-user-management ./seeu-user-management;
       docker push oncletom77/seeu-user-management;
     fi
+    
 notifications:
   slack:
     rooms:
