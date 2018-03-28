@@ -1,0 +1,6 @@
+spring:
+  application:
+     name: seeu-eureka
+  cloud:
+    config:
+      uri: http://localhost:8888

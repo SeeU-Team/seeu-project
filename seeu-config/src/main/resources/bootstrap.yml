@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: seeu-config
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/SeeU-Team/seeu-config
+server:
+  port: 8888
