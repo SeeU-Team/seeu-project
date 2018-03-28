@@ -22,8 +22,9 @@ script:
 
 #before_cache:
 
-#cache:
-#  directories:
+cache:
+  directories:
+    - $HOME/.m2
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then
