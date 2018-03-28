@@ -1,0 +1,34 @@
+sudo: required
+
+services:
+  - docker
+
+language: java
+jdk: oraclejdk9
+
+#env:
+
+before_install:
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y install docker-ce
+  - sudo service docker stop
+  - sudo service docker start
+  - chmod +x mvnw*
+
+script:
+  - ./mvnw clean install
+
+#before_cache:
+
+#cache:
+#  directories:
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+
+    docker build -t oncletom77/seeu-user-management .;
+    docker push oncletom77/seeu-user-management;
+    fi
