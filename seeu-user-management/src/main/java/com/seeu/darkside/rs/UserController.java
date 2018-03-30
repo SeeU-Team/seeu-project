@@ -20,29 +20,28 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}")
     public UserDto getOneUser(@PathVariable("id") Long id) throws UserNotFoundException {
         return userService.getUser(id);
     }
 
-    @GetMapping(produces = APPLICATION_JSON_VALUE)
+    @GetMapping
     public List<UserDto> listUsers() {
         return userService.getAllUsers();
     }
 
-    @GetMapping(value = "/", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/")
     public UserDto getOneUserByEmail(@RequestParam(value="email") String email ) throws UserNotFoundException {
         return userService.getUserByEmail(email);
     }
 
-    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseBody
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto createNewUser(@RequestBody UserDto userDto) throws UserAlreadyExistsException {
         return userService.createUser(userDto);
     }
 
-    @PatchMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/{id}")
     public UserDto updateDescription(@PathVariable("id") Long id, @RequestBody String description) {
         return userService.updateDescription(id, description);
     }
