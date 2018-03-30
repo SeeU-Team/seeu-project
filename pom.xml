@@ -35,6 +35,7 @@
         <module>seeu-user-management</module>
         <module>seeu-eureka</module>
         <module>seeu-config</module>
+        <module>seeu-zuul</module>
     </modules>
 
     <dependencyManagement>
