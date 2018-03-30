@@ -14,13 +14,13 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("users")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @GetMapping(value = "/{id}")
+    @GetMapping("{id}")
     public UserDto getOneUser(@PathVariable("id") Long id) throws UserNotFoundException {
         return userService.getUser(id);
     }
@@ -30,10 +30,10 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @GetMapping(value = "/")
+    /**@GetMapping(value = "/")
     public UserDto getOneUserByEmail(@RequestParam(value="email") String email ) throws UserNotFoundException {
         return userService.getUserByEmail(email);
-    }
+    }**/
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -41,12 +41,12 @@ public class UserController {
         return userService.createUser(userDto);
     }
 
-    @PatchMapping(value = "/{id}")
+    @PatchMapping("{id}")
     public UserDto updateDescription(@PathVariable("id") Long id, @RequestBody String description) {
         return userService.updateDescription(id, description);
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping("{id}")
     @ResponseStatus(NO_CONTENT)
     public void deleteUser(@PathVariable("id") Long id) throws UserNotFoundException {
         userService.deleteUser(id);

@@ -22,7 +22,6 @@
         <seeu-project.version>0.0.1-SNAPSHOT</seeu-project.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.9</java.version>
         <spring-cloud.version>Finchley.M9</spring-cloud.version>
         <mysql.version>5.1.44</mysql.version>
         <aws.java.sdk.s3.version>1.11.271</aws.java.sdk.s3.version>
@@ -82,11 +81,6 @@
             <groupId>com.jayway.restassured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>${rest.assured.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>${jaxb.api.version}</version>
         </dependency>
     </dependencies>
 

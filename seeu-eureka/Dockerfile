@@ -1,4 +1,4 @@
-FROM openjdk:9-jre
+FROM openjdk:8-jre
 COPY target/seeu-eureka-*.jar /usr/app/eureka.jar
 WORKDIR /usr/app/
 EXPOSE 8000
