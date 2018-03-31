@@ -31,10 +31,10 @@
     </properties>
 
     <modules>
-        <module>seeu-user-management</module>
-        <module>seeu-eureka</module>
         <module>seeu-config</module>
-        <module>seeu-zuul</module>
+        <module>seeu-eureka</module>
+        <module>seeu-gateway</module>
+        <module>seeu-user-management</module>
     </modules>
 
     <dependencyManagement>

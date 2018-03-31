@@ -37,8 +37,8 @@ after_success:
       docker build -t oncletom77/seeu-config ./seeu-config;
       docker push oncletom77/seeu-config;
 
-      docker build -t oncletom77/seeu-zuul ./seeu-zuul;
-      docker push oncletom77/seeu-zuul;
+      docker build -t oncletom77/seeu-gateway ./seeu-gateway;
+      docker push oncletom77/seeu-gateway;
 
     fi
 notifications:

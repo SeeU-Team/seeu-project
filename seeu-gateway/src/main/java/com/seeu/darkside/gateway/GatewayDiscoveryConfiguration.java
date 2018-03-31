@@ -1,4 +1,4 @@
-package com.seeu.darkside.zuul;
+package com.seeu.darkside.gateway;
 
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
