@@ -7,6 +7,7 @@ import com.seeu.darkside.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 
@@ -30,10 +31,15 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    /**@GetMapping(value = "/")
-    public UserDto getOneUserByEmail(@RequestParam(value="email") String email ) throws UserNotFoundException {
+    @GetMapping(params = "email")
+    public UserDto getOneUserByEmail(@RequestParam(value = "email") String email ) throws UserNotFoundException {
         return userService.getUserByEmail(email);
-    }**/
+    }
+
+    @GetMapping(params = "facebookId")
+    public UserDto getOneByFacebookId(@RequestParam(value = "facebookId") Long id) throws UserNotFoundException {
+        throw new NotImplementedException();
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
