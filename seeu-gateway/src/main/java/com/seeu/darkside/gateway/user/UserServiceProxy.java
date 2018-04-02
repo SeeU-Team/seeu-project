@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient("seeu-user-management")
 public interface UserServiceProxy {
 
-	@GetMapping(value = "/users")
+	@GetMapping(value = "/users", params = "facebookId")
 	User getOneByFacebookId(@RequestParam(value="facebookId") Long id);
 }
