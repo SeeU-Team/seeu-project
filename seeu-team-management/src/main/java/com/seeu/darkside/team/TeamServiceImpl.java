@@ -1,8 +1,23 @@
 package com.seeu.darkside.team;
 
+import com.seeu.darkside.asset.Asset;
+import com.seeu.darkside.asset.TeamHasAssetEntity;
+import com.seeu.darkside.asset.TeamHasAssetRepository;
+import com.seeu.darkside.category.Category;
+import com.seeu.darkside.category.TeamHasCategoryEntity;
+import com.seeu.darkside.category.TeamHasCategoryRepository;
+import com.seeu.darkside.rs.TeamCreation;
+import com.seeu.darkside.tag.Tag;
+import com.seeu.darkside.tag.TeamHasTagEntity;
+import com.seeu.darkside.tag.TeamHasTagRepository;
+import com.seeu.darkside.teammate.TeamHasUserEntity;
+import com.seeu.darkside.teammate.TeamHasUserRepository;
+import com.seeu.darkside.teammate.Teammate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,11 +27,19 @@ public class TeamServiceImpl implements TeamService {
 
     private final TeamRepository teamRepository;
     private final TeamAdapter teamAdapter;
+    private final TeamHasAssetRepository teamHasAssetRepository;
+    private final TeamHasCategoryRepository teamHasCategoryRepository;
+    private final TeamHasTagRepository teamHasTagRepository;
+    private final TeamHasUserRepository teamHasUserRepository;
 
     @Autowired
-    public TeamServiceImpl(TeamRepository teamRepository, TeamAdapter teamAdapter) {
+    public TeamServiceImpl(TeamRepository teamRepository, TeamAdapter teamAdapter, TeamHasAssetRepository teamHasAssetRepository, TeamHasCategoryRepository teamHasCategoryRepository, TeamHasTagRepository teamHasTagRepository, TeamHasUserRepository teamHasUserRepository) {
         this.teamRepository = teamRepository;
         this.teamAdapter = teamAdapter;
+        this.teamHasAssetRepository = teamHasAssetRepository;
+        this.teamHasCategoryRepository = teamHasCategoryRepository;
+        this.teamHasTagRepository = teamHasTagRepository;
+        this.teamHasUserRepository = teamHasUserRepository;
     }
 
     @Override
@@ -31,15 +54,102 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public TeamDto createTeam(TeamDto teamDto) {
-        Date now = new Date();
-        teamDto.setCreated(now);
-        teamDto.setUpdated(now);
+    @Transactional
+    public boolean createTeam(TeamCreation teamCreation) {
+        try  {
+            TeamEntity teamToSave = extractTeam(teamCreation);
+            TeamEntity teamSaved = teamRepository.save(teamToSave);
+            Long idTeam = teamSaved.getIdTeam();
 
-        TeamEntity teamEntity = teamAdapter.dtoToEntity(teamDto);
-        TeamEntity teamSaved = teamRepository.save(teamEntity);
+            List<TeamHasAssetEntity> teamHasAssetToSave = extractAssets(teamCreation, idTeam);
+            List<TeamHasCategoryEntity> teamHasCategoryToSave = extractCategories(teamCreation, idTeam);
+            List<TeamHasTagEntity> teamHasTagToSave = extractTags(teamCreation, idTeam);
+            List<TeamHasUserEntity> teamHasUserToSave = extractUsers(teamCreation, idTeam);
 
-        return teamAdapter.entityToDto(teamSaved);
+            for (TeamHasAssetEntity teamHasAssetEntity : teamHasAssetToSave) {
+                teamHasAssetRepository.save(teamHasAssetEntity);
+            }
+            for (TeamHasCategoryEntity teamHasCategoryEntity : teamHasCategoryToSave) {
+                teamHasCategoryRepository.save(teamHasCategoryEntity);
+            }
+            for (TeamHasTagEntity teamHasTagEntity : teamHasTagToSave) {
+                teamHasTagRepository.save(teamHasTagEntity);
+            }
+            for (TeamHasUserEntity teamHasUserEntity : teamHasUserToSave) {
+                teamHasUserRepository.save(teamHasUserEntity);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
+    private List<TeamHasUserEntity> extractUsers(TeamCreation teamCreation, Long idTeam) {
+        ArrayList<TeamHasUserEntity> userEntities = new ArrayList<>();
+        for (Teammate teammate : teamCreation.getTeammateList()) {
+            // todo change status
+            TeamHasUserEntity userEntity = TeamHasUserEntity.builder()
+                    .teamId(idTeam)
+                    .assetId(teammate.getIdTeammate())
+                    .status("STATUS")
+                    .build();
+
+            userEntities.add(userEntity);
+        }
+        return userEntities;
+    }
+
+    private List<TeamHasTagEntity> extractTags(TeamCreation teamCreation, Long idTeam) {
+        ArrayList<TeamHasTagEntity> tagEntities = new ArrayList<>();
+        for (Tag tag : teamCreation.getTags()) {
+            TeamHasTagEntity tagEntity = TeamHasTagEntity.builder()
+                    .teamId(idTeam)
+                    .tagId(tag.getIdTag())
+                    .build();
+
+            tagEntities.add(tagEntity);
+        }
+        return tagEntities;
+    }
+
+    private List<TeamHasCategoryEntity> extractCategories(TeamCreation teamCreation, Long idTeam) {
+        ArrayList<TeamHasCategoryEntity> categoryEntities = new ArrayList<>();
+        for (Category category : teamCreation.getCategories()) {
+            TeamHasCategoryEntity categoryEntity = TeamHasCategoryEntity.builder()
+                    .teamId(idTeam)
+                    .categoryId(category.getIdCategory()).build();
+
+            categoryEntities.add(categoryEntity);
+        }
+        return categoryEntities;
+    }
+
+    private List<TeamHasAssetEntity> extractAssets(TeamCreation teamCreation, Long idTeam) {
+        ArrayList<TeamHasAssetEntity> assetEntities = new ArrayList<>();
+        for (Asset asset : teamCreation.getAssets()) {
+            TeamHasAssetEntity assetEntity = TeamHasAssetEntity.builder()
+                    .teamId(idTeam)
+                    .assetId(asset.getIdAsset())
+                    .assetMediaId(asset.getIdMedia())
+                    .build();
+
+            assetEntities.add(assetEntity);
+        }
+        return assetEntities;
+    }
+
+    private TeamEntity extractTeam(TeamCreation teamCreation) {
+        Date now = new Date();
+
+        TeamEntity teamEntity = TeamEntity.builder()
+                .name(teamCreation.getName())
+                .description(teamCreation.getDescription())
+                .place(teamCreation.getPlace())
+                .created(now)
+                .updated(now)
+                .build();
+
+        return teamEntity;
+    }
 }

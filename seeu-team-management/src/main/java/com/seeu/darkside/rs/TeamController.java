@@ -1,11 +1,16 @@
 package com.seeu.darkside.rs;
 
+import com.seeu.darkside.asset.Asset;
+import com.seeu.darkside.category.Category;
+import com.seeu.darkside.tag.Tag;
 import com.seeu.darkside.team.TeamDto;
 import com.seeu.darkside.team.TeamService;
+import com.seeu.darkside.teammate.Teammate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -20,47 +25,49 @@ public class TeamController {
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public TeamDto createNewUser(@RequestBody TeamDto teamDto) {
-        return teamService.createTeam(teamDto);
+    public boolean createNewTeam(@RequestBody TeamCreation teamCreation) {
+        return teamService.createTeam(teamCreation);
     }
 
+    /**
+     * DEBUG
+     * @return
+     */
     @GetMapping
     public List<TeamDto> listTeams() {
         return teamService.getAllTeams();
     }
 
     /**
-     @GetMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
-     public UserDto getOneUser(@PathVariable("id") Long id) throws UserNotFoundException {
-     return userService.getUser(id);
-     }
+     * DEBUG
+     * @return
+     */
+    @GetMapping("/cre")
+    public TeamCreation getTeamCreationJson() {
+        ArrayList<Teammate> teammateList = new ArrayList<>();
+        Teammate teammate = new Teammate(23123L);
+        teammateList.add(teammate);
 
-     @GetMapping(produces = APPLICATION_JSON_VALUE)
-     public List<UserDto> listUsers() {
-     return userService.getAllUsers();
-     }
+        String name = "Team Name";
+        String description = "Team Description";
+        String place = "Paris";
 
-     @GetMapping(value = "/", produces = APPLICATION_JSON_VALUE)
-     public UserDto getOneUserByEmail(@RequestParam(value="email") String email ) throws UserNotFoundException {
-     return userService.getUserByEmail(email);
-     }
+        ArrayList<Asset> assets = new ArrayList<>();
+        Asset asset = new Asset(1212L, 3434L);
+        Asset asset2 = new Asset(2121L, 4343L);
+        assets.add(asset);
+        assets.add(asset2);
 
-     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-     @ResponseBody
-     @ResponseStatus(HttpStatus.CREATED)
-     public UserDto createNewUser(@RequestBody UserDto userDto) throws UserAlreadyExistsException {
-     return userService.createUser(userDto);
-     }
+        ArrayList<Category> categories = new ArrayList<>();
+        Category category = new Category(555L);
+        categories.add(category);
 
-     @PatchMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
-     public UserDto updateDescription(@PathVariable("id") Long id, @RequestBody String description) {
-     return userService.updateDescription(id, description);
-     }
+        ArrayList<Tag> tags = new ArrayList<>();
+        Tag tag = new Tag(666L);
+        tags.add(tag);
 
-     @DeleteMapping(value = "/{id}")
-     @ResponseStatus(NO_CONTENT)
-     public void deleteUser(@PathVariable("id") Long id) throws UserNotFoundException {
-     userService.deleteUser(id);
-     }
-     **/
+        TeamCreation teamCreation = new TeamCreation(name, description, place, teammateList, assets, categories, tags);
+
+        return teamCreation;
+    }
 }

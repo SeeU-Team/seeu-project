@@ -2,6 +2,7 @@ package com.seeu.darkside.team;
 
 import com.jayway.restassured.RestAssured;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,6 +42,7 @@ public class TeamContollerIT {
     }
 
     @Test
+    @Ignore
     public void should_create_new_team() {
         Date date = new Date();
 

@@ -1,0 +1,30 @@
+{
+  "name": "New Team ",
+  "description": "New Description",
+  "place": "Paris",
+  "teammateList": [
+    {
+      "idTeammate": 23123
+    }
+  ],
+  "assets": [
+    {
+      "idAsset": 1212,
+      "idMedia": 3434
+    },
+    {
+      "idAsset": 2121,
+      "idMedia": 4343
+    }
+  ],
+  "categories": [
+    {
+      "idCategory": 555
+    }
+  ],
+  "tags": [
+    {
+      "idTag": 666
+    }
+  ]
+}
