@@ -1,3 +1,4 @@
-#seeu-darkside-team-management
+# seeu-team-management
+
 
 SeeU microservice for team management

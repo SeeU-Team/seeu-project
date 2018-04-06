@@ -1,4 +1,4 @@
-package com.seeu.darkside.team;
+package test.java.com.seeu.darkside.team;
 
 import org.junit.Before;
 import org.junit.Ignore;

@@ -1,4 +1,4 @@
-package com.seeu.darkside.team;
+package test.java.com.seeu.darkside.team;
 
 import com.seeu.darkside.team.TeamAdapter;
 import com.seeu.darkside.team.TeamDto;
