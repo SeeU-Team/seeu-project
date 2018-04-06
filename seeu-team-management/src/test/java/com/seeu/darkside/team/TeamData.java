@@ -1,4 +1,4 @@
-package test.java.com.seeu.darkside.team;
+package com.seeu.darkside.team;
 
 import org.springframework.test.context.jdbc.Sql;
 

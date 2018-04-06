@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.context.annotation.Primary;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -18,9 +19,9 @@ import java.util.Date;
 public class TeamEntity {
 
     @Id
-    @GeneratedValue
-    @Column(name = "id")
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_team")
+    private Long idTeam;
 
     @Column
     @NotEmpty
@@ -40,12 +41,12 @@ public class TeamEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updated;
 
-    public Long getId() {
-        return id;
+    public Long getIdTeam() {
+        return idTeam;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdTeam(Long idTeam) {
+        this.idTeam = idTeam;
     }
 
     public String getName() {
@@ -91,7 +92,7 @@ public class TeamEntity {
     @Override
     public String toString() {
         return "TeamEntity{" +
-                "id=" + id +
+                "idTeam=" + idTeam +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", place='" + place + '\'' +

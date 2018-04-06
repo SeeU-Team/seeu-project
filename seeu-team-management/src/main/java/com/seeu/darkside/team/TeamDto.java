@@ -1,25 +1,29 @@
 package com.seeu.darkside.team;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TeamDto {
 
-    private Long id;
+    private Long idTeam;
     private String name;
     private String description;
     private String place;
     private Date created;
     private Date updated;
 
-    public Long getId() {
-        return id;
+    public Long getIdTeam() {
+        return idTeam;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdTeam(Long idTeam) {
+        this.idTeam = idTeam;
     }
 
     public String getName() {
@@ -65,7 +69,7 @@ public class TeamDto {
     @Override
     public String toString() {
         return "TeamDto{" +
-                "id=" + id +
+                "idTeam=" + idTeam +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", place='" + place + '\'' +

@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TeamServiceImpl implements TeamService {
@@ -15,6 +17,17 @@ public class TeamServiceImpl implements TeamService {
     public TeamServiceImpl(TeamRepository teamRepository, TeamAdapter teamAdapter) {
         this.teamRepository = teamRepository;
         this.teamAdapter = teamAdapter;
+    }
+
+    @Override
+    public List<TeamDto> getAllTeams() {
+        List<TeamDto> teamDtoList = teamRepository.findAll()
+                .stream()
+                .map((teamEntity) -> {
+                    TeamDto teamDto = teamAdapter.entityToDto(teamEntity);
+                    return teamDto;
+                }).collect(Collectors.toList());
+        return teamDtoList;
     }
 
     @Override
