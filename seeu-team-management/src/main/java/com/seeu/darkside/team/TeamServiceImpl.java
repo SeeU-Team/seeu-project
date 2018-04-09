@@ -62,7 +62,6 @@ public class TeamServiceImpl implements TeamService {
             TeamEntity teamToSave = extractTeam(teamCreation);
             TeamEntity teamSaved = teamRepository.save(teamToSave);
             Long idTeam = teamSaved.getIdTeam();
-
             List<TeamHasAssetEntity> teamHasAssetToSave = extractAssets(teamCreation, idTeam);
             List<TeamHasCategoryEntity> teamHasCategoryToSave = extractCategories(teamCreation, idTeam);
             List<TeamHasTagEntity> teamHasTagToSave = extractTags(teamCreation, idTeam);
@@ -79,6 +78,15 @@ public class TeamServiceImpl implements TeamService {
             }
             for (TeamHasUserEntity teamHasUserEntity : teamHasUserToSave) {
                 teamHasUserRepository.save(teamHasUserEntity);
+
+            }
+
+            for (int i = 0; i < teamHasUserToSave.size(); i++) {
+                if (i == 0) {
+                    teamHasUserToSave.get(i).setStatus("LEADER");
+                } else {
+                    teamHasUserToSave.get(i).setStatus("MEMBER");
+                }
             }
 
             teamProfile = createTeamProfile(teamSaved, teamHasUserToSave, teamHasAssetToSave, teamHasCategoryToSave, teamHasTagToSave);
@@ -140,7 +148,6 @@ public class TeamServiceImpl implements TeamService {
             TeamHasUserEntity userEntity = TeamHasUserEntity.builder()
                     .teamId(idTeam)
                     .userId(teammate.getIdTeammate())
-                    .status("STATUS")
                     .build();
 
             userEntities.add(userEntity);
