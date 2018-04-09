@@ -9,7 +9,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.UUID;
 
 @Builder
 @NoArgsConstructor

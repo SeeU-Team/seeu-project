@@ -7,6 +7,7 @@ import com.seeu.darkside.category.Category;
 import com.seeu.darkside.category.TeamHasCategoryEntity;
 import com.seeu.darkside.category.TeamHasCategoryRepository;
 import com.seeu.darkside.rs.TeamCreation;
+import com.seeu.darkside.rs.TeamLike;
 import com.seeu.darkside.tag.Tag;
 import com.seeu.darkside.tag.TeamHasTagEntity;
 import com.seeu.darkside.tag.TeamHasTagRepository;
@@ -83,6 +84,11 @@ public class TeamServiceImpl implements TeamService {
         }
 
         return true;
+    }
+
+    @Override
+    public void likeTeam(TeamLike teamLike) {
+
     }
 
     private List<TeamHasUserEntity> extractUsers(TeamCreation teamCreation, Long idTeam) {

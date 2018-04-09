@@ -44,30 +44,24 @@ public class TeamController {
      */
     @GetMapping("/cre")
     public TeamCreation getTeamCreationJson() {
-        ArrayList<Teammate> teammateList = new ArrayList<>();
-        Teammate teammate = new Teammate(23123L);
-        teammateList.add(teammate);
-
         String name = "Team Name";
         String description = "Team Description";
         String place = "Paris";
-
+        ArrayList<Teammate> teammateList = new ArrayList<>();
+        Teammate teammate = new Teammate(23123L);
+        teammateList.add(teammate);
         ArrayList<Asset> assets = new ArrayList<>();
         Asset asset = new Asset(1212L, 3434L);
         Asset asset2 = new Asset(2121L, 4343L);
         assets.add(asset);
         assets.add(asset2);
-
         ArrayList<Category> categories = new ArrayList<>();
         Category category = new Category(555L);
         categories.add(category);
-
         ArrayList<Tag> tags = new ArrayList<>();
         Tag tag = new Tag(666L);
         tags.add(tag);
-
         TeamCreation teamCreation = new TeamCreation(name, description, place, teammateList, assets, categories, tags);
-
         return teamCreation;
     }
 }
