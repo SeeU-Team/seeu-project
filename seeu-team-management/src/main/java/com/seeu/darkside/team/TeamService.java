@@ -8,7 +8,7 @@ import java.util.List;
 public interface TeamService {
     List<TeamDto> getAllTeams();
 
-    TeamEntity createTeam(TeamCreation teamCreation);
+    TeamProfile createTeam(TeamCreation teamCreation);
 
     void likeTeam(TeamLike teamLike);
 

@@ -56,11 +56,11 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public TeamEntity createTeam(TeamCreation teamCreation) {
-        TeamEntity teamSaved = null;
+    public TeamProfile createTeam(TeamCreation teamCreation) {
+        TeamProfile teamProfile = null;
         try  {
             TeamEntity teamToSave = extractTeam(teamCreation);
-            teamSaved = teamRepository.save(teamToSave);
+            TeamEntity teamSaved = teamRepository.save(teamToSave);
             Long idTeam = teamSaved.getIdTeam();
 
             List<TeamHasAssetEntity> teamHasAssetToSave = extractAssets(teamCreation, idTeam);
@@ -80,11 +80,24 @@ public class TeamServiceImpl implements TeamService {
             for (TeamHasUserEntity teamHasUserEntity : teamHasUserToSave) {
                 teamHasUserRepository.save(teamHasUserEntity);
             }
+
+            teamProfile = TeamProfile.builder()
+                    .idTeam(idTeam)
+                    .name(teamSaved.getName())
+                    .description(teamSaved.getDescription())
+                    .place(teamSaved.getPlace())
+                    .created(teamSaved.getCreated())
+                    .updated(teamSaved.getUpdated())
+                    .teammateList(teamHasUserToSave)
+                    .assets(teamHasAssetToSave)
+                    .categories(teamHasCategoryToSave)
+                    .tags(teamHasTagToSave)
+                    .build();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return teamSaved;
+        return teamProfile;
     }
 
     @Override
@@ -107,7 +120,7 @@ public class TeamServiceImpl implements TeamService {
             // todo change status
             TeamHasUserEntity userEntity = TeamHasUserEntity.builder()
                     .teamId(idTeam)
-                    .assetId(teammate.getIdTeammate())
+                    .userId(teammate.getIdTeammate())
                     .status("STATUS")
                     .build();
 

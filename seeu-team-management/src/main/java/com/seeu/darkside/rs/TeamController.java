@@ -5,6 +5,7 @@ import com.seeu.darkside.category.Category;
 import com.seeu.darkside.tag.Tag;
 import com.seeu.darkside.team.TeamDto;
 import com.seeu.darkside.team.TeamEntity;
+import com.seeu.darkside.team.TeamProfile;
 import com.seeu.darkside.team.TeamService;
 import com.seeu.darkside.teammate.Teammate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class TeamController {
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public TeamEntity createNewTeam(@RequestBody TeamCreation teamCreation) {
+    public TeamProfile createNewTeam(@RequestBody TeamCreation teamCreation) {
         return teamService.createTeam(teamCreation);
     }
 

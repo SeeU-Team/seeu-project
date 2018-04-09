@@ -25,4 +25,36 @@ public class TeamHasAssetEntity {
 
     @Column(name = "asset_media_id")
     private Long assetMediaId;
+
+    public Long getIdTeamHasAsset() {
+        return idTeamHasAsset;
+    }
+
+    public void setIdTeamHasAsset(Long idTeamHasAsset) {
+        this.idTeamHasAsset = idTeamHasAsset;
+    }
+
+    public Long getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
+    }
+
+    public Long getAssetId() {
+        return assetId;
+    }
+
+    public void setAssetId(Long assetId) {
+        this.assetId = assetId;
+    }
+
+    public Long getAssetMediaId() {
+        return assetMediaId;
+    }
+
+    public void setAssetMediaId(Long assetMediaId) {
+        this.assetMediaId = assetMediaId;
+    }
 }

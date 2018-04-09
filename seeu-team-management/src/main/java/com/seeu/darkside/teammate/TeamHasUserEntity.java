@@ -21,7 +21,7 @@ public class TeamHasUserEntity {
     private Long teamId;
 
     @Column(name = "user_id")
-    private Long assetId;
+    private Long userId;
 
     @Column
     private String status;
@@ -42,12 +42,12 @@ public class TeamHasUserEntity {
         this.teamId = teamId;
     }
 
-    public Long getAssetId() {
-        return assetId;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setAssetId(Long assetId) {
-        this.assetId = assetId;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getStatus() {

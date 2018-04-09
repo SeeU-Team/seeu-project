@@ -22,4 +22,28 @@ public class TeamHasCategoryEntity {
 
     @Column(name = "category_id")
     private Long categoryId;
+
+    public Long getIdTeamHasCategory() {
+        return idTeamHasCategory;
+    }
+
+    public void setIdTeamHasCategory(Long idTeamHasCategory) {
+        this.idTeamHasCategory = idTeamHasCategory;
+    }
+
+    public Long getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
 }
