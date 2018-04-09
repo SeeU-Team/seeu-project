@@ -81,18 +81,7 @@ public class TeamServiceImpl implements TeamService {
                 teamHasUserRepository.save(teamHasUserEntity);
             }
 
-            teamProfile = TeamProfile.builder()
-                    .idTeam(idTeam)
-                    .name(teamSaved.getName())
-                    .description(teamSaved.getDescription())
-                    .place(teamSaved.getPlace())
-                    .created(teamSaved.getCreated())
-                    .updated(teamSaved.getUpdated())
-                    .teammateList(teamHasUserToSave)
-                    .assets(teamHasAssetToSave)
-                    .categories(teamHasCategoryToSave)
-                    .tags(teamHasTagToSave)
-                    .build();
+            teamProfile = createTeamProfile(teamSaved, teamHasUserToSave, teamHasAssetToSave, teamHasCategoryToSave, teamHasTagToSave);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,6 +101,36 @@ public class TeamServiceImpl implements TeamService {
             throw new TeamNotFoundException("Team Not Found, team_id=" + idTeam);
         }
         return true;
+    }
+
+    @Override
+    @Transactional
+    public TeamProfile getTeamProfile(Long idTeam) {
+        checkIfTeamExist(idTeam);
+        TeamEntity teamEntity = teamRepository.findOneByIdTeam(idTeam);
+        List<TeamHasUserEntity> userEntities = teamHasUserRepository.findAllByTeamId(idTeam);
+        List<TeamHasAssetEntity> assetEntities = teamHasAssetRepository.findAllByTeamId(idTeam);
+        List<TeamHasCategoryEntity> categoryEntities = teamHasCategoryRepository.findAllByTeamId(idTeam);
+        List<TeamHasTagEntity> tagEntities = teamHasTagRepository.findAllByTeamId(idTeam);
+
+        TeamProfile teamProfile = createTeamProfile(teamEntity, userEntities, assetEntities, categoryEntities, tagEntities);
+
+        return teamProfile;
+    }
+
+    private TeamProfile createTeamProfile(TeamEntity teamEntity, List<TeamHasUserEntity> userEntities, List<TeamHasAssetEntity> assetEntities, List<TeamHasCategoryEntity> categoryEntities, List<TeamHasTagEntity> tagEntities) {
+        return TeamProfile.builder()
+                .idTeam(teamEntity.getIdTeam())
+                .name(teamEntity.getName())
+                .description(teamEntity.getDescription())
+                .place(teamEntity.getPlace())
+                .created(teamEntity.getCreated())
+                .updated(teamEntity.getUpdated())
+                .teammateList(userEntities)
+                .assets(assetEntities)
+                .categories(categoryEntities)
+                .tags(tagEntities)
+                .build();
     }
 
     private List<TeamHasUserEntity> extractUsers(TeamCreation teamCreation, Long idTeam) {

@@ -13,4 +13,6 @@ public interface TeamService {
     void likeTeam(TeamLike teamLike);
 
     boolean checkIfTeamExist(Long idLike) throws TeamNotFoundException;
+
+    TeamProfile getTeamProfile(Long idTeam);
 }

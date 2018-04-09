@@ -31,11 +31,17 @@ public class TeamController {
         return teamService.createTeam(teamCreation);
     }
 
+    @GetMapping
+    public TeamProfile getTeamInfo(@RequestParam Long teamId) {
+        return teamService.getTeamProfile(teamId);
+    }
+
+
     /**
      * DEBUG
      * @return
      */
-    @GetMapping
+    @GetMapping("/list")
     public List<TeamDto> listTeams() {
         return teamService.getAllTeams();
     }
