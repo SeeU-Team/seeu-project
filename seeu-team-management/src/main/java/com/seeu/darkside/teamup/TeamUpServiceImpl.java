@@ -25,13 +25,10 @@ public class TeamUpServiceImpl implements TeamUpService {
 
     @Override
     @Transactional
-    public TeamUpEntity likeTeam(TeamLike teamLike) {
-        try {
-            teamService.checkIfTeamExist(teamLike.getIdLike());
-            teamService.checkIfTeamExist(teamLike.getIdLiked());
-        } catch (TeamNotFoundException e) {
-            e.printStackTrace();
-        }
+    public TeamUpEntity likeTeam(TeamLike teamLike) throws TeamNotFoundException {
+
+        teamService.checkIfTeamExist(teamLike.getIdLike());
+        teamService.checkIfTeamExist(teamLike.getIdLiked());
 
         if (teamsNeedToBeMerge(teamLike)) {
             mergeTeams(teamLike);

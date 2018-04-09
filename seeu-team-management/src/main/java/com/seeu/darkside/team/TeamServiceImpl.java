@@ -96,7 +96,7 @@ public class TeamServiceImpl implements TeamService {
     public boolean checkIfTeamExist(Long idTeam) throws TeamNotFoundException {
         TeamEntity oneByIdTeam = teamRepository.findOneByIdTeam(idTeam);
         if (oneByIdTeam == null) {
-            throw new TeamNotFoundException();
+            throw new TeamNotFoundException("Team Not Found, team_id=" + idTeam);
         }
         return true;
     }

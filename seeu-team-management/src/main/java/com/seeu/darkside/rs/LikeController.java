@@ -1,5 +1,6 @@
 package com.seeu.darkside.rs;
 
+import com.seeu.darkside.team.TeamNotFoundException;
 import com.seeu.darkside.teamup.MergeEntity;
 import com.seeu.darkside.teamup.TeamUpEntity;
 import com.seeu.darkside.teamup.TeamUpService;
@@ -21,7 +22,16 @@ public class LikeController {
     @ResponseBody
     @ResponseStatus
     public TeamUpEntity likeTeam(@RequestBody TeamLike teamLike) {
-        return teamUpService.likeTeam(teamLike);
+
+        TeamUpEntity teamUpEntity = null;
+
+        try {
+            teamUpEntity = teamUpService.likeTeam(teamLike);
+        }
+        catch (TeamNotFoundException e) {
+            throw new TeamNotFoundException("Team Not Found");
+        }
+        return teamUpEntity;
     }
 
     /**
