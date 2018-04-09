@@ -1,6 +1,8 @@
 package com.seeu.darkside.teamup;
 
 import com.seeu.darkside.rs.TeamLike;
+import com.seeu.darkside.team.TeamNotFoundException;
+import com.seeu.darkside.team.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,16 +14,25 @@ public class TeamUpServiceImpl implements TeamUpService {
 
     private final TeamUpRepository teamUpRepository;
     private final MergeRepository mergeRepository;
+    private final TeamService teamService;
 
     @Autowired
-    public TeamUpServiceImpl(TeamUpRepository teamUpRepository, MergeRepository mergeRepository) {
+    public TeamUpServiceImpl(TeamUpRepository teamUpRepository, MergeRepository mergeRepository, TeamService teamService) {
         this.teamUpRepository = teamUpRepository;
         this.mergeRepository = mergeRepository;
+        this.teamService = teamService;
     }
 
     @Override
     @Transactional
-    public void likeTeam(TeamLike teamLike) {
+    public TeamUpEntity likeTeam(TeamLike teamLike) {
+        try {
+            teamService.checkIfTeamExist(teamLike.getIdLike());
+            teamService.checkIfTeamExist(teamLike.getIdLiked());
+        } catch (TeamNotFoundException e) {
+            e.printStackTrace();
+        }
+
         if (teamsNeedToBeMerge(teamLike)) {
             mergeTeams(teamLike);
         }
@@ -31,7 +42,7 @@ public class TeamUpServiceImpl implements TeamUpService {
                 .idLiked(teamLike.getIdLiked())
                 .build();
 
-        teamUpRepository.save(teamUpEntityToSave);
+        return teamUpRepository.save(teamUpEntityToSave);
     }
 
     @Override

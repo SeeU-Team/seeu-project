@@ -56,10 +56,11 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public boolean createTeam(TeamCreation teamCreation) {
+    public TeamEntity createTeam(TeamCreation teamCreation) {
+        TeamEntity teamSaved = null;
         try  {
             TeamEntity teamToSave = extractTeam(teamCreation);
-            TeamEntity teamSaved = teamRepository.save(teamToSave);
+            teamSaved = teamRepository.save(teamToSave);
             Long idTeam = teamSaved.getIdTeam();
 
             List<TeamHasAssetEntity> teamHasAssetToSave = extractAssets(teamCreation, idTeam);
@@ -83,12 +84,21 @@ public class TeamServiceImpl implements TeamService {
             e.printStackTrace();
         }
 
-        return true;
+        return teamSaved;
     }
 
     @Override
     public void likeTeam(TeamLike teamLike) {
 
+    }
+
+    @Override
+    public boolean checkIfTeamExist(Long idTeam) throws TeamNotFoundException {
+        TeamEntity oneByIdTeam = teamRepository.findOneByIdTeam(idTeam);
+        if (oneByIdTeam == null) {
+            throw new TeamNotFoundException();
+        }
+        return true;
     }
 
     private List<TeamHasUserEntity> extractUsers(TeamCreation teamCreation, Long idTeam) {

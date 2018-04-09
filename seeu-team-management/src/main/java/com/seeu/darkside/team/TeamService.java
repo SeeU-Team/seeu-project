@@ -8,7 +8,9 @@ import java.util.List;
 public interface TeamService {
     List<TeamDto> getAllTeams();
 
-    boolean createTeam(TeamCreation teamCreation);
+    TeamEntity createTeam(TeamCreation teamCreation);
 
     void likeTeam(TeamLike teamLike);
+
+    boolean checkIfTeamExist(Long idLike) throws TeamNotFoundException;
 }

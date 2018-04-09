@@ -5,7 +5,7 @@ import com.seeu.darkside.rs.TeamLike;
 import java.util.List;
 
 public interface TeamUpService {
-    void likeTeam(TeamLike teamLike);
+    TeamUpEntity likeTeam(TeamLike teamLike);
 
     List<MergeEntity> getAllMerge();
 

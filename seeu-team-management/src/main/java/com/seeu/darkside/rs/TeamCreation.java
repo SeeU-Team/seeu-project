@@ -5,10 +5,12 @@ import com.seeu.darkside.category.Category;
 import com.seeu.darkside.tag.Tag;
 import com.seeu.darkside.teammate.Teammate;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class TeamCreation {

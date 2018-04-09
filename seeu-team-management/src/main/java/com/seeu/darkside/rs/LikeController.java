@@ -20,8 +20,8 @@ public class LikeController {
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     @ResponseStatus
-    public void likeTeam(@RequestBody TeamLike teamLike) {
-        teamUpService.likeTeam(teamLike);
+    public TeamUpEntity likeTeam(@RequestBody TeamLike teamLike) {
+        return teamUpService.likeTeam(teamLike);
     }
 
     /**

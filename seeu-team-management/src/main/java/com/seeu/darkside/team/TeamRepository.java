@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 public interface TeamRepository extends JpaRepository<TeamEntity, Long> {
 
     TeamEntity save(TeamEntity teamEntity);
+
+    TeamEntity findOneByIdTeam(Long idTeam);
 }
