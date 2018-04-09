@@ -29,9 +29,8 @@ public class TeamUpServiceImpl implements TeamUpService {
         teamService.checkIfTeamExist(teamLike.getIdLike());
         teamService.checkIfTeamExist(teamLike.getIdLiked());
 
-        if (teamsNeedToBeMerge(teamLike)) {
+        if (teamsNeedToBeMerge(teamLike))
             mergeTeams(teamLike);
-        }
 
         TeamUpEntity teamUpEntityToSave = TeamUpEntity.builder()
                 .idLike(teamLike.getIdLike())
