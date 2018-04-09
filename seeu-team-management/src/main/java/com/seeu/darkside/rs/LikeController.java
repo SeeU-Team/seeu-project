@@ -22,16 +22,7 @@ public class LikeController {
     @ResponseBody
     @ResponseStatus
     public TeamUpEntity likeTeam(@RequestBody TeamLike teamLike) {
-
-        TeamUpEntity teamUpEntity = null;
-
-        try {
-            teamUpEntity = teamUpService.likeTeam(teamLike);
-        }
-        catch (TeamNotFoundException e) {
-            throw new TeamNotFoundException("Team Not Found");
-        }
-        return teamUpEntity;
+        return teamUpService.likeTeam(teamLike);
     }
 
     /**

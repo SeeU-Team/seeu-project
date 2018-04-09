@@ -25,7 +25,7 @@ public class TeamUpServiceImpl implements TeamUpService {
 
     @Override
     @Transactional
-    public TeamUpEntity likeTeam(TeamLike teamLike) throws TeamNotFoundException {
+    public TeamUpEntity likeTeam(TeamLike teamLike) {
 
         teamService.checkIfTeamExist(teamLike.getIdLike());
         teamService.checkIfTeamExist(teamLike.getIdLiked());
