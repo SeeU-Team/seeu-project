@@ -134,9 +134,9 @@ public class TeamServiceTest {
         when(teamAdapter.entityToDto(team3)).thenReturn(teamDto3);
         when(teamRepository.findAll()).thenReturn(list);
 
-        when(teamAdapter.dtoToEntity(any(TeamDto.class))).thenReturn(team4);
+        /**when(teamAdapter.dtoToEntity(any(TeamDto.class))).thenReturn(team4);
         when(teamAdapter.entityToDto(team4)).thenReturn(newTeamDto4);
-        when(teamRepository.save(any(TeamEntity.class))).thenReturn(team4);
+        when(teamRepository.save(any(TeamEntity.class))).thenReturn(team4);**/
     }
 
     @Test

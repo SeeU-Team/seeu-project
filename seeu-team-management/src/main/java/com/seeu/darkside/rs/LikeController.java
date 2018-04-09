@@ -1,6 +1,6 @@
 package com.seeu.darkside.rs;
 
-import com.seeu.darkside.team.TeamNotFoundException;
+import com.seeu.darkside.rs.dto.TeamLike;
 import com.seeu.darkside.teamup.MergeEntity;
 import com.seeu.darkside.teamup.TeamUpEntity;
 import com.seeu.darkside.teamup.TeamUpService;

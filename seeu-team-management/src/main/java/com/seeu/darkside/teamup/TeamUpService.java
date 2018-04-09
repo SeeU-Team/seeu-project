@@ -1,6 +1,6 @@
 package com.seeu.darkside.teamup;
 
-import com.seeu.darkside.rs.TeamLike;
+import com.seeu.darkside.rs.dto.TeamLike;
 import com.seeu.darkside.team.TeamNotFoundException;
 
 import java.util.List;

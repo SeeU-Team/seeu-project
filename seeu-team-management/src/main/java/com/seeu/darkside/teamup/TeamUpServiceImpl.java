@@ -1,7 +1,6 @@
 package com.seeu.darkside.teamup;
 
-import com.seeu.darkside.rs.TeamLike;
-import com.seeu.darkside.team.TeamNotFoundException;
+import com.seeu.darkside.rs.dto.TeamLike;
 import com.seeu.darkside.team.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

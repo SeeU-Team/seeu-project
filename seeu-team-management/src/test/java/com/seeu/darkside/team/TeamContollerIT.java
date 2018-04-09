@@ -35,7 +35,7 @@ public class TeamContollerIT {
     @Test
     public void should_get_all_teams() {
         when()
-                .get("/teams")
+                .get("/teams/list")
                 .then()
                 .statusCode(200)
                 .body("$", hasSize(3));

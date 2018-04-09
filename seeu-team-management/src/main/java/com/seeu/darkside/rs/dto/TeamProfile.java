@@ -1,4 +1,4 @@
-package com.seeu.darkside.team;
+package com.seeu.darkside.rs.dto;
 
 import com.seeu.darkside.asset.TeamHasAssetEntity;
 import com.seeu.darkside.category.TeamHasCategoryEntity;

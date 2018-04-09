@@ -1,4 +1,4 @@
-package com.seeu.darkside.rs;
+package com.seeu.darkside.rs.dto;
 
 import com.seeu.darkside.asset.Asset;
 import com.seeu.darkside.category.Category;

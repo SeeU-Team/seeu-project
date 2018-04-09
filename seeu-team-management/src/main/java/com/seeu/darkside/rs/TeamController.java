@@ -2,10 +2,10 @@ package com.seeu.darkside.rs;
 
 import com.seeu.darkside.asset.Asset;
 import com.seeu.darkside.category.Category;
+import com.seeu.darkside.rs.dto.TeamCreation;
 import com.seeu.darkside.tag.Tag;
 import com.seeu.darkside.team.TeamDto;
-import com.seeu.darkside.team.TeamEntity;
-import com.seeu.darkside.team.TeamProfile;
+import com.seeu.darkside.rs.dto.TeamProfile;
 import com.seeu.darkside.team.TeamService;
 import com.seeu.darkside.teammate.Teammate;
 import org.springframework.beans.factory.annotation.Autowired;

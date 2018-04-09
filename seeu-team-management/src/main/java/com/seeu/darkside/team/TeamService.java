@@ -1,7 +1,8 @@
 package com.seeu.darkside.team;
 
-import com.seeu.darkside.rs.TeamCreation;
-import com.seeu.darkside.rs.TeamLike;
+import com.seeu.darkside.rs.dto.TeamCreation;
+import com.seeu.darkside.rs.dto.TeamLike;
+import com.seeu.darkside.rs.dto.TeamProfile;
 
 import java.util.List;
 

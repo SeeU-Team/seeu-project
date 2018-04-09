@@ -1,4 +1,4 @@
-package com.seeu.darkside.rs;
+package com.seeu.darkside.rs.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
