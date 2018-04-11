@@ -1,5 +1,6 @@
 package com.seeu.darkside.team;
 
+import com.seeu.darkside.rs.dto.AddTeammate;
 import com.seeu.darkside.rs.dto.TeamCreation;
 import com.seeu.darkside.rs.dto.TeamLike;
 import com.seeu.darkside.rs.dto.TeamProfile;
@@ -16,4 +17,6 @@ public interface TeamService {
     boolean checkIfTeamExist(Long idLike) throws TeamNotFoundException;
 
     TeamProfile getTeamProfile(Long idTeam);
+
+    TeamProfile addTeammates(AddTeammate teammates);
 }

@@ -6,6 +6,7 @@ import com.seeu.darkside.asset.TeamHasAssetRepository;
 import com.seeu.darkside.category.Category;
 import com.seeu.darkside.category.TeamHasCategoryEntity;
 import com.seeu.darkside.category.TeamHasCategoryRepository;
+import com.seeu.darkside.rs.dto.AddTeammate;
 import com.seeu.darkside.rs.dto.TeamCreation;
 import com.seeu.darkside.rs.dto.TeamLike;
 import com.seeu.darkside.rs.dto.TeamProfile;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.seeu.darkside.utils.Constants.*;
 
 @Service
 public class TeamServiceImpl implements TeamService {
@@ -84,9 +87,9 @@ public class TeamServiceImpl implements TeamService {
 
             for (int i = 0; i < teamHasUserToSave.size(); i++) {
                 if (i == 0) {
-                    teamHasUserToSave.get(i).setStatus("LEADER");
+                    teamHasUserToSave.get(i).setStatus(STATUS_LAEADER);
                 } else {
-                    teamHasUserToSave.get(i).setStatus("MEMBER");
+                    teamHasUserToSave.get(i).setStatus(STATUS_MEMBER);
                 }
             }
 
@@ -107,7 +110,7 @@ public class TeamServiceImpl implements TeamService {
     public boolean checkIfTeamExist(Long idTeam) throws TeamNotFoundException {
         TeamEntity oneByIdTeam = teamRepository.findOneByIdTeam(idTeam);
         if (oneByIdTeam == null) {
-            throw new TeamNotFoundException("Team Not Found, team_id=" + idTeam);
+            throw new TeamNotFoundException(TEAM_NOT_FOUND_MSG + idTeam);
         }
         return true;
     }
@@ -124,6 +127,24 @@ public class TeamServiceImpl implements TeamService {
 
         TeamProfile teamProfile = createTeamProfile(teamEntity, userEntities, assetEntities, categoryEntities, tagEntities);
 
+        return teamProfile;
+    }
+
+    @Override
+    @Transactional
+    public TeamProfile addTeammates(AddTeammate teammates) {
+        checkIfTeamExist(teammates.getIdTeam());
+        List<Teammate> teammateList = teammates.getTeammates();
+        for (int i = 0; i < teammateList.size(); i++) {
+            TeamHasUserEntity teamHasUserEntity = TeamHasUserEntity.builder()
+                    .teamId(teammates.getIdTeam())
+                    .userId(teammateList.get(i).getIdTeammate())
+                    .status(STATUS_MEMBER)
+                    .build();
+            teamHasUserRepository.save(teamHasUserEntity);
+        }
+
+        TeamProfile teamProfile = getTeamProfile(teammates.getIdTeam());
         return teamProfile;
     }
 
@@ -145,7 +166,6 @@ public class TeamServiceImpl implements TeamService {
     private List<TeamHasUserEntity> extractUsers(TeamCreation teamCreation, Long idTeam) {
         ArrayList<TeamHasUserEntity> userEntities = new ArrayList<>();
         for (Teammate teammate : teamCreation.getTeammateList()) {
-            // todo change status
             TeamHasUserEntity userEntity = TeamHasUserEntity.builder()
                     .teamId(idTeam)
                     .userId(teammate.getIdTeammate())
@@ -197,7 +217,6 @@ public class TeamServiceImpl implements TeamService {
 
     private TeamEntity extractTeam(TeamCreation teamCreation) {
         Date now = new Date();
-
         TeamEntity teamEntity = TeamEntity.builder()
                 .name(teamCreation.getName())
                 .description(teamCreation.getDescription())
