@@ -38,7 +38,10 @@ public class UserController {
 
     @GetMapping(params = "facebookId")
     public UserDto getOneByFacebookId(@RequestParam(value = "facebookId") Long id) throws UserNotFoundException {
-        throw new NotImplementedException();
+        return UserDto.builder()
+                .idUser(id)
+                .build();
+        //throw new NotImplementedException();
     }
 
     @PostMapping

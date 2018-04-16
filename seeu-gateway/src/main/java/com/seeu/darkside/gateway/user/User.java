@@ -1,7 +1,5 @@
 package com.seeu.darkside.gateway.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @AllArgsConstructor
@@ -9,11 +7,11 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
 
-	private Long id;
+	private Long idUser;
 
-	@JsonProperty(value = "id")
 	private Long facebookId;
+
+	private String name;
 }
