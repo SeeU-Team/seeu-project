@@ -4,8 +4,6 @@ import com.seeu.darkside.gateway.user.FacebookUser;
 import com.seeu.darkside.gateway.user.User;
 import com.seeu.darkside.gateway.user.UserServiceProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;

@@ -1,6 +1,5 @@
 package com.seeu.darkside.gateway.security;
 
-import com.seeu.darkside.gateway.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +21,7 @@ public class ApiServerSecurityContextRepository implements ServerSecurityContext
 
 	@Override
 	public Mono<Void> save(ServerWebExchange serverWebExchange, SecurityContext securityContext) {
-		return null;
+		return Mono.empty();
 	}
 
 	@Override
