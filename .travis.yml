@@ -26,19 +26,19 @@ cache:
 after_success:
   - |-
     if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then 
-      docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-
-      docker build -t oncletom77/seeu-user-management ./seeu-user-management;
-      docker push oncletom77/seeu-user-management;
-
-      docker build -t oncletom77/seeu-eureka ./seeu-eureka;
-      docker push oncletom77/seeu-eureka;
+      echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin;
 
       docker build -t oncletom77/seeu-config ./seeu-config;
       docker push oncletom77/seeu-config;
 
+      docker build -t oncletom77/seeu-eureka ./seeu-eureka;
+      docker push oncletom77/seeu-eureka;
+
       docker build -t oncletom77/seeu-gateway ./seeu-gateway;
       docker push oncletom77/seeu-gateway;
+
+      docker build -t oncletom77/seeu-user-management ./seeu-user-management;
+      docker push oncletom77/seeu-user-management;
 
     fi
 notifications:
