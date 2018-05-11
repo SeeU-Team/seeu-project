@@ -1,0 +1,29 @@
+version: '3.6'
+
+networks:
+  spring-cloud-network:
+
+services:
+  seeu-config:
+    image: oncletom77/seeu-config
+    networks:
+      - spring-cloud-network
+
+  seeu-eureka:
+    image: oncletom77/seeu-eureka
+    networks:
+      - spring-cloud-network
+    ports:
+      - "${EUREKA_PORT}:8000"
+
+  seeu-gateway:
+    image: oncletom77/seeu-gateway
+    networks:
+      - spring-cloud-network
+    ports:
+      - "${GATEWAY_PORT}:8001"
+
+  seeu-user-management:
+    image: oncletom77/seeu-user-management
+    networks:
+      - spring-cloud-network
