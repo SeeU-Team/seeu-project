@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -170,7 +171,7 @@ public class UserServiceTest {
         when(userRepository.findOneByEmail(user3.getEmail())).thenReturn(user3);
         when(userRepository.findOneByEmail(user4.getEmail())).thenReturn(null);
         when(bCryptPasswordEncoder.encode(user4.getPassword())).thenReturn("passwordEncoded");
-        when(userRepository.getOne(user2.getIdUser())).thenReturn(user2);
+        when(userRepository.findById(user2.getIdUser())).thenReturn(Optional.of(user2));
         // when(userRepository.getOne(4L)).thenReturn(null);
         when(userRepository.save(any(UserEntity.class))).thenReturn(user4);
     }
@@ -190,7 +191,7 @@ public class UserServiceTest {
             assertThat(userByEmail.getIdUser()).isEqualTo(user2.getIdUser());
             assertThat(userByEmail.getFirstname()).isEqualTo(user2.getFirstname());
         } catch (UserNotFoundException e) {
-            fail("Test failed : an exception should have been thrown when trying to retrieve one user with id = " + idUser);
+            fail("Test failed : an unexpected exception has been thrown when trying to retrieve one user with id = " + idUser);
         }
     }
 

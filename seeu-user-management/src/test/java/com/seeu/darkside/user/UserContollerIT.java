@@ -77,7 +77,7 @@ public class UserContollerIT {
     public void should_insert_user() {
         Date date = new Date();
 
-        UserEntity user = UserEntity.builder()
+        UserDto user = UserDto.builder()
                 .firstname("fourth")
                 .lastname("lastname4")
                 .email("fourth@email.com")
@@ -91,9 +91,9 @@ public class UserContollerIT {
         given()
                 .contentType(JSON)
                 .body(user)
-                .when()
+        .when()
                 .post("/users")
-                .then()
+        .then()
                 .statusCode(201);
     }
 

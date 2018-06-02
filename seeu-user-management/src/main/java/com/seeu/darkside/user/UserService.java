@@ -10,7 +10,6 @@ public interface UserService {
 
     UserDto createUser(UserDto userDto) throws UserAlreadyExistsException;
 
-    @Transactional(readOnly = true)
     UserDto getUser(Long id) throws UserNotFoundException;
 
     UserDto updateDescription(Long id, String description);
