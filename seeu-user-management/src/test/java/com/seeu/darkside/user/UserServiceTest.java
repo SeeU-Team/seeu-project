@@ -58,7 +58,7 @@ public class UserServiceTest {
         date = new Date();
 
         user1 = UserEntity.builder()
-                .idUser(1L)
+                .id(1L)
                 .firstname("first")
                 .lastname("lastname1")
                 .email("first@email.com")
@@ -70,7 +70,7 @@ public class UserServiceTest {
                 .build();
 
         user2 = UserEntity.builder()
-                .idUser(2L)
+                .id(2L)
                 .firstname("second")
                 .lastname("lastname2")
                 .email("second@email.com")
@@ -82,7 +82,7 @@ public class UserServiceTest {
                 .build();
 
         user3 = UserEntity.builder()
-                .idUser(3L)
+                .id(3L)
                 .firstname("third")
                 .lastname("lastname1")
                 .email("tird@email.com")
@@ -94,7 +94,7 @@ public class UserServiceTest {
                 .build();
 
         user4 = UserEntity.builder()
-                .idUser(4L)
+                .id(4L)
                 .firstname("fourth")
                 .lastname("lastname4")
                 .email("fourth@email.com")
@@ -106,7 +106,7 @@ public class UserServiceTest {
                 .build();
 
         userDto1 = UserDto.builder()
-                .idUser(1L)
+                .id(1L)
                 .firstname("first")
                 .lastname("lastname1")
                 .email("first@email.com")
@@ -118,7 +118,7 @@ public class UserServiceTest {
                 .build();
 
         userDto2 = UserDto.builder()
-                .idUser(2L)
+                .id(2L)
                 .firstname("second")
                 .lastname("lastname2")
                 .email("second@email.com")
@@ -130,7 +130,7 @@ public class UserServiceTest {
                 .build();
 
         userDto3 = UserDto.builder()
-                .idUser(3L)
+                .id(3L)
                 .firstname("third")
                 .lastname("lastname1")
                 .email("tird@email.com")
@@ -142,7 +142,7 @@ public class UserServiceTest {
                 .build();
 
         newUserDto4 = UserDto.builder()
-                .idUser(4L)
+                .id(4L)
                 .firstname("fourth")
                 .lastname("lastname4")
                 .email("fourth@email.com")
@@ -171,7 +171,7 @@ public class UserServiceTest {
         when(userRepository.findOneByEmail(user3.getEmail())).thenReturn(user3);
         when(userRepository.findOneByEmail(user4.getEmail())).thenReturn(null);
         when(bCryptPasswordEncoder.encode(user4.getPassword())).thenReturn("passwordEncoded");
-        when(userRepository.findById(user2.getIdUser())).thenReturn(Optional.of(user2));
+        when(userRepository.findById(user2.getId())).thenReturn(Optional.of(user2));
         // when(userRepository.getOne(4L)).thenReturn(null);
         when(userRepository.save(any(UserEntity.class))).thenReturn(user4);
     }
@@ -184,14 +184,14 @@ public class UserServiceTest {
 
     @Test
     public void should_get_one_user_from_id() throws UserNotFoundException {
-        Long idUser = 2L;
+        Long id = 2L;
         try {
-            UserDto userByEmail = userService.getUser(idUser);
+            UserDto userByEmail = userService.getUser(id);
             assertThat(userByEmail).isNotNull();
-            assertThat(userByEmail.getIdUser()).isEqualTo(user2.getIdUser());
+            assertThat(userByEmail.getId()).isEqualTo(user2.getId());
             assertThat(userByEmail.getFirstname()).isEqualTo(user2.getFirstname());
         } catch (UserNotFoundException e) {
-            fail("Test failed : an unexpected exception has been thrown when trying to retrieve one user with id = " + idUser);
+            fail("Test failed : an unexpected exception has been thrown when trying to retrieve one user with id = " + id);
         }
     }
 
@@ -211,7 +211,7 @@ public class UserServiceTest {
         try {
             UserDto userByEmail = userService.getUserByEmail(email);
             assertThat(userByEmail).isNotNull();
-            assertThat(userByEmail.getIdUser()).isEqualTo(user3.getIdUser());
+            assertThat(userByEmail.getId()).isEqualTo(user3.getId());
             assertThat(userByEmail.getFirstname()).isEqualTo(user3.getFirstname());
         } catch (UserNotFoundException e) {
             fail("Test failed : an exception should have been thrown when trying to retrieve one user with email = " + email);
@@ -231,7 +231,7 @@ public class UserServiceTest {
     @Test
     public void should_create_new_user() throws UserAlreadyExistsException {
         UserDto userDto4 = UserDto.builder()
-                .idUser(4L)
+                .id(4L)
                 .firstname("fourth")
                 .lastname("lastname4")
                 .email("fourth@email.com")
@@ -241,7 +241,7 @@ public class UserServiceTest {
                 .build();
 
         UserDto userSaved = userService.createUser(userDto4);
-        assertThat(userSaved.getIdUser()).isEqualTo(userDto4.getIdUser());
+        assertThat(userSaved.getId()).isEqualTo(userDto4.getId());
     }
 
     @Test

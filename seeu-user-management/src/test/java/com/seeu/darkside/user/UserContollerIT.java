@@ -45,7 +45,7 @@ public class UserContollerIT {
                 .get("/users/1")
                 .then()
                 .statusCode(200)
-                .body("idUser", is(1));
+                .body("id", is(1));
     }
 
     @Test
@@ -54,7 +54,7 @@ public class UserContollerIT {
                 .get("/users/?email=three@email.com")
                 .then()
                 .statusCode(200)
-                .body("idUser", is(3));
+                .body("id", is(3));
     }
 
     @Test

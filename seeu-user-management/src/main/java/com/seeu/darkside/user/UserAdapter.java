@@ -7,7 +7,8 @@ public class UserAdapter {
 
     public UserEntity dtoToEntity(UserDto userDto) {
         return UserEntity.builder()
-                .idUser(userDto.getIdUser())
+                .id(userDto.getId())
+                .facebookId(userDto.getFacebookId())
                 .firstname(userDto.getFirstname())
                 .lastname(userDto.getLastname())
                 .email(userDto.getEmail())
@@ -21,7 +22,8 @@ public class UserAdapter {
 
     public UserDto entityToDto(UserEntity userEntity) {
         return UserDto.builder()
-                .idUser(userEntity.getIdUser())
+                .id(userEntity.getId())
+                .facebookId(userEntity.getFacebookId())
                 .firstname(userEntity.getFirstname())
                 .lastname(userEntity.getLastname())
                 .email(userEntity.getEmail())

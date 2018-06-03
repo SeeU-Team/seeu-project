@@ -17,7 +17,10 @@ public class UserEntity {
     @Id
     @GeneratedValue
     @Column(name = "id_user")
-    private Long idUser;
+    private Long id;
+
+    @Column
+	private Long facebookId;
 
     @Column
     private String firstname;
@@ -48,7 +51,7 @@ public class UserEntity {
     @Override
     public String toString() {
         return "UserEntity{" +
-                "idUser=" + idUser +
+                "id=" + id +
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
                 ", email='" + email + '\'' +

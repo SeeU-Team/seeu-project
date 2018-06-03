@@ -23,10 +23,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-cloud.version>Finchley.M9</spring-cloud.version>
-        <mysql.version>5.1.44</mysql.version>
         <lombok.version>1.16.20</lombok.version>
         <rest-assured.version>2.4.1</rest-assured.version>
-        <jaxb-api.version>2.3.0</jaxb-api.version>
+        <!--<jaxb-api.version>2.3.0</jaxb-api.version>-->
     </properties>
 
     <modules>

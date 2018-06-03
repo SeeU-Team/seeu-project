@@ -24,6 +24,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+	@Transactional(readOnly = true)
     public List<UserDto> getAllUsers() {
 
         return userRepository.findAll()
@@ -31,6 +32,34 @@ public class UserServiceImpl implements UserService {
             .map(userAdapter::entityToDto)
             .collect(toList());
     }
+
+	@Override
+	@Transactional(readOnly = true)
+	public UserDto getUser(Long id) throws UserNotFoundException {
+		UserEntity userEntity = userRepository
+				.findById(id)
+				.orElseThrow(UserNotFoundException::new);
+
+		return userAdapter.entityToDto(userEntity);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public UserDto getUserByEmail(String email) throws UserNotFoundException {
+		UserEntity userByEmail = userRepository.findOneByEmail(email);
+		if(userByEmail == null)
+			throw new UserNotFoundException();
+		return userAdapter.entityToDto(userByEmail);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public UserDto getUserByFacebookId(Long facebookId) throws UserNotFoundException {
+		UserEntity userByEmail = userRepository.findOneByFacebookId(facebookId);
+		if(userByEmail == null)
+			throw new UserNotFoundException();
+		return userAdapter.entityToDto(userByEmail);
+	}
 
     @Override
     @Transactional
@@ -51,35 +80,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public UserDto getUser(Long id) throws UserNotFoundException {
-        UserEntity userEntity = userRepository
-                .findById(id)
-                .orElseThrow(UserNotFoundException::new);
-
-        return userAdapter.entityToDto(userEntity);
-    }
-
-    @Override
+	@Transactional
     public UserDto updateDescription(Long id, String description) {
         Date now = new Date();
         UserEntity userToUpdate = userRepository.getOne(id);
         userToUpdate.setDescription(description);
         userToUpdate.setUpdated(now);
+
         UserEntity save = userRepository.save(userToUpdate);
+
         return userAdapter.entityToDto(save);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public UserDto getUserByEmail(String email) throws UserNotFoundException {
-        UserEntity userByEmail = userRepository.findOneByEmail(email);
-        if(userByEmail == null)
-            throw new UserNotFoundException();
-        return userAdapter.entityToDto(userByEmail);
-    }
-
-    @Override
+	@Transactional
     public void deleteUser(Long id) throws UserNotFoundException {
         UserEntity userToDelete = userRepository
                 .findById(id)

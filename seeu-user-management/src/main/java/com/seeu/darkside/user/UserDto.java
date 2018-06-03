@@ -9,7 +9,6 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
-import java.util.UUID;
 
 @Data
 @Builder
@@ -17,7 +16,10 @@ import java.util.UUID;
 @NoArgsConstructor
 public class UserDto {
 
-    private Long idUser;
+    private Long id;
+
+    @NotEmpty
+    private Long facebookId;
 
 	@NotEmpty
     private String firstname;
@@ -43,7 +45,7 @@ public class UserDto {
     @Override
     public String toString() {
         return "UserDto{" +
-                "idUser=" + idUser +
+                "id=" + id +
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
                 ", email='" + email + '\'' +
