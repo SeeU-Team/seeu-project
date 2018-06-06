@@ -27,6 +27,7 @@
         <lombok.version>1.16.20</lombok.version>
         <rest-assured.version>2.4.1</rest-assured.version>
         <jaxb-api.version>2.3.0</jaxb-api.version>
+        <aws.java.sdk.s3.version>1.11.340</aws.java.sdk.s3.version>
     </properties>
 
     <modules>

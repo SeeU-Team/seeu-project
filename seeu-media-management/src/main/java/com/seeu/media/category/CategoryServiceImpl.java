@@ -32,11 +32,11 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public CategoryEntity getCategory(Long categoryId) {
-        return null;
+        return categoryRepository.findCategoryEntityByIdCategory(categoryId);
     }
 
     @Override
     public List<CategoryEntity> getAllCategories() {
-        return null;
+        return categoryRepository.findAll();
     }
 }

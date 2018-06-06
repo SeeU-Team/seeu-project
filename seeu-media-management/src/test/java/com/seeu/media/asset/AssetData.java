@@ -13,7 +13,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @Retention(RUNTIME)
 @Target(TYPE)
 
-@Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "classpath:tag-init.sql")
-@Sql(executionPhase = AFTER_TEST_METHOD, scripts = "classpath:tag-cleanup.sql")
+@Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "classpath:asset-init.sql")
+@Sql(executionPhase = AFTER_TEST_METHOD, scripts = "classpath:asset-cleanup.sql")
 public @interface AssetData {
 }
