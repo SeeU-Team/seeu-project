@@ -22,6 +22,7 @@ public class SecurityConfiguration {
 				.authorizeExchange()
 					.pathMatchers(POST, "/login").permitAll()
 					.pathMatchers("/actuator/**").permitAll()
+					.pathMatchers("/app/**").permitAll() // authorize web socket URLs
 				.anyExchange().authenticated()
 				.and()
 					.securityContextRepository(securityContextRepository)

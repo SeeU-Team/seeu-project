@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.0.RELEASE</version>
+        <version>2.0.1.RELEASE</version>
     </parent>
 
 
@@ -33,6 +33,7 @@
         <module>seeu-eureka</module>
         <module>seeu-gateway</module>
         <module>seeu-user-management</module>
+        <module>seeu-messages</module>
     </modules>
 
     <dependencyManagement>
