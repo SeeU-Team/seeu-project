@@ -1,0 +1,6 @@
+spring:
+  application:
+     name: seeu-team-management
+  cloud:
+    config:
+      uri: http://localhost:8888
