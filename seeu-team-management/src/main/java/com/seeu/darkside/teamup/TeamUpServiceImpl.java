@@ -25,12 +25,13 @@ public class TeamUpServiceImpl implements TeamUpService {
     @Override
     @Transactional
     public TeamUpEntity likeTeam(TeamLike teamLike) {
-
         teamService.checkIfTeamExist(teamLike.getIdLike());
         teamService.checkIfTeamExist(teamLike.getIdLiked());
 
-        if (teamsNeedToBeMerge(teamLike))
+        if (isReciprocalLike(teamLike)) {
+            // TODO: send notif via notification micro service to the leader of each team
             mergeTeams(teamLike);
+        }
 
         TeamUpEntity teamUpEntityToSave = TeamUpEntity.builder()
                 .idLike(teamLike.getIdLike())
@@ -56,15 +57,10 @@ public class TeamUpServiceImpl implements TeamUpService {
                 .idSecond(teamLike.getIdLike())
                 .build();
 
-        MergeEntity savedEntity = mergeRepository.save(newMerge);
-        return savedEntity;
+        return mergeRepository.save(newMerge);
     }
 
-    private boolean teamsNeedToBeMerge(TeamLike teamLike) {
-        TeamUpEntity teamIsLiked = teamUpRepository.findIfTeamIsLiked(teamLike.getIdLike(), teamLike.getIdLiked());
-        if (teamIsLiked != null)
-            return true;
-        else
-            return false;
+    private boolean isReciprocalLike(TeamLike teamLike) {
+        return teamUpRepository.findIfTeamIsLiked(teamLike.getIdLike(), teamLike.getIdLiked()).isPresent();
     }
 }

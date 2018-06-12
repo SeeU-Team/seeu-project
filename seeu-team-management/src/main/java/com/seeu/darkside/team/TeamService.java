@@ -12,9 +12,7 @@ public interface TeamService {
 
     TeamProfile createTeam(TeamCreation teamCreation);
 
-    void likeTeam(TeamLike teamLike);
-
-    boolean checkIfTeamExist(Long idLike) throws TeamNotFoundException;
+    void checkIfTeamExist(Long idTeam) throws TeamNotFoundException;
 
     TeamProfile getTeamProfile(Long idTeam);
 

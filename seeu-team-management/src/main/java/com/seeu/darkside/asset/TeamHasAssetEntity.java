@@ -1,14 +1,14 @@
 package com.seeu.darkside.asset;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "team_has_asset")
 public class TeamHasAssetEntity {
@@ -25,36 +25,4 @@ public class TeamHasAssetEntity {
 
     @Column(name = "asset_media_id")
     private Long assetMediaId;
-
-    public Long getIdTeamHasAsset() {
-        return idTeamHasAsset;
-    }
-
-    public void setIdTeamHasAsset(Long idTeamHasAsset) {
-        this.idTeamHasAsset = idTeamHasAsset;
-    }
-
-    public Long getTeamId() {
-        return teamId;
-    }
-
-    public void setTeamId(Long teamId) {
-        this.teamId = teamId;
-    }
-
-    public Long getAssetId() {
-        return assetId;
-    }
-
-    public void setAssetId(Long assetId) {
-        this.assetId = assetId;
-    }
-
-    public Long getAssetMediaId() {
-        return assetMediaId;
-    }
-
-    public void setAssetMediaId(Long assetMediaId) {
-        this.assetMediaId = assetMediaId;
-    }
 }

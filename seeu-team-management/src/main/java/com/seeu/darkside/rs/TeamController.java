@@ -25,7 +25,7 @@ public class TeamController {
     @Autowired
     private TeamService teamService;
 
-    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PostMapping
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
     public TeamProfile createNewTeam(@RequestBody TeamCreation teamCreation) {

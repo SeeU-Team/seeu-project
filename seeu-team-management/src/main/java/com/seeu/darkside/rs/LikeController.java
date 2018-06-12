@@ -18,7 +18,7 @@ public class LikeController {
     @Autowired
     private TeamUpService teamUpService;
 
-    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PostMapping
     @ResponseBody
     @ResponseStatus
     public TeamUpEntity likeTeam(@RequestBody TeamLike teamLike) {

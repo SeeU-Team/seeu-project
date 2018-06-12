@@ -1,14 +1,14 @@
 package com.seeu.darkside.teammate;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "team_has_user")
 public class TeamHasUserEntity {
@@ -24,37 +24,5 @@ public class TeamHasUserEntity {
     private Long userId;
 
     @Column
-    private String status;
-
-    public Long getIdTeamHasUser() {
-        return idTeamHasUser;
-    }
-
-    public void setIdTeamHasUser(Long idTeamHasUser) {
-        this.idTeamHasUser = idTeamHasUser;
-    }
-
-    public Long getTeamId() {
-        return teamId;
-    }
-
-    public void setTeamId(Long teamId) {
-        this.teamId = teamId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    private TeammateStatus status;
 }
