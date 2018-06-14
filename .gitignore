@@ -24,3 +24,5 @@ nbdist/
 
 ### MacOS ###
 .DS_Store
+
+amazon-keys.properties
