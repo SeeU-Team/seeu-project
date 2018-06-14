@@ -2,12 +2,12 @@ package com.seeu.media.asset;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +15,9 @@ import java.util.List;
 public class AssetServiceImpl implements AssetService {
 
     private static final String BUCKET_SOURCE = "seeu-bucket";
+    private static final String DARK_VALUE = "-dark.";
+    private static final String LIGHT_VALUE = "-light.";
+
     private AssetRepository assetRepository;
 
     private AmazonS3 amazonS3;
@@ -24,20 +27,6 @@ public class AssetServiceImpl implements AssetService {
         this.assetRepository = assetRepository;
         this.amazonS3 = amazonS3;
     }
-
-    /**@Override
-    public AssetEntity createAsset(AssetDTO assetDTO) {
-        Date now = new Date();
-
-        AssetEntity entityToCreate = AssetEntity.builder()
-                .name(assetDTO.getName())
-                .mediaId(assetDTO.getMediaId())
-                .created(now)
-                .updated(now)
-                .build();
-
-        return assetRepository.save(entityToCreate);
-    }**/
 
     @Override
     public AssetEntity getAsset(Long assetId) {
@@ -50,20 +39,24 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public AssetEntity createAsset(MultipartFile file1, MultipartFile file2, String name, int mediaId) {
+    public AssetEntity createAsset(MultipartFile imageDark, MultipartFile imageLight, String name) {
+        String file1extension = FilenameUtils.getExtension(imageDark.getOriginalFilename());
+        String file2extension = FilenameUtils.getExtension(imageLight.getOriginalFilename());
+        String darkFileName = name + DARK_VALUE + file1extension;
+        String lightFileName = name + LIGHT_VALUE + file2extension;
+        Date now = new Date();
+
         try {
-            amazonS3.putObject(BUCKET_SOURCE, file1.getOriginalFilename(), file1.getInputStream(), null);
-            amazonS3.putObject(BUCKET_SOURCE, file2.getOriginalFilename(), file2.getInputStream(), null);
+            amazonS3.putObject(BUCKET_SOURCE, darkFileName, imageDark.getInputStream(), null);
+            amazonS3.putObject(BUCKET_SOURCE, lightFileName, imageLight.getInputStream(), null);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        Date now = new Date();
-
         AssetEntity entityToCreate = AssetEntity.builder()
                 .name(name)
-                .imageDark(file1.getOriginalFilename())
-                .imageLight(file2.getOriginalFilename())
+                .imageDark(darkFileName)
+                .imageLight(lightFileName)
                 .created(now)
                 .updated(now)
                 .build();

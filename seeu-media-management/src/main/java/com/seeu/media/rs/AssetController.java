@@ -29,14 +29,14 @@ public class AssetController {
     @PostMapping(value = "/file", consumes = MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity createAsset(@RequestParam("file1") MultipartFile file1, @RequestParam("file2") MultipartFile file2, @RequestParam("name") String name, @RequestParam("mediaId") int mediaId) {
+    public ResponseEntity createAsset(@RequestParam("imageDark") MultipartFile imageDark, @RequestParam("imageLight") MultipartFile imageLight, @RequestParam("name") String name) {
 
-        if (file1 == null || file2 == null)
+        if (imageDark == null || imageLight == null)
             throw new AssetFileIsNullException("Asset file 1 or 2 is null");
         if (name == null)
             throw new AssetNameIsNullException("Asset name is null");
 
-        assetService.createAsset(file1, file2, name, mediaId);
+        assetService.createAsset(imageDark, imageLight, name);
 
         return new ResponseEntity(HttpStatus.OK);
     }

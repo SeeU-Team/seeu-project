@@ -29,9 +29,6 @@ public class AssetEntity {
     private String imageLight;
 
     @Column
-    private int mediaId;
-
-    @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
 
@@ -71,14 +68,6 @@ public class AssetEntity {
         this.imageLight = imageLight;
     }
 
-    public int getMediaId() {
-        return mediaId;
-    }
-
-    public void setMediaId(int mediaId) {
-        this.mediaId = mediaId;
-    }
-
     public Date getCreated() {
         return created;
     }
@@ -102,7 +91,6 @@ public class AssetEntity {
                 ", name='" + name + '\'' +
                 ", imageDark='" + imageDark + '\'' +
                 ", imageLight='" + imageLight + '\'' +
-                ", mediaId=" + mediaId +
                 ", created=" + created +
                 ", updated=" + updated +
                 '}';

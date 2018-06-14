@@ -12,7 +12,7 @@ public interface AssetService {
 
     List<AssetEntity> getAllAssets();
 
-    AssetEntity createAsset(MultipartFile file1, MultipartFile file2, String name, int mediaId);
+    AssetEntity createAsset(MultipartFile file1, MultipartFile file2, String name);
 
     S3Object getImageDark(Long idAsset) throws IOException;
 
