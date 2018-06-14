@@ -22,6 +22,12 @@ public class AssetEntity {
     @Column
     private String name;
 
+    @Column(name = "image_dark")
+    private String imageDark;
+
+    @Column(name = "image_light")
+    private String imageLight;
+
     @Column
     private int mediaId;
 
@@ -49,12 +55,28 @@ public class AssetEntity {
         this.name = name;
     }
 
+    public String getImageDark() {
+        return imageDark;
+    }
+
+    public void setImageDark(String imageDark) {
+        this.imageDark = imageDark;
+    }
+
+    public String getImageLight() {
+        return imageLight;
+    }
+
+    public void setImageLight(String imageLight) {
+        this.imageLight = imageLight;
+    }
+
     public int getMediaId() {
         return mediaId;
     }
 
-    public void setMediaId(int media_id) {
-        this.mediaId = media_id;
+    public void setMediaId(int mediaId) {
+        this.mediaId = mediaId;
     }
 
     public Date getCreated() {
@@ -78,6 +100,8 @@ public class AssetEntity {
         return "AssetEntity{" +
                 "idAsset=" + idAsset +
                 ", name='" + name + '\'' +
+                ", imageDark='" + imageDark + '\'' +
+                ", imageLight='" + imageLight + '\'' +
                 ", mediaId=" + mediaId +
                 ", created=" + created +
                 ", updated=" + updated +
