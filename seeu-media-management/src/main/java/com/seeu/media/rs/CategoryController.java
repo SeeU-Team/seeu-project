@@ -3,6 +3,8 @@ package com.seeu.media.rs;
 import com.seeu.media.category.CategoryEntity;
 import com.seeu.media.category.CategoryService;
 import com.seeu.media.rs.dto.CategoryDTO;
+import com.seeu.media.rs.exception.CategoryNameIsNullException;
+import com.seeu.media.rs.exception.TagNameIsNullException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,11 @@ public class CategoryController {
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryEntity createNewCategory(@RequestBody CategoryDTO categoryDTO) {
+
+        if (categoryDTO.getName() == null) {
+            throw new CategoryNameIsNullException("Category name is null");
+        }
+
         return categoryService.createCategory(categoryDTO);
     }
 

@@ -3,6 +3,7 @@ package com.seeu.media.rs;
 import com.seeu.media.asset.AssetEntity;
 import com.seeu.media.asset.AssetService;
 import com.seeu.media.rs.dto.AssetDTO;
+import com.seeu.media.rs.exception.AssetNameIsNullException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,11 @@ public class AssetController {
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
     public AssetEntity createNewAsset(@RequestBody AssetDTO assetDTO) {
+
+        if (assetDTO.getName() == null) {
+            throw new AssetNameIsNullException("Asset name is null");
+        }
+
         return assetService.createAsset(assetDTO);
     }
 
