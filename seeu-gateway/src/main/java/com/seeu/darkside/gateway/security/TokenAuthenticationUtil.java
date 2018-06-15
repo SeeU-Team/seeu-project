@@ -36,7 +36,7 @@ public class TokenAuthenticationUtil {
 	public static String generateToken(final User user) {
 		return Jwts.builder()
 //				.claim("user", user)
-				.setSubject(user.getIdUser().toString())
+				.setSubject(user.getId().toString())
 				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
 				.signWith(SignatureAlgorithm.HS512, TokenAuthenticationUtil.getSecretKey())
 				.compact();

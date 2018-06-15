@@ -45,7 +45,7 @@ public class UserContollerIT {
                 .get("/users/1")
                 .then()
                 .statusCode(200)
-                .body("idUser", is(1));
+                .body("id", is(1));
     }
 
     @Test
@@ -54,7 +54,7 @@ public class UserContollerIT {
                 .get("/users/?email=three@email.com")
                 .then()
                 .statusCode(200)
-                .body("idUser", is(3));
+                .body("id", is(3));
     }
 
     @Test
@@ -77,7 +77,7 @@ public class UserContollerIT {
     public void should_insert_user() {
         Date date = new Date();
 
-        UserEntity user = UserEntity.builder()
+        UserDto user = UserDto.builder()
                 .firstname("fourth")
                 .lastname("lastname4")
                 .email("fourth@email.com")
@@ -91,9 +91,9 @@ public class UserContollerIT {
         given()
                 .contentType(JSON)
                 .body(user)
-                .when()
+        .when()
                 .post("/users")
-                .then()
+        .then()
                 .statusCode(201);
     }
 

@@ -1,24 +1,40 @@
 package com.seeu.darkside.user;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
-import java.util.UUID;
 
+@Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
 
-    private Long idUser;
+    private Long id;
 
+    @NotEmpty
+    private Long facebookId;
+
+	@NotEmpty
     private String firstname;
 
+	@NotEmpty
     private String lastname;
 
+	@NotEmpty
+	@Email
     private String email;
 
-    private String description;
-
+	@Length(min = 8)
     private String password;
+
+	private String description;
 
     private String profilePhotoUrl;
 
@@ -26,97 +42,10 @@ public class UserDto {
 
     private Date updated;
 
-    public UserDto() {
-    }
-
-    public UserDto(Long idUser, String firstname, String lastname, String email, String description, String password, String profilePhotoUrl, Date created, Date updated) {
-        this.idUser = idUser;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-        this.description = description;
-        this.password = password;
-        this.profilePhotoUrl = profilePhotoUrl;
-        this.created = created;
-        this.updated = updated;
-    }
-
-    public Long getIdUser() {
-        return idUser;
-    }
-
-    public void setIdUser(Long idUser) {
-        this.idUser = idUser;
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getProfilePhotoUrl() {
-        return profilePhotoUrl;
-    }
-
-    public void setProfilePhotoUrl(String profilePhotoUrl) {
-        this.profilePhotoUrl = profilePhotoUrl;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public Date getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(Date updated) {
-        this.updated = updated;
-    }
-
     @Override
     public String toString() {
         return "UserDto{" +
-                "idUser=" + idUser +
+                "id=" + id +
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
                 ", email='" + email + '\'' +

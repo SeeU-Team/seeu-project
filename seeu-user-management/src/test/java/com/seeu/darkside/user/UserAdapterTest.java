@@ -19,7 +19,7 @@ public class UserAdapterTest {
     public void should_return_an_user_entity() {
         Date date = new Date();
         UserDto userDto = UserDto.builder()
-                .idUser(1L)
+                .id(1L)
                 .firstname("first")
                 .lastname("last")
                 .email("email")
@@ -32,7 +32,7 @@ public class UserAdapterTest {
 
         UserEntity userEntity = userAdapter.dtoToEntity(userDto);
 
-        assertThat(userEntity.getIdUser()).isEqualTo(userDto.getIdUser());
+        assertThat(userEntity.getId()).isEqualTo(userDto.getId());
         assertThat(userEntity.getFirstname()).isEqualTo(userDto.getFirstname());
         assertThat(userEntity.getLastname()).isEqualTo(userDto.getLastname());
         assertThat(userEntity.getEmail()).isEqualTo(userDto.getEmail());
@@ -47,7 +47,7 @@ public class UserAdapterTest {
     public void should_return_an_user_dto() {
         Date date = new Date();
         UserEntity userEntity = UserEntity.builder()
-                .idUser(1L)
+                .id(1L)
                 .firstname("first")
                 .lastname("last")
                 .email("email")
@@ -59,7 +59,7 @@ public class UserAdapterTest {
 
         UserDto userDto = userAdapter.entityToDto(userEntity);
 
-        assertThat(userDto.getIdUser()).isEqualTo(userEntity.getIdUser());
+        assertThat(userDto.getId()).isEqualTo(userEntity.getId());
         assertThat(userDto.getFirstname()).isEqualTo(userEntity.getFirstname());
         assertThat(userDto.getLastname()).isEqualTo(userEntity.getLastname());
         assertThat(userDto.getEmail()).isEqualTo(userEntity.getEmail());
