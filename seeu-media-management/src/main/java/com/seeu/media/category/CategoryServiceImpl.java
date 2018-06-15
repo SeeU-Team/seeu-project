@@ -38,7 +38,9 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     public void updateCategoryName(Long categoryId, String newName) {
         CategoryEntity categoryToUpdate = categoryRepository.findCategoryEntityByIdCategory(categoryId);
+        Date date = new Date();
         categoryToUpdate.setName(newName);
+        categoryToUpdate.setUpdated(date);
         categoryRepository.save(categoryToUpdate);
     }
 

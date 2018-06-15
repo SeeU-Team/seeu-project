@@ -80,7 +80,6 @@ public class AssetServiceImpl implements AssetService {
         if (oneByIdAsset == null)
             throw new AssetNotFoundException("Asset not Found Exception");
         S3Object s3Object = amazonS3.getObject(BUCKET_SOURCE, oneByIdAsset.getImageLight());
-
         return s3Object;
     }
 
@@ -95,6 +94,9 @@ public class AssetServiceImpl implements AssetService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Date date = new Date();
+        entityToUpdate.setUpdated(date);
+        assetRepository.save(entityToUpdate);
     }
 
     @Override
@@ -106,5 +108,8 @@ public class AssetServiceImpl implements AssetService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Date date = new Date();
+        entityToUpdate.setUpdated(date);
+        assetRepository.save(entityToUpdate);
     }
 }
