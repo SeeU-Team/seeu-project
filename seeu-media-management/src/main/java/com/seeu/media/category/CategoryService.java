@@ -9,5 +9,9 @@ public interface CategoryService {
 
     CategoryEntity getCategory(Long categoryId);
 
+    void updateCategoryName(Long categoryId, String newName);
+
+    void deleteCategory(Long categoryId);
+
     List<CategoryEntity> getAllCategories();
 }

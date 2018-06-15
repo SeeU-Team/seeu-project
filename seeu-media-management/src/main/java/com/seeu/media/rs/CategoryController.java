@@ -4,9 +4,9 @@ import com.seeu.media.category.CategoryEntity;
 import com.seeu.media.category.CategoryService;
 import com.seeu.media.rs.dto.CategoryDTO;
 import com.seeu.media.rs.exception.CategoryNameIsNullException;
-import com.seeu.media.rs.exception.TagNameIsNullException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,6 +35,18 @@ public class CategoryController {
     @GetMapping
     public CategoryEntity getCategoryInfo(@RequestParam Long categoryId) {
         return categoryService.getCategory(categoryId);
+    }
+
+    @PutMapping
+    public ResponseEntity updateCategoryInfo(@RequestBody CategoryDTO category) {
+        categoryService.updateCategoryName(category.getIdCategory(), category.getName());
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    public ResponseEntity deleteCategory(@RequestParam Long categoryId) {
+        categoryService.deleteCategory(categoryId);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     /**
