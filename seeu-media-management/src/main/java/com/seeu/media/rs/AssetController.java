@@ -26,7 +26,7 @@ public class AssetController {
     @Autowired
     private AssetService assetService;
 
-    @PostMapping(value = "/file", consumes = MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity createAsset(@RequestParam("imageDark") MultipartFile imageDark, @RequestParam("imageLight") MultipartFile imageLight, @RequestParam("name") String name) {
@@ -60,6 +60,36 @@ public class AssetController {
         InputStream inputStream = s3Object.getObjectContent();
         response.setHeader("Content-Disposition", "attachment; filename=" + s3Object.getKey());
         FileCopyUtils.copy(inputStream, response.getOutputStream());
+    }
+
+    @PutMapping(value = "/dark", consumes = MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity updateDarkImageAsset(@RequestParam("imageDark") MultipartFile imageDark, @RequestParam("assetId") Long assetId) {
+
+        if (imageDark == null )
+            throw new AssetFileIsNullException("Asset file is null");
+        if (assetId == null)
+            throw new AssetNameIsNullException("assetId is null");
+
+        assetService.updateImageDark(imageDark, assetId);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/light", consumes = MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity updateLightImageAsset(@RequestParam("imageLight") MultipartFile imageLight, @RequestParam("assetId") Long assetId) {
+
+        if (imageLight == null )
+            throw new AssetFileIsNullException("Asset file is null");
+        if (assetId == null)
+            throw new AssetNameIsNullException("assetId is null");
+
+        assetService.updateImageLight(imageLight, assetId);
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     /**

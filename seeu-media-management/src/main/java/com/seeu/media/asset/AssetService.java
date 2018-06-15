@@ -14,7 +14,11 @@ public interface AssetService {
 
     AssetEntity createAsset(MultipartFile file1, MultipartFile file2, String name);
 
-    S3Object getImageDark(Long idAsset) throws IOException;
+    S3Object getImageDark(Long idAsset);
 
-    S3Object getImageLight(Long idAsset) throws IOException;
+    S3Object getImageLight(Long idAsset);
+
+    void updateImageDark(MultipartFile imageDark, Long idAsset);
+
+    void updateImageLight(MultipartFile imageLight, Long assetId);
 }

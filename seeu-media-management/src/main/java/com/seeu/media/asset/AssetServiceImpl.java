@@ -65,18 +65,46 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public S3Object getImageDark(Long idAsset) throws IOException {
+    public S3Object getImageDark(Long idAsset) {
         AssetEntity oneByIdAsset = assetRepository.findOneByIdAsset(idAsset);
+        if (oneByIdAsset == null)
+            throw new AssetNotFoundException("Asset not Found Exception");
         S3Object s3Object = amazonS3.getObject(BUCKET_SOURCE, oneByIdAsset.getImageDark());
 
         return s3Object;
     }
 
     @Override
-    public S3Object getImageLight(Long idAsset) throws IOException {
+    public S3Object getImageLight(Long idAsset) {
         AssetEntity oneByIdAsset = assetRepository.findOneByIdAsset(idAsset);
+        if (oneByIdAsset == null)
+            throw new AssetNotFoundException("Asset not Found Exception");
         S3Object s3Object = amazonS3.getObject(BUCKET_SOURCE, oneByIdAsset.getImageLight());
 
         return s3Object;
+    }
+
+    @Override
+    public void updateImageDark(MultipartFile imageDark, Long idAsset) {
+        AssetEntity entityToUpdate = assetRepository.findOneByIdAsset(idAsset);
+        if (entityToUpdate == null)
+            throw new AssetNotFoundException("Asset not Found Exception");
+        String imageName = entityToUpdate.getImageDark();
+        try {
+            amazonS3.putObject(BUCKET_SOURCE, imageName, imageDark.getInputStream(), null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void updateImageLight(MultipartFile imageLight, Long assetId) {
+        AssetEntity entityToUpdate = assetRepository.findOneByIdAsset(assetId);
+        String imageName = entityToUpdate.getImageLight();
+        try {
+            amazonS3.putObject(BUCKET_SOURCE, imageName, imageLight.getInputStream(), null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
