@@ -6,6 +6,7 @@ import com.seeu.media.tag.TagEntity;
 import com.seeu.media.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.BadAttributeValueExpException;
@@ -34,6 +35,18 @@ public class TagController {
     @GetMapping
     public TagEntity getTagInfo(@RequestParam Long tagId) {
         return tagService.getTag(tagId);
+    }
+
+    @PutMapping
+    public ResponseEntity updateTagInfo(@RequestBody TagDTO tag) {
+        tagService.updateTagName(tag.getIdTag(), tag.getName());
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    public ResponseEntity deleteTag(@RequestParam Long idTag) {
+        tagService.deleteTag(idTag);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     /**

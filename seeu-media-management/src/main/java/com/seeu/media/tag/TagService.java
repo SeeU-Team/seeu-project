@@ -10,4 +10,8 @@ public interface TagService {
     List<TagEntity> getAllTags();
 
     TagEntity createTag(TagDTO tagDTO);
+
+    void updateTagName(Long tagId, String newName);
+
+    void deleteTag(Long tagId);
 }

@@ -40,4 +40,24 @@ public class TagServiceImpl implements TagService {
 
         return tagRepository.save(entityToCreate);
     }
+
+    @Override
+    public void updateTagName(Long tagId, String newName) {
+        TagEntity tagToUpdate = tagRepository.findTagEntityByIdTag(tagId);
+        Date now = new Date();
+        if (tagToUpdate== null)
+            throw new TagNotFoundException("Tag not found exception");
+
+        tagToUpdate.setName(newName);
+        tagToUpdate.setUpdated(now);
+        tagRepository.save(tagToUpdate);
+    }
+
+    @Override
+    public void deleteTag(Long tagId) {
+        TagEntity tagToDelete = tagRepository.findTagEntityByIdTag(tagId);
+        if (tagToDelete == null)
+            throw new TagNotFoundException("Tag not found exception");
+        tagRepository.delete(tagToDelete);
+    }
 }
