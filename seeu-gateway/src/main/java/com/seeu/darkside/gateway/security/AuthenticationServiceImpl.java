@@ -7,6 +7,8 @@ import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.tuple.Tuple;
+import org.springframework.tuple.TupleBuilder;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,9 +23,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	UserServiceProxy userServiceProxy;
 
 	@Override
-	public String getAuthenticationToken(@NotNull String accessToken) throws FacebookRequestException {
+	public Tuple getAuthenticationToken(@NotNull String accessToken) throws FacebookRequestException {
 		FacebookUser facebookUser;
-		User user = null;
+		User user;
 
 		try {
 			final RestTemplate restTemplate = new RestTemplate();
@@ -48,7 +50,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			}
 		}
 
-		return TokenAuthenticationUtil.generateToken(user);
+		final String token = TokenAuthenticationUtil.generateToken(user);
+
+		return TupleBuilder
+				.tuple()
+				.of("USER", user, "TOKEN", token);
 	}
 
 	private User createNewUser(FacebookUser facebookUser) {

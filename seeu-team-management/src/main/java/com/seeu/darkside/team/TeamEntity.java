@@ -21,7 +21,6 @@ public class TeamEntity {
     private Long idTeam;
 
     @Column
-    @NotEmpty
     private String name;
 
     @Column

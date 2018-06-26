@@ -2,11 +2,13 @@ package com.seeu.darkside;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
+@EnableDiscoveryClient
 @SpringBootApplication
-public class SeeuDarksideApplication {
+public class TeamManagementApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SeeuDarksideApplication.class, args);
+		SpringApplication.run(TeamManagementApplication.class, args);
 	}
 }

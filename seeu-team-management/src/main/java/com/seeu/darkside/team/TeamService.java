@@ -1,9 +1,6 @@
 package com.seeu.darkside.team;
 
-import com.seeu.darkside.rs.dto.AddTeammate;
-import com.seeu.darkside.rs.dto.TeamCreation;
-import com.seeu.darkside.rs.dto.TeamLike;
-import com.seeu.darkside.rs.dto.TeamProfile;
+import com.seeu.darkside.rs.dto.*;
 
 import java.util.List;
 
@@ -17,4 +14,6 @@ public interface TeamService {
     TeamProfile getTeamProfile(Long idTeam);
 
     TeamProfile addTeammates(AddTeammate teammates);
+
+    TeamHasUser getTeamProfileOfMember(Long memberId);
 }

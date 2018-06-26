@@ -2,21 +2,19 @@ package com.seeu.darkside.rs;
 
 import com.seeu.darkside.asset.Asset;
 import com.seeu.darkside.category.Category;
-import com.seeu.darkside.rs.dto.AddTeammate;
-import com.seeu.darkside.rs.dto.TeamCreation;
-import com.seeu.darkside.rs.dto.TeamProfile;
+import com.seeu.darkside.rs.dto.*;
 import com.seeu.darkside.tag.Tag;
 import com.seeu.darkside.team.TeamDto;
 import com.seeu.darkside.team.TeamService;
 import com.seeu.darkside.teammate.Teammate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("/teams")
@@ -28,13 +26,25 @@ public class TeamController {
     @PostMapping
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public TeamProfile createNewTeam(@RequestBody TeamCreation teamCreation) {
-        return teamService.createTeam(teamCreation);
+    public TeamProfile createNewTeam(@RequestBody @Valid TeamCreationRoot teamCreationRoot, BindingResult bindingResult) {
+
+    	if (bindingResult.hasErrors()) {
+			throw new TeamValidationException();
+		}
+
+		// Save the base64 picture to AWS...
+
+        return teamService.createTeam(teamCreationRoot.getTeam());
     }
 
-    @GetMapping
-    public TeamProfile getTeamInfo(@RequestParam Long teamId) {
+    @GetMapping("/{teamId}")
+    public TeamProfile getTeamInfo(@PathVariable("teamId") Long teamId) {
         return teamService.getTeamProfile(teamId);
+    }
+
+    @GetMapping(params = {"memberId"})
+    public TeamHasUser getTeamOfMember(@RequestParam("memberId") Long memberId) {
+		return teamService.getTeamProfileOfMember(memberId);
     }
 
     @PostMapping("/addTeammates")
