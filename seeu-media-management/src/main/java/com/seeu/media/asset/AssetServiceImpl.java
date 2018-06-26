@@ -2,12 +2,15 @@ package com.seeu.media.asset;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -62,6 +65,16 @@ public class AssetServiceImpl implements AssetService {
                 .build();
 
         return assetRepository.save(entityToCreate);
+    }
+
+    public void saveImage(String image, String fileName) {
+        String file1extension = FilenameUtils.getExtension(fileName);
+        String darkFileName ="FILEA-NAME" + file1extension;
+
+        byte[] bytes = Base64.decodeBase64(image);
+        InputStream inputStream = new ByteArrayInputStream(bytes);
+
+        amazonS3.putObject(BUCKET_SOURCE, darkFileName, inputStream, null);
     }
 
     @Override

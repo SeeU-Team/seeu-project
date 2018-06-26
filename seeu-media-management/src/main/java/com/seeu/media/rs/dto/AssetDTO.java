@@ -3,35 +3,30 @@ package com.seeu.media.rs.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.apache.commons.codec.binary.Base64InputStream;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AssetDTO {
 
-    private Long idAsset;
+    private String nameFile;
 
-    private String name;
+    private String base64;
 
-    private int mediaId;
-
-    public void setIdAsset(Long idAsset) {
-        this.idAsset = idAsset;
+    public String getNameFile() {
+        return nameFile;
     }
 
-    public String getName() {
-        return name;
+    public void setNameFile(String nameFile) {
+        this.nameFile = nameFile;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getBase64() {
+        return base64;
     }
 
-    public int getMediaId() {
-        return mediaId;
-    }
-
-    public void setMediaId(int mediaId) {
-        this.mediaId = mediaId;
+    public void setBase64(String base64) {
+        this.base64 = base64;
     }
 }
