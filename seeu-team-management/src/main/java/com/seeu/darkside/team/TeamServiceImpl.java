@@ -34,17 +34,17 @@ public class TeamServiceImpl implements TeamService {
     private final TeamHasCategoryRepository teamHasCategoryRepository;
     private final TeamHasTagRepository teamHasTagRepository;
     private final TeamHasUserRepository teamHasUserRepository;
-    private final UserServiceProxy userServiceProxy;
+    //private final UserServiceProxy userServiceProxy;
 
     @Autowired
-    public TeamServiceImpl(TeamRepository teamRepository, TeamAdapter teamAdapter, TeamHasAssetRepository teamHasAssetRepository, TeamHasCategoryRepository teamHasCategoryRepository, TeamHasTagRepository teamHasTagRepository, TeamHasUserRepository teamHasUserRepository, UserServiceProxy userServiceProxy) {
+    public TeamServiceImpl(TeamRepository teamRepository, TeamAdapter teamAdapter, TeamHasAssetRepository teamHasAssetRepository, TeamHasCategoryRepository teamHasCategoryRepository, TeamHasTagRepository teamHasTagRepository, TeamHasUserRepository teamHasUserRepository/**, UserServiceProxy userServiceProxy**/) {
         this.teamRepository = teamRepository;
         this.teamAdapter = teamAdapter;
         this.teamHasAssetRepository = teamHasAssetRepository;
         this.teamHasCategoryRepository = teamHasCategoryRepository;
         this.teamHasTagRepository = teamHasTagRepository;
         this.teamHasUserRepository = teamHasUserRepository;
-        this.userServiceProxy = userServiceProxy;
+        //this.userServiceProxy = userServiceProxy;
     }
 
     @Override
@@ -83,7 +83,8 @@ public class TeamServiceImpl implements TeamService {
 
             List<User> users = new ArrayList<>();
             for (TeamHasUserEntity userEntity : teamHasUserToSave) {
-                User oneUser = userServiceProxy.getOneUser(userEntity.getUserId());
+                //User oneUser = userServiceProxy.getOneUser(userEntity.getUserId());
+                User oneUser = User.builder().build();
                 users.add(oneUser);
             }
 
@@ -114,7 +115,8 @@ public class TeamServiceImpl implements TeamService {
         List<User> users = new ArrayList<>();
 
         for (TeamHasUserEntity userEntity : userEntities) {
-            User oneUser = userServiceProxy.getOneUser(userEntity.getUserId());
+            //User oneUser = userServiceProxy.getOneUser(userEntity.getUserId());
+            User oneUser = User.builder().build();
             users.add(oneUser);
         }
 

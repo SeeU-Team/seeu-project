@@ -9,32 +9,6 @@ import org.springframework.web.client.RestTemplate;
 @PropertySource("classpath:amazon-keys.properties")
 public class AppConfig {
 
-    /**
-     @Value("${cloud.aws.credentials.accessKey}")
-     private String accessKey;
-
-     @Value("${cloud.aws.credentials.secretKey}")
-     private String secretKey;
-
-     @Value("${cloud.aws.region}")
-     private String region;
-
-     @Bean
-     public BasicAWSCredentials basicAWSCredentials() {
-     return new BasicAWSCredentials(accessKey, secretKey);
-     }
-
-     @Bean
-     public AmazonS3 amazonS3() {
-
-     AnonymousAWSCredentials anonymousAWSCredentials = new AnonymousAWSCredentials();
-
-     return AmazonS3ClientBuilder.standard()
-     .withRegion(Regions.fromName(region))
-     .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials()))
-     .build();
-     }**/
-
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
