@@ -17,7 +17,6 @@
     <name>seeu-project</name>
     <description>SeeU microservices</description>
 
-
     <properties>
         <seeu-project.version>0.0.1-SNAPSHOT</seeu-project.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,7 +24,9 @@
         <spring-cloud.version>Finchley.M9</spring-cloud.version>
         <lombok.version>1.16.20</lombok.version>
         <rest-assured.version>2.4.1</rest-assured.version>
-        <!--<jaxb-api.version>2.3.0</jaxb-api.version>-->
+        <jaxb-api.version>2.3.0</jaxb-api.version>
+        <aws.java.sdk.s3.version>1.11.340</aws.java.sdk.s3.version>
+        <mysq-connector-java.version>8.0.11</mysq-connector-java.version>
     </properties>
 
     <modules>
@@ -72,6 +73,11 @@
             <groupId>com.jayway.restassured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>${rest-assured.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysq-connector-java.version}</version>
         </dependency>
     </dependencies>
 
