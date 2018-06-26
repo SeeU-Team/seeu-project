@@ -1,21 +1,18 @@
 package com.seeu.darkside.team;
 
-import com.seeu.darkside.asset.Asset;
 import com.seeu.darkside.asset.TeamHasAssetEntity;
 import com.seeu.darkside.asset.TeamHasAssetRepository;
-import com.seeu.darkside.category.Category;
 import com.seeu.darkside.category.TeamHasCategoryEntity;
 import com.seeu.darkside.category.TeamHasCategoryRepository;
 import com.seeu.darkside.rs.dto.AddTeammate;
 import com.seeu.darkside.rs.dto.TeamCreation;
-import com.seeu.darkside.rs.dto.TeamLike;
+import com.seeu.darkside.rs.dto.TeamHasUser;
 import com.seeu.darkside.rs.dto.TeamProfile;
-import com.seeu.darkside.tag.Tag;
 import com.seeu.darkside.tag.TeamHasTagEntity;
 import com.seeu.darkside.tag.TeamHasTagRepository;
 import com.seeu.darkside.teammate.TeamHasUserEntity;
 import com.seeu.darkside.teammate.TeamHasUserRepository;
-import com.seeu.darkside.teammate.Teammate;
+import com.seeu.darkside.teammate.TeammateHasNotTeamException;
 import com.seeu.darkside.teammate.TeammateStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.seeu.darkside.utils.Constants.*;
+import static com.seeu.darkside.utils.Constants.TEAM_NOT_FOUND_MSG;
 
 @Service
 public class TeamServiceImpl implements TeamService {
@@ -49,6 +46,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+	@Transactional(readOnly = true)
     public List<TeamDto> getAllTeams() {
         return teamRepository.findAll()
                 .stream()
@@ -98,7 +96,7 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	@Override
-    @Transactional
+    @Transactional(readOnly = true)
     public TeamProfile getTeamProfile(Long idTeam) {
         TeamEntity teamEntity = teamRepository
 				.findById(idTeam)
@@ -131,7 +129,24 @@ public class TeamServiceImpl implements TeamService {
 		return getTeamProfile(teammates.getIdTeam());
     }
 
-    private TeamProfile createTeamProfile(TeamEntity teamEntity, List<TeamHasUserEntity> userEntities, List<TeamHasAssetEntity> assetEntities, List<TeamHasCategoryEntity> categoryEntities, List<TeamHasTagEntity> tagEntities) {
+	@Override
+	@Transactional(readOnly = true)
+	public TeamHasUser getTeamProfileOfMember(Long memberId) {
+
+		TeamHasUserEntity teamHasUserEntity = teamHasUserRepository
+				.findByUserId(memberId)
+				.orElseThrow(TeammateHasNotTeamException::new);
+
+		TeamProfile teamProfile = getTeamProfile(teamHasUserEntity.getTeamId());
+
+		return TeamHasUser.builder()
+				.memberId(teamHasUserEntity.getUserId())
+				.team(teamProfile)
+				.status(teamHasUserEntity.getStatus())
+				.build();
+	}
+
+	private TeamProfile createTeamProfile(TeamEntity teamEntity, List<TeamHasUserEntity> userEntities, List<TeamHasAssetEntity> assetEntities, List<TeamHasCategoryEntity> categoryEntities, List<TeamHasTagEntity> tagEntities) {
         return TeamProfile.builder()
                 .idTeam(teamEntity.getIdTeam())
                 .name(teamEntity.getName())
@@ -147,7 +162,11 @@ public class TeamServiceImpl implements TeamService {
     }
 
     private List<TeamHasUserEntity> extractUsers(TeamCreation teamCreation, Long idTeam) {
-    	return teamCreation.getTeammateList()
+    	if (null == teamCreation.getTeammateList()) {
+    		return new ArrayList<>();
+		}
+
+		return teamCreation.getTeammateList()
 				.stream()
 				.map(teammate -> TeamHasUserEntity.builder()
 						.teamId(idTeam)
@@ -157,6 +176,10 @@ public class TeamServiceImpl implements TeamService {
     }
 
     private List<TeamHasTagEntity> extractTags(TeamCreation teamCreation, Long idTeam) {
+		if (null == teamCreation.getTags()) {
+			return new ArrayList<>();
+		}
+
     	return teamCreation.getTags()
 				.stream()
 				.map(tag -> TeamHasTagEntity.builder()
@@ -167,6 +190,10 @@ public class TeamServiceImpl implements TeamService {
     }
 
     private List<TeamHasCategoryEntity> extractCategories(TeamCreation teamCreation, Long idTeam) {
+		if (null == teamCreation.getCategories()) {
+			return new ArrayList<>();
+		}
+
     	return teamCreation.getCategories()
 				.stream()
 				.map(category -> TeamHasCategoryEntity.builder()
@@ -177,6 +204,10 @@ public class TeamServiceImpl implements TeamService {
     }
 
     private List<TeamHasAssetEntity> extractAssets(TeamCreation teamCreation, Long idTeam) {
+		if (null == teamCreation.getAssets()) {
+			return new ArrayList<>();
+		}
+
     	return teamCreation.getAssets()
 				.stream()
 				.map(asset -> TeamHasAssetEntity.builder()
