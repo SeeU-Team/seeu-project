@@ -43,6 +43,9 @@ after_success:
       docker build -t oncletom77/seeu-team-management ./seeu-team-management;
       docker push oncletom77/seeu-team-management;
 
+      docker build -t oncletom77/seeu-media-management ./seeu-media-management;
+      docker push oncletom77/seeu-media-management;
+
       docker build -t oncletom77/seeu-messages ./seeu-messages;
       docker push oncletom77/seeu-messages;
 

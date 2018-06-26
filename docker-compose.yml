@@ -27,3 +27,18 @@ services:
     image: oncletom77/seeu-user-management
     networks:
       - spring-cloud-network
+
+  seeu-team-management:
+    image: oncletom77/seeu-team-management
+    networks:
+      - spring-cloud-network
+
+  seeu-media-management:
+    image: oncletom77/seeu-media-management
+    networks:
+      - spring-cloud-network
+
+  seeu-messages:
+    image: oncletom77/seeu-messages
+    networks:
+      - spring-cloud-network
