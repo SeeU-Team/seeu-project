@@ -1,6 +1,8 @@
 package com.seeu.darkside.gateway.security;
 
+import org.springframework.tuple.Tuple;
+
 public interface AuthenticationService {
 
-	String getAuthenticationToken(String accessToken) throws FacebookRequestException;
+	Tuple getAuthenticationToken(String accessToken) throws FacebookRequestException;
 }
