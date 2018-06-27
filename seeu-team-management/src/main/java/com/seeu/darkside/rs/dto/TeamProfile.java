@@ -1,5 +1,6 @@
 package com.seeu.darkside.rs.dto;
 
+import com.seeu.darkside.asset.AssetEntity;
 import com.seeu.darkside.asset.TeamHasAssetEntity;
 import com.seeu.darkside.category.TeamHasCategoryEntity;
 import com.seeu.darkside.tag.TeamHasTagEntity;
@@ -23,7 +24,7 @@ public class TeamProfile {
     private Date created;
     private Date updated;
     private List<TeamHasUserEntity> teammateList;
-    private List<TeamHasAssetEntity> assets;
+    private List<AssetEntity> assets;
     private List<TeamHasCategoryEntity> categories;
     private List<TeamHasTagEntity> tags;
 }

@@ -24,7 +24,7 @@ import java.util.List;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
-@RequestMapping("/assets")
+@RequestMapping("/medias/assets")
 public class AssetController {
 
     @Autowired
@@ -46,7 +46,7 @@ public class AssetController {
     }
 
     @GetMapping
-    public AssetEntity getTagInfo(@RequestParam Long assetId) {
+    public AssetEntity getAssetInfo(@RequestParam Long assetId) {
         return assetService.getAsset(assetId);
     }
 
