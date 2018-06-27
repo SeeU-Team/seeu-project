@@ -4,6 +4,8 @@ import com.seeu.darkside.asset.AssetEntity;
 import com.seeu.darkside.asset.AssetServiceProxy;
 import com.seeu.darkside.asset.TeamHasAssetEntity;
 import com.seeu.darkside.asset.TeamHasAssetRepository;
+import com.seeu.darkside.category.CategoryEntity;
+import com.seeu.darkside.category.CategoryServiceProxy;
 import com.seeu.darkside.category.TeamHasCategoryEntity;
 import com.seeu.darkside.category.TeamHasCategoryRepository;
 import com.seeu.darkside.rs.dto.AddTeammate;
@@ -37,9 +39,10 @@ public class TeamServiceImpl implements TeamService {
     private final TeamHasTagRepository teamHasTagRepository;
     private final TeamHasUserRepository teamHasUserRepository;
     private final AssetServiceProxy assetServiceProxy;
+    private final CategoryServiceProxy categoryServiceProxy;
 
     @Autowired
-    public TeamServiceImpl(TeamRepository teamRepository, TeamAdapter teamAdapter, TeamHasAssetRepository teamHasAssetRepository, TeamHasCategoryRepository teamHasCategoryRepository, TeamHasTagRepository teamHasTagRepository, TeamHasUserRepository teamHasUserRepository, AssetServiceProxy assetServiceProxy) {
+    public TeamServiceImpl(TeamRepository teamRepository, TeamAdapter teamAdapter, TeamHasAssetRepository teamHasAssetRepository, TeamHasCategoryRepository teamHasCategoryRepository, TeamHasTagRepository teamHasTagRepository, TeamHasUserRepository teamHasUserRepository, AssetServiceProxy assetServiceProxy, CategoryServiceProxy categoryServiceProxy) {
         this.teamRepository = teamRepository;
         this.teamAdapter = teamAdapter;
         this.teamHasAssetRepository = teamHasAssetRepository;
@@ -47,6 +50,7 @@ public class TeamServiceImpl implements TeamService {
         this.teamHasTagRepository = teamHasTagRepository;
         this.teamHasUserRepository = teamHasUserRepository;
 		this.assetServiceProxy = assetServiceProxy;
+		this.categoryServiceProxy = categoryServiceProxy;
     }
 
     @Override
@@ -87,7 +91,9 @@ public class TeamServiceImpl implements TeamService {
 
             // todo remove comment
 			List<AssetEntity> assetEntities = getAssetEntitiesFromIds(teamHasAssetToSave);
-            teamProfile = createTeamProfile(teamSaved, teamHasUserToSave, assetEntities, teamHasCategoryToSave, teamHasTagToSave);
+            List<CategoryEntity> categoryEntities = getCategoryEntitiesFromIds(teamHasCategoryToSave);
+
+            teamProfile = createTeamProfile(teamSaved, teamHasUserToSave, assetEntities, categoryEntities, teamHasTagToSave);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -110,16 +116,18 @@ public class TeamServiceImpl implements TeamService {
 				.orElseThrow(() -> new TeamNotFoundException(TEAM_NOT_FOUND_MSG + idTeam));
 
         List<TeamHasUserEntity> userEntities = teamHasUserRepository.findAllByTeamId(idTeam);
-        List<TeamHasCategoryEntity> categoryEntities = teamHasCategoryRepository.findAllByTeamId(idTeam);
         List<TeamHasTagEntity> tagEntities = teamHasTagRepository.findAllByTeamId(idTeam);
 
 		List<TeamHasAssetEntity> assetEntitiesIds = teamHasAssetRepository.findAllByTeamId(idTeam);
 		List<AssetEntity> assetEntities = getAssetEntitiesFromIds(assetEntitiesIds);
 
+		List<TeamHasCategoryEntity> categoryEntitiesIds = teamHasCategoryRepository.findAllByTeamId(idTeam);
+		List<CategoryEntity> categoryEntities = getCategoryEntitiesFromIds(categoryEntitiesIds);
+
 		return createTeamProfile(teamEntity, userEntities, assetEntities, categoryEntities, tagEntities);
     }
 
-    @Override
+	@Override
     @Transactional
     public TeamProfile addTeammates(AddTeammate teammates) {
     	checkIfTeamExist(teammates.getIdTeam());
@@ -155,7 +163,7 @@ public class TeamServiceImpl implements TeamService {
 				.build();
 	}
 
-	private TeamProfile createTeamProfile(TeamEntity teamEntity, List<TeamHasUserEntity> userEntities, List<AssetEntity> assetEntities, List<TeamHasCategoryEntity> categoryEntities, List<TeamHasTagEntity> tagEntities) {
+	private TeamProfile createTeamProfile(TeamEntity teamEntity, List<TeamHasUserEntity> userEntities, List<AssetEntity> assetEntities, List<CategoryEntity> categoryEntities, List<TeamHasTagEntity> tagEntities) {
         return TeamProfile.builder()
                 .idTeam(teamEntity.getIdTeam())
                 .name(teamEntity.getName())
@@ -246,4 +254,14 @@ public class TeamServiceImpl implements TeamService {
 
 		return assetEntities;
 	}
+
+
+	private List<CategoryEntity> getCategoryEntitiesFromIds(List<TeamHasCategoryEntity> categoryEntitiesIds) {
+		List<CategoryEntity> categoryEntities = new ArrayList<>();
+		for (TeamHasCategoryEntity categoryEntity : categoryEntitiesIds) {
+			categoryEntities.add(categoryServiceProxy.getCategoryInfo(categoryEntity.getCategoryId()));
+		}
+
+		return categoryEntities;
+    }
 }

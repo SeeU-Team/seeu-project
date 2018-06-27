@@ -1,12 +1,12 @@
-package com.seeu.darkside.asset;
+package com.seeu.darkside.category;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient("seeu-media-management")
-public interface AssetServiceProxy {
+public interface CategoryServiceProxy {
 
-	@GetMapping("/medias/assets")
-	AssetEntity getAssetInfo(@RequestParam("assetId") Long assetId);
+	@GetMapping("/medias/categories")
+	CategoryEntity getCategoryInfo(@RequestParam("categoryId") Long categoryId);
 }

@@ -14,7 +14,7 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/medias/categories")
 public class CategoryController {
 
     @Autowired
