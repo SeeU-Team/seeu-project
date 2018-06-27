@@ -119,7 +119,7 @@ public class TeamServiceImpl implements TeamService {
 				.stream()
 				.map(teammate -> TeamHasUserEntity.builder()
 						.teamId(teammates.getIdTeam())
-						.userId(teammate.getIdTeammate())
+						.userId(teammate.getId())
 						.status(TeammateStatus.MEMBER)
 						.build())
 				.collect(Collectors.toList());
@@ -148,13 +148,13 @@ public class TeamServiceImpl implements TeamService {
 
 	private TeamProfile createTeamProfile(TeamEntity teamEntity, List<TeamHasUserEntity> userEntities, List<TeamHasAssetEntity> assetEntities, List<TeamHasCategoryEntity> categoryEntities, List<TeamHasTagEntity> tagEntities) {
         return TeamProfile.builder()
-                .idTeam(teamEntity.getIdTeam())
+                .id(teamEntity.getIdTeam())
                 .name(teamEntity.getName())
                 .description(teamEntity.getDescription())
                 .place(teamEntity.getPlace())
                 .created(teamEntity.getCreated())
                 .updated(teamEntity.getUpdated())
-                .teammateList(userEntities)
+                .members(userEntities)
                 .assets(assetEntities)
                 .categories(categoryEntities)
                 .tags(tagEntities)
@@ -162,15 +162,15 @@ public class TeamServiceImpl implements TeamService {
     }
 
     private List<TeamHasUserEntity> extractUsers(TeamCreation teamCreation, Long idTeam) {
-    	if (null == teamCreation.getTeammateList()) {
+    	if (null == teamCreation.getMembers()) {
     		return new ArrayList<>();
 		}
 
-		return teamCreation.getTeammateList()
+		return teamCreation.getMembers()
 				.stream()
 				.map(teammate -> TeamHasUserEntity.builder()
 						.teamId(idTeam)
-						.userId(teammate.getIdTeammate())
+						.userId(teammate.getId())
 						.build())
 				.collect(Collectors.toList());
     }

@@ -16,13 +16,15 @@ import java.util.List;
 @Setter
 public class TeamProfile {
 
-    private Long idTeam;
+    private Long id;
     private String name;
     private String description;
     private String place;
     private Date created;
     private Date updated;
-    private List<TeamHasUserEntity> teammateList;
+
+    // TODO: Remplacer les listes de XxxHasXxxEntity par des listes d'Entity en appelant le bon micro service pour chacun
+    private List<TeamHasUserEntity> members;
     private List<TeamHasAssetEntity> assets;
     private List<TeamHasCategoryEntity> categories;
     private List<TeamHasTagEntity> tags;

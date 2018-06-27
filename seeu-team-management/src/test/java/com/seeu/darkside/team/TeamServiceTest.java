@@ -148,6 +148,6 @@ public class TeamServiceTest {
     @Test
     public void should_create_new_team() {
         TeamDto createdTeam = teamService.createTeam(newTeamDto4);
-        assertThat(createdTeam.getIdTeam()).isEqualTo(newTeamDto4.getIdTeam());
+        assertThat(createdTeam.getId()).isEqualTo(newTeamDto4.getId());
     }**/
 }
