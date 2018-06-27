@@ -1,21 +1,17 @@
 package com.seeu.darkside.rs;
 
-import com.seeu.darkside.user.UserAlreadyExistsException;
-import com.seeu.darkside.user.UserDto;
-import com.seeu.darkside.user.UserNotFoundException;
-import com.seeu.darkside.user.UserService;
+import com.seeu.darkside.facebook.FacebookRequestException;
+import com.seeu.darkside.user.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping("users")
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
@@ -41,13 +37,24 @@ public class UserController {
         return userService.getUserByFacebookId(facebookId);
     }
 
+    @GetMapping(value = "/facebookFriends", params = "access_token")
+	public List<UserDto> getFacebookFriends(@RequestParam("access_token") String accessToken) throws FacebookRequestException {
+		return userService.getFacebookFriends(accessToken);
+	}
+
+	@GetMapping(value = "/{id}/friends")
+	public List<UserDto> getFriends(@PathVariable("id") Long id) {
+    	// TODO: get friends with messages micro service. If already one message has been sent between this user and another user, it is a friend
+		return null;
+	}
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto createNewUser(@RequestBody UserDto userDto) throws UserAlreadyExistsException {
         return userService.createUser(userDto);
     }
 
-    @PatchMapping("{id}")
+    @PutMapping("{id}")
     public UserDto updateDescription(@PathVariable("id") Long id, @RequestBody String description) {
         return userService.updateDescription(id, description);
     }

@@ -1,11 +1,16 @@
 package com.seeu.darkside.user;
 
+import com.seeu.darkside.facebook.FacebookRequestException;
+import com.seeu.darkside.facebook.FacebookService;
+import com.seeu.darkside.facebook.FacebookUser;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -15,12 +20,17 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserAdapter userAdapter;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final FacebookService facebookService;
 
-    public UserServiceImpl(final UserRepository userRepository, final UserAdapter userAdapter, final BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(final UserRepository userRepository,
+						   final UserAdapter userAdapter,
+						   final BCryptPasswordEncoder bCryptPasswordEncoder,
+						   final FacebookService facebookService) {
 
         this.userRepository = userRepository;
         this.userAdapter = userAdapter;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.facebookService = facebookService;
     }
 
     @Override
@@ -61,7 +71,31 @@ public class UserServiceImpl implements UserService {
 		return userAdapter.entityToDto(userByEmail);
 	}
 
-    @Override
+	@Override
+	@Transactional(readOnly = true)
+	public List<UserDto> getFacebookFriends(String accessToken) throws FacebookRequestException {
+		List<FacebookUser> facebookUserFriends = facebookService.getFacebookUserFriends(accessToken);
+
+		return facebookUserFriends
+				.stream()
+				.map(facebookUser -> {
+					try {
+						return getUserByFacebookId(facebookUser.getId());
+					} catch (UserNotFoundException e) {
+						return null;
+					}
+				})
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<UserDto> getFriends(Long id) throws UserNotFoundException {
+		return null;
+	}
+
+	@Override
     @Transactional
     public UserDto createUser(UserDto userDto) throws UserAlreadyExistsException {
 
