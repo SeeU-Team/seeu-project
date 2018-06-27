@@ -12,6 +12,8 @@ import com.seeu.darkside.rs.dto.AddTeammate;
 import com.seeu.darkside.rs.dto.TeamCreation;
 import com.seeu.darkside.rs.dto.TeamHasUser;
 import com.seeu.darkside.rs.dto.TeamProfile;
+import com.seeu.darkside.tag.TagEntity;
+import com.seeu.darkside.tag.TagServiceProxy;
 import com.seeu.darkside.tag.TeamHasTagEntity;
 import com.seeu.darkside.tag.TeamHasTagRepository;
 import com.seeu.darkside.teammate.TeamHasUserEntity;
@@ -40,21 +42,23 @@ public class TeamServiceImpl implements TeamService {
     private final TeamHasUserRepository teamHasUserRepository;
     private final AssetServiceProxy assetServiceProxy;
     private final CategoryServiceProxy categoryServiceProxy;
+    private final TagServiceProxy tagServiceProxy;
 
     @Autowired
-    public TeamServiceImpl(TeamRepository teamRepository, TeamAdapter teamAdapter, TeamHasAssetRepository teamHasAssetRepository, TeamHasCategoryRepository teamHasCategoryRepository, TeamHasTagRepository teamHasTagRepository, TeamHasUserRepository teamHasUserRepository, AssetServiceProxy assetServiceProxy, CategoryServiceProxy categoryServiceProxy) {
+    public TeamServiceImpl(TeamRepository teamRepository, TeamAdapter teamAdapter, TeamHasAssetRepository teamHasAssetRepository, TeamHasCategoryRepository teamHasCategoryRepository, TeamHasTagRepository teamHasTagRepository, TeamHasUserRepository teamHasUserRepository, AssetServiceProxy assetServiceProxy, CategoryServiceProxy categoryServiceProxy, TagServiceProxy tagServiceProxy) {
         this.teamRepository = teamRepository;
         this.teamAdapter = teamAdapter;
         this.teamHasAssetRepository = teamHasAssetRepository;
         this.teamHasCategoryRepository = teamHasCategoryRepository;
         this.teamHasTagRepository = teamHasTagRepository;
         this.teamHasUserRepository = teamHasUserRepository;
-		this.assetServiceProxy = assetServiceProxy;
-		this.categoryServiceProxy = categoryServiceProxy;
+        this.assetServiceProxy = assetServiceProxy;
+        this.categoryServiceProxy = categoryServiceProxy;
+        this.tagServiceProxy = tagServiceProxy;
     }
 
     @Override
-	@Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public List<TeamDto> getAllTeams() {
         return teamRepository.findAll()
                 .stream()
@@ -67,7 +71,7 @@ public class TeamServiceImpl implements TeamService {
     public TeamProfile createTeam(TeamCreation teamCreation) {
         TeamProfile teamProfile = null;
         try {
-        	TeamEntity teamToSave = extractTeam(teamCreation);
+            TeamEntity teamToSave = extractTeam(teamCreation);
             TeamEntity teamSaved = teamRepository.save(teamToSave);
             Long idTeam = teamSaved.getIdTeam();
             List<TeamHasAssetEntity> teamHasAssetToSave = extractAssets(teamCreation, idTeam);
@@ -77,9 +81,9 @@ public class TeamServiceImpl implements TeamService {
 
             // todo Retourné les info AssetEntity, CategoryEntity , save le tag en bdd et retourner TagEntity
             teamHasAssetRepository.saveAll(teamHasAssetToSave);
-			teamHasCategoryRepository.saveAll(teamHasCategoryToSave);
-			teamHasTagRepository.saveAll(teamHasTagToSave);
-			teamHasUserRepository.saveAll(teamHasUserToSave);
+            teamHasCategoryRepository.saveAll(teamHasCategoryToSave);
+            teamHasTagRepository.saveAll(teamHasTagToSave);
+            teamHasUserRepository.saveAll(teamHasUserToSave);
 
             for (int i = 0; i < teamHasUserToSave.size(); i++) {
                 if (i == 0) {
@@ -89,11 +93,11 @@ public class TeamServiceImpl implements TeamService {
                 }
             }
 
-            // todo remove comment
-			List<AssetEntity> assetEntities = getAssetEntitiesFromIds(teamHasAssetToSave);
+            List<AssetEntity> assetEntities = getAssetEntitiesFromIds(teamHasAssetToSave);
             List<CategoryEntity> categoryEntities = getCategoryEntitiesFromIds(teamHasCategoryToSave);
+            List<TagEntity> tagEntities = getTagsEntitiesFromIds(teamHasTagToSave);
 
-            teamProfile = createTeamProfile(teamSaved, teamHasUserToSave, assetEntities, categoryEntities, teamHasTagToSave);
+            teamProfile = createTeamProfile(teamSaved, teamHasUserToSave, assetEntities, categoryEntities, tagEntities);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -101,69 +105,71 @@ public class TeamServiceImpl implements TeamService {
         return teamProfile;
     }
 
-	@Override
-	public void checkIfTeamExist(Long idTeam) throws TeamNotFoundException {
-		teamRepository
-				.findById(idTeam)
-				.orElseThrow(() -> new TeamNotFoundException(TEAM_NOT_FOUND_MSG + idTeam));
-	}
+    @Override
+    public void checkIfTeamExist(Long idTeam) throws TeamNotFoundException {
+        teamRepository
+                .findById(idTeam)
+                .orElseThrow(() -> new TeamNotFoundException(TEAM_NOT_FOUND_MSG + idTeam));
+    }
 
-	@Override
+    @Override
     @Transactional(readOnly = true)
     public TeamProfile getTeamProfile(Long idTeam) {
-        TeamEntity teamEntity = teamRepository
-				.findById(idTeam)
-				.orElseThrow(() -> new TeamNotFoundException(TEAM_NOT_FOUND_MSG + idTeam));
+        TeamEntity teamEntity = teamRepository.findById(idTeam).orElseThrow(() ->
+                new TeamNotFoundException(TEAM_NOT_FOUND_MSG + idTeam));
 
         List<TeamHasUserEntity> userEntities = teamHasUserRepository.findAllByTeamId(idTeam);
-        List<TeamHasTagEntity> tagEntities = teamHasTagRepository.findAllByTeamId(idTeam);
 
-		List<TeamHasAssetEntity> assetEntitiesIds = teamHasAssetRepository.findAllByTeamId(idTeam);
-		List<AssetEntity> assetEntities = getAssetEntitiesFromIds(assetEntitiesIds);
+        List<TeamHasAssetEntity> assetEntitiesIds = teamHasAssetRepository.findAllByTeamId(idTeam);
+        List<AssetEntity> assetEntities = getAssetEntitiesFromIds(assetEntitiesIds);
 
-		List<TeamHasCategoryEntity> categoryEntitiesIds = teamHasCategoryRepository.findAllByTeamId(idTeam);
-		List<CategoryEntity> categoryEntities = getCategoryEntitiesFromIds(categoryEntitiesIds);
+        List<TeamHasCategoryEntity> categoryEntitiesIds = teamHasCategoryRepository.findAllByTeamId(idTeam);
+        List<CategoryEntity> categoryEntities = getCategoryEntitiesFromIds(categoryEntitiesIds);
 
-		return createTeamProfile(teamEntity, userEntities, assetEntities, categoryEntities, tagEntities);
+        List<TeamHasTagEntity> tagEntitiesIds = teamHasTagRepository.findAllByTeamId(idTeam);
+        List<TagEntity> tagEntities = getTagsEntitiesFromIds(tagEntitiesIds);
+
+        return createTeamProfile(teamEntity, userEntities, assetEntities, categoryEntities, tagEntities);
     }
 
-	@Override
+
+    @Override
     @Transactional
     public TeamProfile addTeammates(AddTeammate teammates) {
-    	checkIfTeamExist(teammates.getIdTeam());
+        checkIfTeamExist(teammates.getIdTeam());
 
-		List<TeamHasUserEntity> teamHasUserEntities = teammates.getTeammates()
-				.stream()
-				.map(teammate -> TeamHasUserEntity.builder()
-						.teamId(teammates.getIdTeam())
-						.userId(teammate.getIdTeammate())
-						.status(TeammateStatus.MEMBER)
-						.build())
-				.collect(Collectors.toList());
+        List<TeamHasUserEntity> teamHasUserEntities = teammates.getTeammates()
+                .stream()
+                .map(teammate -> TeamHasUserEntity.builder()
+                        .teamId(teammates.getIdTeam())
+                        .userId(teammate.getIdTeammate())
+                        .status(TeammateStatus.MEMBER)
+                        .build())
+                .collect(Collectors.toList());
 
-		teamHasUserRepository.saveAll(teamHasUserEntities);
+        teamHasUserRepository.saveAll(teamHasUserEntities);
 
-		return getTeamProfile(teammates.getIdTeam());
+        return getTeamProfile(teammates.getIdTeam());
     }
 
-	@Override
-	@Transactional(readOnly = true)
-	public TeamHasUser getTeamProfileOfMember(Long memberId) {
+    @Override
+    @Transactional(readOnly = true)
+    public TeamHasUser getTeamProfileOfMember(Long memberId) {
 
-		TeamHasUserEntity teamHasUserEntity = teamHasUserRepository
-				.findByUserId(memberId)
-				.orElseThrow(TeammateHasNotTeamException::new);
+        TeamHasUserEntity teamHasUserEntity = teamHasUserRepository
+                .findByUserId(memberId)
+                .orElseThrow(TeammateHasNotTeamException::new);
 
-		TeamProfile teamProfile = getTeamProfile(teamHasUserEntity.getTeamId());
+        TeamProfile teamProfile = getTeamProfile(teamHasUserEntity.getTeamId());
 
-		return TeamHasUser.builder()
-				.memberId(teamHasUserEntity.getUserId())
-				.team(teamProfile)
-				.status(teamHasUserEntity.getStatus())
-				.build();
-	}
+        return TeamHasUser.builder()
+                .memberId(teamHasUserEntity.getUserId())
+                .team(teamProfile)
+                .status(teamHasUserEntity.getStatus())
+                .build();
+    }
 
-	private TeamProfile createTeamProfile(TeamEntity teamEntity, List<TeamHasUserEntity> userEntities, List<AssetEntity> assetEntities, List<CategoryEntity> categoryEntities, List<TeamHasTagEntity> tagEntities) {
+    private TeamProfile createTeamProfile(TeamEntity teamEntity, List<TeamHasUserEntity> userEntities, List<AssetEntity> assetEntities, List<CategoryEntity> categoryEntities, List<TagEntity> tagEntities) {
         return TeamProfile.builder()
                 .idTeam(teamEntity.getIdTeam())
                 .name(teamEntity.getName())
@@ -179,66 +185,66 @@ public class TeamServiceImpl implements TeamService {
     }
 
     private List<TeamHasUserEntity> extractUsers(TeamCreation teamCreation, Long idTeam) {
-    	if (null == teamCreation.getTeammateList()) {
-    		return new ArrayList<>();
-		}
+        if (null == teamCreation.getTeammateList()) {
+            return new ArrayList<>();
+        }
 
-		return teamCreation.getTeammateList()
-				.stream()
-				.map(teammate -> TeamHasUserEntity.builder()
-						.teamId(idTeam)
-						.userId(teammate.getIdTeammate())
-						.build())
-				.collect(Collectors.toList());
+        return teamCreation.getTeammateList()
+                .stream()
+                .map(teammate -> TeamHasUserEntity.builder()
+                        .teamId(idTeam)
+                        .userId(teammate.getIdTeammate())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     private List<TeamHasTagEntity> extractTags(TeamCreation teamCreation, Long idTeam) {
-		if (null == teamCreation.getTags()) {
-			return new ArrayList<>();
-		}
+        if (null == teamCreation.getTags()) {
+            return new ArrayList<>();
+        }
 
-    	return teamCreation.getTags()
-				.stream()
-				.map(tag -> TeamHasTagEntity.builder()
-						.teamId(idTeam)
-						.tagId(tag.getIdTag())
-						.build())
-				.collect(Collectors.toList());
+        return teamCreation.getTags()
+                .stream()
+                .map(tag -> TeamHasTagEntity.builder()
+                        .teamId(idTeam)
+                        .tagId(tag.getIdTag())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     private List<TeamHasCategoryEntity> extractCategories(TeamCreation teamCreation, Long idTeam) {
-		if (null == teamCreation.getCategories()) {
-			return new ArrayList<>();
-		}
+        if (null == teamCreation.getCategories()) {
+            return new ArrayList<>();
+        }
 
-    	return teamCreation.getCategories()
-				.stream()
-				.map(category -> TeamHasCategoryEntity.builder()
-						.teamId(idTeam)
-						.categoryId(category.getIdCategory())
-						.build())
-				.collect(Collectors.toList());
+        return teamCreation.getCategories()
+                .stream()
+                .map(category -> TeamHasCategoryEntity.builder()
+                        .teamId(idTeam)
+                        .categoryId(category.getIdCategory())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     private List<TeamHasAssetEntity> extractAssets(TeamCreation teamCreation, Long idTeam) {
-		if (null == teamCreation.getAssets()) {
-			return new ArrayList<>();
-		}
+        if (null == teamCreation.getAssets()) {
+            return new ArrayList<>();
+        }
 
-    	return teamCreation.getAssets()
-				.stream()
-				.map(asset -> TeamHasAssetEntity.builder()
-						.teamId(idTeam)
-						.assetId(asset.getIdAsset())
-						.assetMediaId(asset.getIdMedia())
-						.build())
-				.collect(Collectors.toList());
+        return teamCreation.getAssets()
+                .stream()
+                .map(asset -> TeamHasAssetEntity.builder()
+                        .teamId(idTeam)
+                        .assetId(asset.getIdAsset())
+                        .assetMediaId(asset.getIdMedia())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     private TeamEntity extractTeam(TeamCreation teamCreation) {
         Date now = new Date();
         return TeamEntity.builder()
-				.name(teamCreation.getName())
+                .name(teamCreation.getName())
                 .description(teamCreation.getDescription())
                 .place(teamCreation.getPlace())
                 .created(now)
@@ -247,21 +253,24 @@ public class TeamServiceImpl implements TeamService {
     }
 
     private List<AssetEntity> getAssetEntitiesFromIds(List<TeamHasAssetEntity> teamHasAssetEntities) {
-		List<AssetEntity> assetEntities = new ArrayList<>();
-		for (TeamHasAssetEntity assetEntitiesId : teamHasAssetEntities) {
-			assetEntities.add(assetServiceProxy.getAssetInfo(assetEntitiesId.getAssetId()));
-		}
-
-		return assetEntities;
-	}
+        List<AssetEntity> assetEntities = new ArrayList<>();
+        for (TeamHasAssetEntity assetEntitiesId : teamHasAssetEntities)
+            assetEntities.add(assetServiceProxy.getAssetInfo(assetEntitiesId.getAssetId()));
+        return assetEntities;
+    }
 
 
-	private List<CategoryEntity> getCategoryEntitiesFromIds(List<TeamHasCategoryEntity> categoryEntitiesIds) {
-		List<CategoryEntity> categoryEntities = new ArrayList<>();
-		for (TeamHasCategoryEntity categoryEntity : categoryEntitiesIds) {
-			categoryEntities.add(categoryServiceProxy.getCategoryInfo(categoryEntity.getCategoryId()));
-		}
+    private List<CategoryEntity> getCategoryEntitiesFromIds(List<TeamHasCategoryEntity> categoryEntitiesIds) {
+        List<CategoryEntity> categoryEntities = new ArrayList<>();
+        for (TeamHasCategoryEntity categoryEntityId : categoryEntitiesIds)
+            categoryEntities.add(categoryServiceProxy.getCategoryInfo(categoryEntityId.getCategoryId()));
+        return categoryEntities;
+    }
 
-		return categoryEntities;
+    private List<TagEntity> getTagsEntitiesFromIds(List<TeamHasTagEntity> tagEntitiesIds) {
+        List<TagEntity> tagEntities = new ArrayList<>();
+        for (TeamHasTagEntity tagEntity : tagEntitiesIds)
+            tagEntities.add(tagServiceProxy.getTagInfo(tagEntity.getTagId()));
+        return tagEntities;
     }
 }
