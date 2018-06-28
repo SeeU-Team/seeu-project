@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
@@ -17,7 +18,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public UserDto getOneUser(@PathVariable("id") Long id) throws UserNotFoundException {
         return userService.getUser(id);
     }
@@ -44,8 +45,8 @@ public class UserController {
 
 	@GetMapping(value = "/{id}/friends")
 	public List<UserDto> getFriends(@PathVariable("id") Long id) {
-    	// TODO: get friends with messages micro service. If already one message has been sent between this user and another user, it is a friend
-		return null;
+    	// TODO: get friends with message micro service. If already one message has been sent between this user and another user, it is a friend
+		return new ArrayList<>();
 	}
 
     @PostMapping
