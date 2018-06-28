@@ -1,5 +1,0 @@
-spring:
-  application:
-    name: seeu-messages
-  jpa:
-    database: h2

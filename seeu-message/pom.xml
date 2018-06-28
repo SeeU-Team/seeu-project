@@ -11,9 +11,10 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>seeu-messages</artifactId>
+    <artifactId>seeu-message</artifactId>
     <packaging>jar</packaging>
-    <name>seeu-messages</name>
+    <name>seeu-message</name>
+    <description>SeeU microservice for real time messages</description>
 
     <dependencies>
         <dependency>
@@ -29,9 +30,8 @@
             <artifactId>spring-cloud-netflix-eureka-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>test</scope>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
     </dependencies>
 </project>

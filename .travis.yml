@@ -46,8 +46,11 @@ after_success:
       docker build -t oncletom77/seeu-media-management ./seeu-media-management;
       docker push oncletom77/seeu-media-management;
 
-      docker build -t oncletom77/seeu-messages ./seeu-messages;
-      docker push oncletom77/seeu-messages;
+      docker build -t oncletom77/seeu-message-management ./seeu-message-management;
+      docker push oncletom77/seeu-message-management;
+
+      docker build -t oncletom77/seeu-message ./seeu-message;
+      docker push oncletom77/seeu-message;
 
     fi
 notifications:

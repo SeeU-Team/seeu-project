@@ -36,7 +36,8 @@
         <module>seeu-user-management</module>
         <module>seeu-team-management</module>
         <module>seeu-media-management</module>
-        <module>seeu-messages</module>
+        <module>seeu-message</module>
+        <module>seeu-message-management</module>
     </modules>
 
     <dependencyManagement>
