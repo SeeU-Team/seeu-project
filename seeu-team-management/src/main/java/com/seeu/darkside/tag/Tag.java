@@ -10,5 +10,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Tag {
-    private Long idTag;
+    private String tagName;
 }

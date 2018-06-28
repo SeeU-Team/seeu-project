@@ -42,6 +42,25 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    public TagEntity createTagIfNotExist(TagDTO tagDTO) {
+
+        TagEntity tagEntityByName = tagRepository.findTagEntityByName(tagDTO.getName());
+
+        if (tagEntityByName != null)
+            return tagEntityByName;
+
+        Date now = new Date();
+
+        TagEntity entityToCreate = TagEntity.builder()
+                .name(tagDTO.getName())
+                .created(now)
+                .updated(now)
+                .build();
+
+        return tagRepository.save(entityToCreate);
+    }
+
+    @Override
     public void updateTagName(Long tagId, String newName) {
         TagEntity tagToUpdate = tagRepository.findTagEntityByIdTag(tagId);
         Date now = new Date();

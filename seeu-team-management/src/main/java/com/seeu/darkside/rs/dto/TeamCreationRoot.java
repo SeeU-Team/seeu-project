@@ -15,6 +15,9 @@ public class TeamCreationRoot {
 	@NotEmpty
 	private String profilePicture;
 
+	@NotEmpty
+	private String profilePictureName;
+
 	@NotNull
 	private TeamCreation team;
 }

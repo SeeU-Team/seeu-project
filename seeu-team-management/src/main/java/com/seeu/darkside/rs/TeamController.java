@@ -31,13 +31,11 @@ public class TeamController {
     @ResponseStatus(HttpStatus.CREATED)
     public TeamProfile createNewTeam(@RequestBody @Valid TeamCreationRoot teamCreationRoot, BindingResult bindingResult) {
 
-    	if (bindingResult.hasErrors()) {
-			throw new TeamValidationException();
-		}
+        if (bindingResult.hasErrors()) {
+            throw new TeamValidationException();
+        }
 
-		// Save the base64 picture to AWS...
-
-        return teamService.createTeam(teamCreationRoot.getTeam());
+        return teamService.createTeam(teamCreationRoot.getTeam(), teamCreationRoot.getProfilePicture(), teamCreationRoot.getProfilePictureName());
     }
 
     @GetMapping("/{teamId}")
@@ -47,7 +45,7 @@ public class TeamController {
 
     @GetMapping(params = {"memberId"})
     public TeamHasUser getTeamOfMember(@RequestParam("memberId") Long memberId) {
-		return teamService.getTeamProfileOfMember(memberId);
+        return teamService.getTeamProfileOfMember(memberId);
     }
 
     @PostMapping("/addTeammates")
@@ -57,6 +55,7 @@ public class TeamController {
 
     /**
      * DEBUG
+     *
      * @return
      */
     @GetMapping("/list")
@@ -66,6 +65,7 @@ public class TeamController {
 
     /**
      * DEBUG
+     *
      * @return
      */
     @GetMapping("/cre")
@@ -85,7 +85,7 @@ public class TeamController {
         Category category = new Category(555L);
         categories.add(category);
         ArrayList<Tag> tags = new ArrayList<>();
-        Tag tag = new Tag(666L);
+        Tag tag = new Tag("bbq");
         tags.add(tag);
         TeamCreation teamCreation = new TeamCreation(name, description, place, teammateList, assets, categories, tags);
         return teamCreation;

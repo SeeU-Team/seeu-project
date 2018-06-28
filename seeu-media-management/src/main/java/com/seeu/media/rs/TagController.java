@@ -24,12 +24,12 @@ public class TagController {
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public TagEntity createNewTag(@RequestBody TagDTO tagDTO) {
+    public TagEntity createNewTagIfNotExist(@RequestBody TagDTO tagDTO) {
 
         if (tagDTO.getName() == null) {
             throw new TagNameIsNullException("Tag name is null");
         }
-        return tagService.createTag(tagDTO);
+        return tagService.createTagIfNotExist(tagDTO);
     }
 
     @GetMapping
@@ -57,5 +57,4 @@ public class TagController {
     public List<TagEntity> listTags() {
         return tagService.getAllTags();
     }
-
 }

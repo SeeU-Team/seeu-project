@@ -9,22 +9,23 @@
   ],
   "assets": [
     {
-      "idAsset": 1212,
-      "idMedia": 3434
+      "idAsset": 1,
+      "idMedia": 2
     },
     {
-      "idAsset": 2121,
-      "idMedia": 4343
+      "idAsset": 2,
+      "idMedia": 2
     }
   ],
   "categories": [
     {
-      "idCategory": 555
+      "idCategory": 1
     }
   ],
   "tags": [
     {
-      "idTag": 666
+      "tagName": "NouvelAn",
+      "tagName": "31Decembre"
     }
   ]
 }

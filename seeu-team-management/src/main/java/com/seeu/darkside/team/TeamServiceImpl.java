@@ -1,5 +1,6 @@
 package com.seeu.darkside.team;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.seeu.darkside.asset.AssetEntity;
 import com.seeu.darkside.asset.AssetServiceProxy;
 import com.seeu.darkside.asset.TeamHasAssetEntity;
@@ -12,18 +13,19 @@ import com.seeu.darkside.rs.dto.AddTeammate;
 import com.seeu.darkside.rs.dto.TeamCreation;
 import com.seeu.darkside.rs.dto.TeamHasUser;
 import com.seeu.darkside.rs.dto.TeamProfile;
-import com.seeu.darkside.tag.TagEntity;
-import com.seeu.darkside.tag.TagServiceProxy;
-import com.seeu.darkside.tag.TeamHasTagEntity;
-import com.seeu.darkside.tag.TeamHasTagRepository;
+import com.seeu.darkside.tag.*;
 import com.seeu.darkside.teammate.TeamHasUserEntity;
 import com.seeu.darkside.teammate.TeamHasUserRepository;
 import com.seeu.darkside.teammate.TeammateHasNotTeamException;
 import com.seeu.darkside.teammate.TeammateStatus;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +36,8 @@ import static com.seeu.darkside.utils.Constants.TEAM_NOT_FOUND_MSG;
 @Service
 public class TeamServiceImpl implements TeamService {
 
+    private static final String BUCKET_SOURCE = "seeu-bucket";
+
     private final TeamRepository teamRepository;
     private final TeamAdapter teamAdapter;
     private final TeamHasAssetRepository teamHasAssetRepository;
@@ -43,9 +47,10 @@ public class TeamServiceImpl implements TeamService {
     private final AssetServiceProxy assetServiceProxy;
     private final CategoryServiceProxy categoryServiceProxy;
     private final TagServiceProxy tagServiceProxy;
+    private final AmazonS3 amazonS3;
 
     @Autowired
-    public TeamServiceImpl(TeamRepository teamRepository, TeamAdapter teamAdapter, TeamHasAssetRepository teamHasAssetRepository, TeamHasCategoryRepository teamHasCategoryRepository, TeamHasTagRepository teamHasTagRepository, TeamHasUserRepository teamHasUserRepository, AssetServiceProxy assetServiceProxy, CategoryServiceProxy categoryServiceProxy, TagServiceProxy tagServiceProxy) {
+    public TeamServiceImpl(TeamRepository teamRepository, TeamAdapter teamAdapter, TeamHasAssetRepository teamHasAssetRepository, TeamHasCategoryRepository teamHasCategoryRepository, TeamHasTagRepository teamHasTagRepository, TeamHasUserRepository teamHasUserRepository, AssetServiceProxy assetServiceProxy, CategoryServiceProxy categoryServiceProxy, TagServiceProxy tagServiceProxy, AmazonS3 amazonS3) {
         this.teamRepository = teamRepository;
         this.teamAdapter = teamAdapter;
         this.teamHasAssetRepository = teamHasAssetRepository;
@@ -55,6 +60,7 @@ public class TeamServiceImpl implements TeamService {
         this.assetServiceProxy = assetServiceProxy;
         this.categoryServiceProxy = categoryServiceProxy;
         this.tagServiceProxy = tagServiceProxy;
+        this.amazonS3 = amazonS3;
     }
 
     @Override
@@ -68,7 +74,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public TeamProfile createTeam(TeamCreation teamCreation) {
+    public TeamProfile createTeam(TeamCreation teamCreation, String imageBase64, String fileName) {
         TeamProfile teamProfile = null;
         try {
             TeamEntity teamToSave = extractTeam(teamCreation);
@@ -79,7 +85,8 @@ public class TeamServiceImpl implements TeamService {
             List<TeamHasTagEntity> teamHasTagToSave = extractTags(teamCreation, idTeam);
             List<TeamHasUserEntity> teamHasUserToSave = extractUsers(teamCreation, idTeam);
 
-            // todo Retourné les info AssetEntity, CategoryEntity , save le tag en bdd et retourner TagEntity
+
+            // TODO USER
             teamHasAssetRepository.saveAll(teamHasAssetToSave);
             teamHasCategoryRepository.saveAll(teamHasCategoryToSave);
             teamHasTagRepository.saveAll(teamHasTagToSave);
@@ -92,6 +99,13 @@ public class TeamServiceImpl implements TeamService {
                     teamHasUserToSave.get(i).setStatus(TeammateStatus.MEMBER);
                 }
             }
+
+            // todo Save image base 64, save le nom du fichier dans la bdd
+            String fileExtension = FilenameUtils.getExtension(fileName);
+            String fileNameToSave = teamToSave.getName() + "-" + teamToSave.getIdTeam() + "." + fileExtension;
+            byte[] bytes = Base64.decodeBase64(imageBase64);
+            InputStream inputStream = new ByteArrayInputStream(bytes);
+            amazonS3.putObject(BUCKET_SOURCE, fileNameToSave, inputStream, null);
 
             List<AssetEntity> assetEntities = getAssetEntitiesFromIds(teamHasAssetToSave);
             List<CategoryEntity> categoryEntities = getCategoryEntitiesFromIds(teamHasCategoryToSave);
@@ -117,6 +131,7 @@ public class TeamServiceImpl implements TeamService {
     public TeamProfile getTeamProfile(Long idTeam) {
         TeamEntity teamEntity = teamRepository.findById(idTeam).orElseThrow(() ->
                 new TeamNotFoundException(TEAM_NOT_FOUND_MSG + idTeam));
+
 
         List<TeamHasUserEntity> userEntities = teamHasUserRepository.findAllByTeamId(idTeam);
 
@@ -202,14 +217,13 @@ public class TeamServiceImpl implements TeamService {
         if (null == teamCreation.getTags()) {
             return new ArrayList<>();
         }
-
-        return teamCreation.getTags()
-                .stream()
-                .map(tag -> TeamHasTagEntity.builder()
-                        .teamId(idTeam)
-                        .tagId(tag.getIdTag())
-                        .build())
-                .collect(Collectors.toList());
+        List<TeamHasTagEntity> tagEntities = new ArrayList<>();
+        for (Tag tag : teamCreation.getTags()) {
+            TagEntity newTagIfNotExist = tagServiceProxy.createNewTagIfNotExist(new TagDTO(null, tag.getTagName()));
+            TeamHasTagEntity teamHasTagEntity = TeamHasTagEntity.builder().teamId(idTeam).tagId(newTagIfNotExist.getIdTag()).build();
+            tagEntities.add(teamHasTagEntity);
+        }
+        return tagEntities;
     }
 
     private List<TeamHasCategoryEntity> extractCategories(TeamCreation teamCreation, Long idTeam) {

@@ -11,6 +11,8 @@ public interface TagService {
 
     TagEntity createTag(TagDTO tagDTO);
 
+    TagEntity createTagIfNotExist(TagDTO tagDTO);
+
     void updateTagName(Long tagId, String newName);
 
     void deleteTag(Long tagId);
