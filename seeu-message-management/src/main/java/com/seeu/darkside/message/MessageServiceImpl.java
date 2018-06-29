@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -55,9 +56,22 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	public List<Long> getFriendsOf(Long userId) {
+		return messageRepository.getDistinctMessagesWith(userId)
+				.stream()
+				.map(entity -> userId.equals(entity.getFrom()) ? entity.getDest() : entity.getFrom())
+				.distinct()
+				.collect(Collectors.toList());
+	}
+
+	@Override
 	@Transactional
 	public CompleteMessageDto createMessage(MessageDto messageDto) {
 		MessageEntity entity = messageAdapter.dtoToEntity(messageDto);
+		Date date = new Date();
+		entity.setCreated(date);
+		entity.setUpdated(date);
 
 		entity = messageRepository.save(entity);
 

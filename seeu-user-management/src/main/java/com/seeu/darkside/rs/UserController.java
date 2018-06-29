@@ -45,8 +45,7 @@ public class UserController {
 
 	@GetMapping(value = "/{id}/friends")
 	public List<UserDto> getFriends(@PathVariable("id") Long id) {
-    	// TODO: get friends with message micro service. If already one message has been sent between this user and another user, it is a friend
-		return new ArrayList<>();
+		return userService.getFriends(id);
 	}
 
     @PostMapping

@@ -40,6 +40,11 @@ public class MessageController {
 		return messageService.getAllMessagesForTeamToBefore(firstTeamId, secondTeamId);
 	}
 
+	@GetMapping("/{userId}/friends")
+	public List<Long> getFriendsOfUser(@PathVariable("userId") Long userId) {
+		return messageService.getFriendsOf(userId);
+	}
+
 	@PostMapping
 	@ResponseStatus(CREATED)
 	public CompleteMessageDto createMessage(@RequestBody @Valid MessageDto messageDto, BindingResult bindingResult) {

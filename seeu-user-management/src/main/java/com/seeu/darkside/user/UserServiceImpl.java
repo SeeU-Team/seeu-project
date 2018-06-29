@@ -3,6 +3,7 @@ package com.seeu.darkside.user;
 import com.seeu.darkside.facebook.FacebookRequestException;
 import com.seeu.darkside.facebook.FacebookService;
 import com.seeu.darkside.facebook.FacebookUser;
+import com.seeu.darkside.message.MessageServiceProxy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,17 +22,19 @@ public class UserServiceImpl implements UserService {
     private final UserAdapter userAdapter;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final FacebookService facebookService;
+    private final MessageServiceProxy messageServiceProxy;
 
     public UserServiceImpl(final UserRepository userRepository,
 						   final UserAdapter userAdapter,
 						   final BCryptPasswordEncoder bCryptPasswordEncoder,
-						   final FacebookService facebookService) {
+						   final FacebookService facebookService, MessageServiceProxy messageServiceProxy) {
 
         this.userRepository = userRepository;
         this.userAdapter = userAdapter;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.facebookService = facebookService;
-    }
+		this.messageServiceProxy = messageServiceProxy;
+	}
 
     @Override
 	@Transactional(readOnly = true)
@@ -91,8 +94,19 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<UserDto> getFriends(Long id) throws UserNotFoundException {
-		return null;
+	public List<UserDto> getFriends(Long id) {
+		// If already one message has been sent between this user and another user, it is a friend
+		return messageServiceProxy.getFriendsOfUser(id)
+				.stream()
+				.map(userId -> {
+					try {
+						return this.getUser(userId);
+					} catch (UserNotFoundException e) {
+						return null;
+					}
+				})
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
 	}
 
 	@Override

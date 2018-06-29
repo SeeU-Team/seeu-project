@@ -12,7 +12,7 @@ public interface UserService {
 	UserDto getUserByEmail(String email) throws UserNotFoundException;
 	UserDto getUserByFacebookId(Long facebookId) throws UserNotFoundException;
 	List<UserDto> getFacebookFriends(String accessToken) throws FacebookRequestException;
-	List<UserDto> getFriends(Long id) throws UserNotFoundException;
+	List<UserDto> getFriends(Long id);
 
     UserDto createUser(UserDto userDto) throws UserAlreadyExistsException;
 

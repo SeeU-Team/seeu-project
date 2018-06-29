@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -15,10 +16,12 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 public class RealTimeMessageController {
 
 	private final MessageServiceProxy messageService;
+	public final SimpMessageSendingOperations messagingTemplate;
 
 	@Autowired
-	public RealTimeMessageController(MessageServiceProxy messageService) {
+	public RealTimeMessageController(MessageServiceProxy messageService, SimpMessageSendingOperations messagingTemplate) {
 		this.messageService = messageService;
+		this.messagingTemplate = messagingTemplate;
 	}
 
 	@MessageMapping("/hello")
@@ -37,7 +40,9 @@ public class RealTimeMessageController {
 				.type(ConversationType.USER_TO_USER)
 				.build();
 
-		return createMessageAndHandleErrors(createdMessage);
+		CompleteMessageDto completeMessageDto = createMessageAndHandleErrors(createdMessage);
+		sendMessageBackToOwner(completeMessageDto);
+		return completeMessageDto;
 	}
 
 	@MessageMapping("/toTeam/{teamId}")
@@ -63,7 +68,15 @@ public class RealTimeMessageController {
 				.type(ConversationType.TEAM_TO_BEFORE)
 				.build();
 
-		 return createMessageAndHandleErrors(createdMessage);
+		// TODO: who is the owner of the message ? The Leader (Member's id) or the team he belongs to (Team's id).
+
+		CompleteMessageDto completeMessageDto = createMessageAndHandleErrors(createdMessage);
+		sendMessageBackToOwner(completeMessageDto);
+		return completeMessageDto;
+	}
+
+	private void sendMessageBackToOwner(CompleteMessageDto completeMessageDto) {
+		messagingTemplate.convertAndSend("/topic/user/" + completeMessageDto.getOwner().getId(), completeMessageDto);
 	}
 
 	private CompleteMessageDto createMessageAndHandleErrors(MessageDto messageDto) throws FeignException, MessageCreationException {
