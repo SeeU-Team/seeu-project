@@ -8,7 +8,7 @@ import org.apache.commons.codec.binary.Base64InputStream;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssetDTO {
+public class AssetDto {
 
     private String nameFile;
 

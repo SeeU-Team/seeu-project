@@ -1,6 +1,6 @@
 package com.seeu.media.rs;
 
-import com.seeu.media.rs.dto.TagDTO;
+import com.seeu.media.rs.dto.TagDto;
 import com.seeu.media.rs.exception.TagNameIsNullException;
 import com.seeu.media.tag.TagEntity;
 import com.seeu.media.tag.TagService;
@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.BadAttributeValueExpException;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -18,18 +17,22 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("/medias/tags")
 public class TagController {
 
+    private final TagService tagService;
+
     @Autowired
-    private TagService tagService;
+    public TagController(TagService tagService) {
+        this.tagService = tagService;
+    }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public TagEntity createNewTag(@RequestBody TagDTO tagDTO) {
+    public TagEntity createNewTag(@RequestBody TagDto tagDto) {
 
-        if (tagDTO.getName() == null) {
+        if (tagDto.getName() == null) {
             throw new TagNameIsNullException("Tag name is null");
         }
-        return tagService.createTag(tagDTO);
+        return tagService.createTag(tagDto);
     }
 
     @GetMapping
@@ -38,7 +41,7 @@ public class TagController {
     }
 
     @PutMapping
-    public ResponseEntity updateTagInfo(@RequestBody TagDTO tag) {
+    public ResponseEntity updateTagInfo(@RequestBody TagDto tag) {
         tagService.updateTagName(tag.getIdTag(), tag.getName());
         return new ResponseEntity(HttpStatus.OK);
     }

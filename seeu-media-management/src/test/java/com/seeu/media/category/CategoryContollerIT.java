@@ -1,8 +1,7 @@
 package com.seeu.media.category;
 
 import com.jayway.restassured.RestAssured;
-import com.seeu.media.rs.dto.TagDTO;
-import com.seeu.media.tag.TagData;
+import com.seeu.media.rs.dto.TagDto;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +48,7 @@ public class CategoryContollerIT {
                 .get("/categories?categoryId=2")
         .then()
                 .statusCode(200)
-                .body("idCategory", is(2))
+                .body("id", is(2))
                 .body("name", is("category2"));
     }
 
@@ -57,7 +56,7 @@ public class CategoryContollerIT {
     public void should_create_new_tags() {
         Date date = new Date();
 
-        TagDTO tag = TagDTO.builder()
+        TagDto tag = TagDto.builder()
                 .name("asset4")
                 .build();
 
