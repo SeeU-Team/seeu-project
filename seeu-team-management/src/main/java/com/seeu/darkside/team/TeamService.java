@@ -1,19 +1,22 @@
 package com.seeu.darkside.team;
 
 import com.seeu.darkside.rs.dto.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface TeamService {
     List<TeamDto> getAllTeams();
 
-    TeamProfile createTeam(TeamCreation teamCreation);
+	TeamProfile getTeamProfile(Long idTeam);
 
-    void checkIfTeamExist(Long idTeam) throws TeamNotFoundException;
+	TeamHasUser getTeamProfileOfMember(Long memberId);
 
-    TeamProfile getTeamProfile(Long idTeam);
+	List<TeamProfile> getAllTeamsForCategory(Long categoryId);
+
+	TeamProfile createTeam(TeamCreation teamCreation);
 
     TeamProfile addTeammates(AddTeammate teammates);
 
-    TeamHasUser getTeamProfileOfMember(Long memberId);
+	void checkIfTeamExist(Long idTeam) throws TeamNotFoundException;
 }

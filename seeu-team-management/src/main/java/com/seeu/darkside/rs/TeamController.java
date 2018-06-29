@@ -20,22 +20,21 @@ import java.util.List;
 @RequestMapping("/teams")
 public class TeamController {
 
-    @Autowired
-    private TeamService teamService;
+    private final TeamService teamService;
 
-    @PostMapping
-    @ResponseBody
-    @ResponseStatus(HttpStatus.CREATED)
-    public TeamProfile createNewTeam(@RequestBody @Valid TeamCreationRoot teamCreationRoot, BindingResult bindingResult) {
+	@Autowired
+	public TeamController(TeamService teamService) {
+		this.teamService = teamService;
+	}
 
-    	if (bindingResult.hasErrors()) {
-			throw new TeamValidationException();
-		}
-
-		// Save the base64 picture to AWS...
-
-        return teamService.createTeam(teamCreationRoot.getTeam());
-    }
+	/**
+	 * DEBUG
+	 * @return
+	 */
+	@GetMapping
+	public List<TeamDto> listTeams() {
+		return teamService.getAllTeams();
+	}
 
     @GetMapping("/{teamId}")
     public TeamProfile getTeamInfo(@PathVariable("teamId") Long teamId) {
@@ -47,19 +46,44 @@ public class TeamController {
 		return teamService.getTeamProfileOfMember(memberId);
     }
 
+    @GetMapping(params = {"categoryId"})
+	public List<TeamProfile> getAllTeamsForCategory(@RequestParam("categoryId") Long categoryId) {
+		return teamService.getAllTeamsForCategory(categoryId);
+	}
+
+	@PostMapping
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	public TeamProfile createNewTeam(@RequestBody @Valid TeamCreationRoot teamCreationRoot,
+									 BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			throw new TeamValidationException();
+		}
+
+		// TODO: Save the base64 picture to AWS...
+
+		return teamService.createTeam(teamCreationRoot.getTeam());
+	}
+
     @PostMapping("/addTeammates")
     public TeamProfile addTeammates(@RequestBody AddTeammate teammates) {
         return teamService.addTeammates(teammates);
     }
 
-    /**
-     * DEBUG
-     * @return
-     */
-    @GetMapping("/list")
-    public List<TeamDto> listTeams() {
-        return teamService.getAllTeams();
-    }
+    @PutMapping
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void updateTeam(@RequestBody @Valid TeamCreationRoot teamCreationRoot,
+						   BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			throw new TeamValidationException();
+		}
+
+		// TODO: Save the base64 picture to AWS if it has changed
+
+		// TODO: teamService.updateTeam();
+	}
 
     /**
      * DEBUG

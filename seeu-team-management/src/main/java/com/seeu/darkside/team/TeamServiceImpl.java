@@ -54,47 +54,6 @@ public class TeamServiceImpl implements TeamService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    @Transactional
-    public TeamProfile createTeam(TeamCreation teamCreation) {
-        TeamProfile teamProfile = null;
-        try {
-        	TeamEntity teamToSave = extractTeam(teamCreation);
-            TeamEntity teamSaved = teamRepository.save(teamToSave);
-            Long idTeam = teamSaved.getIdTeam();
-            List<TeamHasAssetEntity> teamHasAssetToSave = extractAssets(teamCreation, idTeam);
-            List<TeamHasCategoryEntity> teamHasCategoryToSave = extractCategories(teamCreation, idTeam);
-            List<TeamHasTagEntity> teamHasTagToSave = extractTags(teamCreation, idTeam);
-            List<TeamHasUserEntity> teamHasUserToSave = extractUsers(teamCreation, idTeam);
-
-            teamHasAssetRepository.saveAll(teamHasAssetToSave);
-			teamHasCategoryRepository.saveAll(teamHasCategoryToSave);
-			teamHasTagRepository.saveAll(teamHasTagToSave);
-			teamHasUserRepository.saveAll(teamHasUserToSave);
-
-            for (int i = 0; i < teamHasUserToSave.size(); i++) {
-                if (i == 0) {
-                    teamHasUserToSave.get(i).setStatus(TeammateStatus.LEADER);
-                } else {
-                    teamHasUserToSave.get(i).setStatus(TeammateStatus.MEMBER);
-                }
-            }
-
-            teamProfile = createTeamProfile(teamSaved, teamHasUserToSave, teamHasAssetToSave, teamHasCategoryToSave, teamHasTagToSave);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return teamProfile;
-    }
-
-	@Override
-	public void checkIfTeamExist(Long idTeam) throws TeamNotFoundException {
-		teamRepository
-				.findById(idTeam)
-				.orElseThrow(() -> new TeamNotFoundException(TEAM_NOT_FOUND_MSG + idTeam));
-	}
-
 	@Override
     @Transactional(readOnly = true)
     public TeamProfile getTeamProfile(Long idTeam) {
@@ -109,6 +68,66 @@ public class TeamServiceImpl implements TeamService {
 
         return createTeamProfile(teamEntity, userEntities, assetEntities, categoryEntities, tagEntities);
     }
+
+	@Override
+	@Transactional(readOnly = true)
+	public TeamHasUser getTeamProfileOfMember(Long memberId) {
+
+		TeamHasUserEntity teamHasUserEntity = teamHasUserRepository
+				.findByUserId(memberId)
+				.orElseThrow(TeammateHasNotTeamException::new);
+
+		TeamProfile teamProfile = getTeamProfile(teamHasUserEntity.getTeamId());
+
+		return TeamHasUser.builder()
+				.memberId(teamHasUserEntity.getUserId())
+				.team(teamProfile)
+				.status(teamHasUserEntity.getStatus())
+				.build();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<TeamProfile> getAllTeamsForCategory(Long categoryId) {
+		return teamHasCategoryRepository.findAllByCategoryId(categoryId)
+				.stream()
+				.map(teamHasCategoryEntity -> getTeamProfile(teamHasCategoryEntity.getTeamId()))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	@Transactional
+	public TeamProfile createTeam(TeamCreation teamCreation) {
+		TeamProfile teamProfile = null;
+		try {
+			TeamEntity teamToSave = extractTeam(teamCreation);
+			TeamEntity teamSaved = teamRepository.save(teamToSave);
+			Long idTeam = teamSaved.getIdTeam();
+			List<TeamHasAssetEntity> teamHasAssetToSave = extractAssets(teamCreation, idTeam);
+			List<TeamHasCategoryEntity> teamHasCategoryToSave = extractCategories(teamCreation, idTeam);
+			List<TeamHasTagEntity> teamHasTagToSave = extractTags(teamCreation, idTeam);
+			List<TeamHasUserEntity> teamHasUserToSave = extractUsers(teamCreation, idTeam);
+
+			teamHasAssetRepository.saveAll(teamHasAssetToSave);
+			teamHasCategoryRepository.saveAll(teamHasCategoryToSave);
+			teamHasTagRepository.saveAll(teamHasTagToSave);
+			teamHasUserRepository.saveAll(teamHasUserToSave);
+
+			for (int i = 0; i < teamHasUserToSave.size(); i++) {
+				if (i == 0) {
+					teamHasUserToSave.get(i).setStatus(TeammateStatus.LEADER);
+				} else {
+					teamHasUserToSave.get(i).setStatus(TeammateStatus.MEMBER);
+				}
+			}
+
+			teamProfile = createTeamProfile(teamSaved, teamHasUserToSave, teamHasAssetToSave, teamHasCategoryToSave, teamHasTagToSave);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return teamProfile;
+	}
 
     @Override
     @Transactional
@@ -130,20 +149,10 @@ public class TeamServiceImpl implements TeamService {
     }
 
 	@Override
-	@Transactional(readOnly = true)
-	public TeamHasUser getTeamProfileOfMember(Long memberId) {
-
-		TeamHasUserEntity teamHasUserEntity = teamHasUserRepository
-				.findByUserId(memberId)
-				.orElseThrow(TeammateHasNotTeamException::new);
-
-		TeamProfile teamProfile = getTeamProfile(teamHasUserEntity.getTeamId());
-
-		return TeamHasUser.builder()
-				.memberId(teamHasUserEntity.getUserId())
-				.team(teamProfile)
-				.status(teamHasUserEntity.getStatus())
-				.build();
+	public void checkIfTeamExist(Long idTeam) throws TeamNotFoundException {
+		teamRepository
+				.findById(idTeam)
+				.orElseThrow(() -> new TeamNotFoundException(TEAM_NOT_FOUND_MSG + idTeam));
 	}
 
 	private TeamProfile createTeamProfile(TeamEntity teamEntity, List<TeamHasUserEntity> userEntities, List<TeamHasAssetEntity> assetEntities, List<TeamHasCategoryEntity> categoryEntities, List<TeamHasTagEntity> tagEntities) {
