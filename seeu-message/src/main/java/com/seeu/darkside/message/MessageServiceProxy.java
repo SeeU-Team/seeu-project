@@ -1,5 +1,6 @@
 package com.seeu.darkside.message;
 
+import com.seeu.darkside.team.Team;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,5 +11,8 @@ import javax.validation.Valid;
 public interface MessageServiceProxy {
 
 	@PostMapping(value = "/messages")
-	CompleteMessageDto createMessage(@RequestBody @Valid MessageDto messageDto);
+	CompleteMessageDto<User> createUserMessage(@RequestBody @Valid MessageDto messageDto);
+
+	@PostMapping(value = "/messages")
+	CompleteMessageDto<Team> createTeamMessage(@RequestBody @Valid MessageDto messageDto);
 }

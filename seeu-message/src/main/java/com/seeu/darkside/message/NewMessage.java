@@ -7,10 +7,9 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewMessage {
+public class NewMessage<T> {
 
-	private Long id;
-	private String content;
-	private User owner;
-
+	protected Long id;
+	protected String content;
+	protected T owner;
 }

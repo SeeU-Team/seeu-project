@@ -1,6 +1,7 @@
 package com.seeu.darkside.rs;
 
 import com.seeu.darkside.message.*;
+import com.seeu.darkside.team.Team;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -16,7 +17,7 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 public class RealTimeMessageController {
 
 	private final MessageServiceProxy messageService;
-	public final SimpMessageSendingOperations messagingTemplate;
+	private final SimpMessageSendingOperations messagingTemplate;
 
 	@Autowired
 	public RealTimeMessageController(MessageServiceProxy messageService, SimpMessageSendingOperations messagingTemplate) {
@@ -32,7 +33,7 @@ public class RealTimeMessageController {
 
 	@MessageMapping("/toUser/{userId}")
 	@SendTo("/topic/user/{userId}")
-	public CompleteMessageDto newUserMessage(@DestinationVariable Long userId, NewMessage newMessage) {
+	public CompleteMessageDto newUserMessage(@DestinationVariable Long userId, NewMessage<User> newMessage) {
 		MessageDto createdMessage = MessageDto.builder()
 				.from(newMessage.getOwner().getId())
 				.dest(userId)
@@ -40,14 +41,14 @@ public class RealTimeMessageController {
 				.type(ConversationType.USER_TO_USER)
 				.build();
 
-		CompleteMessageDto completeMessageDto = createMessageAndHandleErrors(createdMessage);
+		CompleteMessageDto<User> completeMessageDto = createMessageAndHandleErrors(createdMessage);
 		sendMessageBackToOwner(completeMessageDto);
 		return completeMessageDto;
 	}
 
 	@MessageMapping("/toTeam/{teamId}")
 	@SendTo("/topic/team/{teamId}")
-	public CompleteMessageDto newTeamMessage(@DestinationVariable Long teamId, NewMessage newMessage) {
+	public CompleteMessageDto<User> newTeamMessage(@DestinationVariable Long teamId, NewMessage<User> newMessage) {
 		MessageDto createdMessage = MessageDto.builder()
 				.from(newMessage.getOwner().getId())
 				.dest(teamId)
@@ -60,7 +61,7 @@ public class RealTimeMessageController {
 
 	@MessageMapping("/toBefore/{teamId}")
 	@SendTo("/topic/leader/{teamId}")
-	public CompleteMessageDto newBeforeMessage(@DestinationVariable Long teamId, NewMessage newMessage) {
+	public CompleteMessageDto<Team> newBeforeMessage(@DestinationVariable Long teamId, NewMessage<Team> newMessage) {
 		MessageDto createdMessage = MessageDto.builder()
 				.from(newMessage.getOwner().getId())
 				.dest(teamId)
@@ -68,20 +69,21 @@ public class RealTimeMessageController {
 				.type(ConversationType.TEAM_TO_BEFORE)
 				.build();
 
-		// TODO: who is the owner of the message ? The Leader (Member's id) or the team he belongs to (Team's id).
+		CompleteMessageDto<Team> completeMessageDto = createMessageAndHandleErrors(createdMessage);
+		messagingTemplate.convertAndSend("/topic/leader/" + completeMessageDto.getOwner().getId(), completeMessageDto);
 
-		CompleteMessageDto completeMessageDto = createMessageAndHandleErrors(createdMessage);
-		sendMessageBackToOwner(completeMessageDto);
 		return completeMessageDto;
 	}
 
-	private void sendMessageBackToOwner(CompleteMessageDto completeMessageDto) {
+	private void sendMessageBackToOwner(CompleteMessageDto<User> completeMessageDto) {
 		messagingTemplate.convertAndSend("/topic/user/" + completeMessageDto.getOwner().getId(), completeMessageDto);
 	}
 
 	private CompleteMessageDto createMessageAndHandleErrors(MessageDto messageDto) throws FeignException, MessageCreationException {
 		try {
-			return messageService.createMessage(messageDto);
+			return ConversationType.TEAM_TO_BEFORE.equals(messageDto.getType())
+					? messageService.createTeamMessage(messageDto)
+					: messageService.createUserMessage(messageDto);
 		} catch (FeignException e) {
 			if (INTERNAL_SERVER_ERROR.value() == e.status()
 					|| BAD_REQUEST.value() == e.status()) {

@@ -9,11 +9,11 @@ import java.util.Date;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CompleteMessageDto {
+public class CompleteMessageDto<T> {
 
 	private Long id;
 	private String content;
-	private User owner;
+	private T owner;
 
 	private Date created;
 	private Date updated;

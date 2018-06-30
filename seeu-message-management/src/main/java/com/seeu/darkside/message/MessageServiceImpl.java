@@ -1,5 +1,7 @@
 package com.seeu.darkside.message;
 
+import com.seeu.darkside.team.Team;
+import com.seeu.darkside.team.TeamServiceProxy;
 import com.seeu.darkside.user.User;
 import com.seeu.darkside.user.UserServiceProxy;
 import feign.FeignException;
@@ -20,12 +22,14 @@ public class MessageServiceImpl implements MessageService {
 	private final MessageRepository messageRepository;
 	private final MessageAdapter messageAdapter;
 	private final UserServiceProxy userServiceProxy;
+	private final TeamServiceProxy teamServiceProxy;
 
 	@Autowired
-	public MessageServiceImpl(MessageRepository messageRepository, MessageAdapter messageAdapter, UserServiceProxy userServiceProxy) {
+	public MessageServiceImpl(MessageRepository messageRepository, MessageAdapter messageAdapter, UserServiceProxy userServiceProxy, TeamServiceProxy teamServiceProxy) {
 		this.messageRepository = messageRepository;
 		this.messageAdapter = messageAdapter;
 		this.userServiceProxy = userServiceProxy;
+		this.teamServiceProxy = teamServiceProxy;
 	}
 
 	@Override
@@ -33,16 +37,16 @@ public class MessageServiceImpl implements MessageService {
 	public List<CompleteMessageDto> getAllMessagesForUserToUser(Long firstUserId, Long secondUserId) {
 		return messageRepository.getAllBySwitchableFromAndDestAndType(firstUserId, secondUserId, USER_TO_USER)
 				.stream()
-				.map(this::getCompleteMessageDto)
+				.map(this::getCompleteUserMessageDto)
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<CompleteMessageDto> getAllMessagesForTeam(Long teamId) {
-		return messageRepository.getAllByDestAndType(teamId, USER_TO_TEAM)
+		return messageRepository.getAllByDestAndTypeOrderByCreatedAsc(teamId, USER_TO_TEAM)
 				.stream()
-				.map(this::getCompleteMessageDto)
+				.map(this::getCompleteUserMessageDto)
 				.collect(Collectors.toList());
 	}
 
@@ -51,7 +55,7 @@ public class MessageServiceImpl implements MessageService {
 	public List<CompleteMessageDto> getAllMessagesForTeamToBefore(Long firstTeamId, Long secondTeamId) {
 		return messageRepository.getAllBySwitchableFromAndDestAndType(firstTeamId, secondTeamId, TEAM_TO_BEFORE)
 				.stream()
-				.map(this::getCompleteMessageDto)
+				.map(this::getCompleteTeamMessageDto)
 				.collect(Collectors.toList());
 	}
 
@@ -75,10 +79,12 @@ public class MessageServiceImpl implements MessageService {
 
 		entity = messageRepository.save(entity);
 
-		return getCompleteMessageDto(entity);
+		return ConversationType.TEAM_TO_BEFORE.equals(entity.getType())
+				? getCompleteTeamMessageDto(entity)
+				: getCompleteUserMessageDto(entity);
 	}
 
-	private CompleteMessageDto getCompleteMessageDto(MessageEntity entity) {
+	private CompleteMessageDto<User> getCompleteUserMessageDto(MessageEntity entity) {
 		User owner;
 
 		try {
@@ -89,11 +95,35 @@ public class MessageServiceImpl implements MessageService {
 			e.printStackTrace();
 
 			owner = User.builder()
-					.id(entity.getId())
+					.id(entity.getFrom())
 					.build();
 		}
 
-		return CompleteMessageDto.builder()
+		return CompleteMessageDto.<User>builder()
+				.id(entity.getId())
+				.content(entity.getContent())
+				.created(entity.getCreated())
+				.updated(entity.getUpdated())
+				.owner(owner)
+				.build();
+	}
+
+	private CompleteMessageDto<Team> getCompleteTeamMessageDto(MessageEntity entity) {
+		Team owner;
+
+		try {
+			owner = teamServiceProxy.getTeamInfo(entity.getFrom());
+		} catch (FeignException e) {
+			Logger logger = Logger.getLogger(this.getClass().getName());
+			logger.severe("Error while retrieving team information (teamId=" + entity.getFrom() + ")");
+			e.printStackTrace();
+
+			owner = Team.builder()
+					.id(entity.getFrom())
+					.build();
+		}
+
+		return CompleteMessageDto.<Team>builder()
 				.id(entity.getId())
 				.content(entity.getContent())
 				.created(entity.getCreated())

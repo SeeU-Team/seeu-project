@@ -1,6 +1,5 @@
 package com.seeu.darkside.message;
 
-import com.seeu.darkside.user.User;
 import lombok.*;
 
 import java.util.Date;
@@ -10,12 +9,12 @@ import java.util.Date;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CompleteMessageDto {
+public class CompleteMessageDto<T> {
 
-	private Long id;
-	private String content;
-	private User owner;
+	protected Long id;
+	protected String content;
+	protected T owner;
 
-	private Date created;
-	private Date updated;
+	protected Date created;
+	protected Date updated;
 }
