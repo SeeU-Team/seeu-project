@@ -14,9 +14,9 @@ public interface TeamService {
 
 	List<TeamProfile> getAllTeamsForCategory(Long categoryId);
 
-	TeamProfile createTeam(TeamCreation teamCreation);
+	TeamProfile createTeam(TeamCreation teamCreation, String profilePhotoUrl);
 
     TeamProfile addTeammates(AddTeammate teammates);
 
-	void checkIfTeamExist(Long idTeam) throws TeamNotFoundException;
+	void checkIfTeamExist(Long idTeam);
 }

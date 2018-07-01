@@ -1,6 +1,7 @@
 package com.seeu.darkside.message;
 
 import com.seeu.darkside.team.Team;
+import com.seeu.darkside.user.User;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

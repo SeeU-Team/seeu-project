@@ -29,6 +29,10 @@ public class TeamEntity {
     @Column
     private String place;
 
+    // TODO: to replace with S3 bucket name
+    @Column(name = "team_photo_url")
+    private String profilePhotoUrl;
+
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;

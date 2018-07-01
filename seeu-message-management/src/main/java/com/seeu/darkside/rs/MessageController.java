@@ -47,7 +47,8 @@ public class MessageController {
 
 	@PostMapping
 	@ResponseStatus(CREATED)
-	public CompleteMessageDto createMessage(@RequestBody @Valid MessageDto messageDto, BindingResult bindingResult) {
+	public CompleteMessageDto createMessage(@RequestBody @Valid MessageDto messageDto,
+											BindingResult bindingResult) {
 
 		if (bindingResult.hasErrors()) {
 			throw new MessageValidationException();

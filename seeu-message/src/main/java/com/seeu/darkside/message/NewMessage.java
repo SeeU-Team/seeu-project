@@ -2,6 +2,9 @@ package com.seeu.darkside.message;
 
 import lombok.*;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 @Builder
 @Getter
 @Setter
@@ -9,7 +12,9 @@ import lombok.*;
 @NoArgsConstructor
 public class NewMessage<T> {
 
-	protected Long id;
-	protected String content;
-	protected T owner;
+	@NotEmpty
+	private String content;
+
+	@NotNull
+	private T owner;
 }

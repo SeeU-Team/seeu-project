@@ -14,20 +14,8 @@ import java.util.Date;
 public class MessageDto {
 
 	private Long id;
-
-	@NotNull
-	@NotEmpty
 	private String content;
-
-	@NotNull
 	private ConversationType type;
-
-	@NotNull
 	private Long from;
-
-	@NotNull
 	private Long dest;
-
-	private Date created;
-	private Date updated;
 }

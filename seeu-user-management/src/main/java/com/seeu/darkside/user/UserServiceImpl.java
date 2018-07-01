@@ -4,13 +4,13 @@ import com.seeu.darkside.facebook.FacebookRequestException;
 import com.seeu.darkside.facebook.FacebookService;
 import com.seeu.darkside.facebook.FacebookUser;
 import com.seeu.darkside.message.MessageServiceProxy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -20,18 +20,15 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserAdapter userAdapter;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final FacebookService facebookService;
     private final MessageServiceProxy messageServiceProxy;
 
     public UserServiceImpl(final UserRepository userRepository,
 						   final UserAdapter userAdapter,
-						   final BCryptPasswordEncoder bCryptPasswordEncoder,
 						   final FacebookService facebookService, MessageServiceProxy messageServiceProxy) {
 
         this.userRepository = userRepository;
         this.userAdapter = userAdapter;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.facebookService = facebookService;
 		this.messageServiceProxy = messageServiceProxy;
 	}
@@ -48,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public UserDto getUser(Long id) throws UserNotFoundException {
+	public UserDto getUser(Long id) {
 		UserEntity userEntity = userRepository
 				.findById(id)
 				.orElseThrow(UserNotFoundException::new);
@@ -58,19 +55,21 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public UserDto getUserByEmail(String email) throws UserNotFoundException {
-		UserEntity userByEmail = userRepository.findOneByEmail(email);
-		if(userByEmail == null)
-			throw new UserNotFoundException();
+	public UserDto getUserByEmail(String email) {
+		UserEntity userByEmail = userRepository
+				.findOneByEmail(email)
+				.orElseThrow(UserNotFoundException::new);
+
 		return userAdapter.entityToDto(userByEmail);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public UserDto getUserByFacebookId(Long facebookId) throws UserNotFoundException {
-		UserEntity userByEmail = userRepository.findOneByFacebookId(facebookId);
-		if(userByEmail == null)
-			throw new UserNotFoundException();
+	public UserDto getUserByFacebookId(Long facebookId) {
+		UserEntity userByEmail = userRepository
+				.findOneByFacebookId(facebookId)
+				.orElseThrow(UserNotFoundException::new);
+
 		return userAdapter.entityToDto(userByEmail);
 	}
 
@@ -89,7 +88,7 @@ public class UserServiceImpl implements UserService {
 					}
 				})
 				.filter(Objects::nonNull)
-				.collect(Collectors.toList());
+				.collect(toList());
 	}
 
 	@Override
@@ -106,25 +105,24 @@ public class UserServiceImpl implements UserService {
 					}
 				})
 				.filter(Objects::nonNull)
-				.collect(Collectors.toList());
+				.collect(toList());
 	}
 
 	@Override
     @Transactional
-    public UserDto createUser(UserDto userDto) throws UserAlreadyExistsException {
+    public UserDto createUser(UserDto userDto) {
 
-        final UserEntity oneByEmail = userRepository.findOneByEmail(userDto.getEmail());
-        if(oneByEmail != null)
+        final Optional<UserEntity> optionalUser = userRepository.findOneByFacebookId(userDto.getFacebookId());
+        if(optionalUser.isPresent())
             throw new UserAlreadyExistsException();
 
         final Date now = new Date();
         userDto.setCreated(now);
         userDto.setUpdated(now);
-        userDto.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
         UserEntity userEntity = userAdapter.dtoToEntity(userDto);
-        UserEntity userSaved = userRepository.save(userEntity);
+        userEntity = userRepository.save(userEntity);
 
-        return userAdapter.entityToDto(userSaved);
+        return userAdapter.entityToDto(userEntity);
     }
 
     @Override
@@ -142,7 +140,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
 	@Transactional
-    public void deleteUser(Long id) throws UserNotFoundException {
+    public void deleteUser(Long id) {
         UserEntity userToDelete = userRepository
                 .findById(id)
                 .orElseThrow(UserNotFoundException::new);

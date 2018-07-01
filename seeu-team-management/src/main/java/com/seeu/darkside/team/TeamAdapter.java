@@ -11,6 +11,7 @@ public class TeamAdapter {
                 .name(teamDto.getName())
                 .description(teamDto.getDescription())
                 .place(teamDto.getPlace())
+                .profilePhotoUrl(teamDto.getProfilePhotoUrl())
                 .created(teamDto.getCreated())
                 .updated(teamDto.getUpdated())
                 .build();
@@ -22,6 +23,7 @@ public class TeamAdapter {
                 .name(teamEntity.getName())
                 .description(teamEntity.getDescription())
                 .place(teamEntity.getPlace())
+                .profilePhotoUrl(teamEntity.getProfilePhotoUrl())
                 .created(teamEntity.getCreated())
                 .updated(teamEntity.getUpdated())
                 .build();

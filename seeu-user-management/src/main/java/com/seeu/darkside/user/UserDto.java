@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
@@ -18,21 +19,18 @@ public class UserDto {
 
     private Long id;
 
-    @NotEmpty
+    @NotNull
     private Long facebookId;
 
 	@NotEmpty
-    private String firstname;
+    private String name;
 
-	@NotEmpty
-    private String lastname;
+	@NotNull
+	private Gender gender;
 
-	@NotEmpty
+//	@NotEmpty
 	@Email
     private String email;
-
-	@Length(min = 8)
-    private String password;
 
 	private String description;
 
@@ -46,11 +44,9 @@ public class UserDto {
     public String toString() {
         return "UserDto{" +
                 "id=" + id +
-                ", firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
+                ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", description='" + description + '\'' +
-                ", password='" + password + '\'' +
                 ", profilePhotoUrl='" + profilePhotoUrl + '\'' +
                 ", created=" + created +
                 ", updated=" + updated +

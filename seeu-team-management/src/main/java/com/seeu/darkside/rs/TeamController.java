@@ -49,7 +49,7 @@ public class TeamController {
     @GetMapping(params = {"categoryId"})
 	public List<TeamProfile> getAllTeamsForCategory(@RequestParam("categoryId") Long categoryId) {
 		// TODO: get all teams for category that are not the team asking for, and are not already liked by it, and have not already merged with a team
-		// TODO: maybe introduce algorithm to order the result with the more interesting teams first ??
+		// TODO: maybe introduce algorithm to order the result with the more interesting teams first (all teams that liked this one) ??
 		return teamService.getAllTeamsForCategory(categoryId);
 	}
 
@@ -63,9 +63,10 @@ public class TeamController {
 			throw new TeamValidationException();
 		}
 
-		// TODO: Save the base64 picture to AWS...
+		// TODO: Save the base64 picture to AWS and get the s3 bucket name...
+		String url = "";
 
-		return teamService.createTeam(teamCreationRoot.getTeam());
+		return teamService.createTeam(teamCreationRoot.getTeam(), url);
 	}
 
     @PostMapping("/addTeammates")

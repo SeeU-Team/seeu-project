@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.seeu.darkside.utils.Constants.TEAM_NOT_FOUND_MSG;
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class TeamServiceImpl implements TeamService {
@@ -51,7 +52,7 @@ public class TeamServiceImpl implements TeamService {
         return teamRepository.findAll()
                 .stream()
                 .map(teamAdapter::entityToDto)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
 	@Override
@@ -92,17 +93,20 @@ public class TeamServiceImpl implements TeamService {
 		return teamHasCategoryRepository.findAllByCategoryId(categoryId)
 				.stream()
 				.map(teamHasCategoryEntity -> getTeamProfile(teamHasCategoryEntity.getTeamId()))
-				.collect(Collectors.toList());
+				.collect(toList());
 	}
 
 	@Override
 	@Transactional
-	public TeamProfile createTeam(TeamCreation teamCreation) {
+	public TeamProfile createTeam(TeamCreation teamCreation, String profilePhotoUrl) {
 		TeamProfile teamProfile = null;
 		try {
-			TeamEntity teamToSave = extractTeam(teamCreation);
-			TeamEntity teamSaved = teamRepository.save(teamToSave);
-			Long idTeam = teamSaved.getIdTeam();
+			TeamEntity teamEntity = extractTeam(teamCreation);
+			teamEntity.setProfilePhotoUrl(profilePhotoUrl);
+
+			teamEntity = teamRepository.save(teamEntity);
+			Long idTeam = teamEntity.getIdTeam();
+
 			List<TeamHasAssetEntity> teamHasAssetToSave = extractAssets(teamCreation, idTeam);
 			List<TeamHasCategoryEntity> teamHasCategoryToSave = extractCategories(teamCreation, idTeam);
 			List<TeamHasTagEntity> teamHasTagToSave = extractTags(teamCreation, idTeam);
@@ -121,7 +125,7 @@ public class TeamServiceImpl implements TeamService {
 				}
 			}
 
-			teamProfile = createTeamProfile(teamSaved, teamHasUserToSave, teamHasAssetToSave, teamHasCategoryToSave, teamHasTagToSave);
+			teamProfile = createTeamProfile(teamEntity, teamHasUserToSave, teamHasAssetToSave, teamHasCategoryToSave, teamHasTagToSave);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -141,7 +145,7 @@ public class TeamServiceImpl implements TeamService {
 						.userId(teammate.getId())
 						.status(TeammateStatus.MEMBER)
 						.build())
-				.collect(Collectors.toList());
+				.collect(toList());
 
 		teamHasUserRepository.saveAll(teamHasUserEntities);
 
@@ -149,7 +153,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
 	@Override
-	public void checkIfTeamExist(Long idTeam) throws TeamNotFoundException {
+	public void checkIfTeamExist(Long idTeam) {
 		teamRepository
 				.findById(idTeam)
 				.orElseThrow(() -> new TeamNotFoundException(TEAM_NOT_FOUND_MSG + idTeam));
@@ -161,6 +165,7 @@ public class TeamServiceImpl implements TeamService {
                 .name(teamEntity.getName())
                 .description(teamEntity.getDescription())
                 .place(teamEntity.getPlace())
+				.profilePhotoUrl(teamEntity.getProfilePhotoUrl())
                 .created(teamEntity.getCreated())
                 .updated(teamEntity.getUpdated())
                 .members(userEntities)
@@ -181,7 +186,7 @@ public class TeamServiceImpl implements TeamService {
 						.teamId(idTeam)
 						.userId(teammate.getId())
 						.build())
-				.collect(Collectors.toList());
+				.collect(toList());
     }
 
     private List<TeamHasTagEntity> extractTags(TeamCreation teamCreation, Long idTeam) {
@@ -195,7 +200,7 @@ public class TeamServiceImpl implements TeamService {
 						.teamId(idTeam)
 						.tagId(tag.getIdTag())
 						.build())
-				.collect(Collectors.toList());
+				.collect(toList());
     }
 
     private List<TeamHasCategoryEntity> extractCategories(TeamCreation teamCreation, Long idTeam) {
@@ -209,7 +214,7 @@ public class TeamServiceImpl implements TeamService {
 						.teamId(idTeam)
 						.categoryId(category.getIdCategory())
 						.build())
-				.collect(Collectors.toList());
+				.collect(toList());
     }
 
     private List<TeamHasAssetEntity> extractAssets(TeamCreation teamCreation, Long idTeam) {
@@ -224,7 +229,7 @@ public class TeamServiceImpl implements TeamService {
 						.assetId(asset.getIdAsset())
 						.assetMediaId(asset.getIdMedia())
 						.build())
-				.collect(Collectors.toList());
+				.collect(toList());
     }
 
     private TeamEntity extractTeam(TeamCreation teamCreation) {

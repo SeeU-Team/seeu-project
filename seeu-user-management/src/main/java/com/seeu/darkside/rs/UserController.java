@@ -4,8 +4,10 @@ import com.seeu.darkside.facebook.FacebookRequestException;
 import com.seeu.darkside.user.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +21,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/{id}")
-    public UserDto getOneUser(@PathVariable("id") Long id) throws UserNotFoundException {
+    public UserDto getOneUser(@PathVariable("id") Long id) {
         return userService.getUser(id);
     }
 
@@ -29,17 +31,17 @@ public class UserController {
     }
 
     @GetMapping(params = "email")
-    public UserDto getOneUserByEmail(@RequestParam(value = "email") String email ) throws UserNotFoundException {
+    public UserDto getOneUserByEmail(@RequestParam(value = "email") String email) {
         return userService.getUserByEmail(email);
     }
 
     @GetMapping(params = "facebookId")
-    public UserDto getOneByFacebookId(@RequestParam(value = "facebookId") Long facebookId) throws UserNotFoundException {
+    public UserDto getOneByFacebookId(@RequestParam(value = "facebookId") Long facebookId) {
         return userService.getUserByFacebookId(facebookId);
     }
 
     @GetMapping(value = "/facebookFriends", params = "access_token")
-	public List<UserDto> getFacebookFriends(@RequestParam("access_token") String accessToken) throws FacebookRequestException {
+	public List<UserDto> getFacebookFriends(@RequestParam("access_token") String accessToken) {
 		return userService.getFacebookFriends(accessToken);
 	}
 
@@ -50,7 +52,13 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createNewUser(@RequestBody UserDto userDto) throws UserAlreadyExistsException {
+    public UserDto createNewUser(@RequestBody @Valid UserDto userDto,
+								 BindingResult bindingResult) {
+
+    	if (bindingResult.hasErrors()) {
+    		throw new UserValidationException();
+		}
+
         return userService.createUser(userDto);
     }
 
@@ -61,7 +69,7 @@ public class UserController {
 
     @DeleteMapping("{id}")
     @ResponseStatus(NO_CONTENT)
-    public void deleteUser(@PathVariable("id") Long id) throws UserNotFoundException {
+    public void deleteUser(@PathVariable("id") Long id) {
         userService.deleteUser(id);
     }
 
