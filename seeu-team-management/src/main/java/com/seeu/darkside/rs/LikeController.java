@@ -1,6 +1,7 @@
 package com.seeu.darkside.rs;
 
 import com.seeu.darkside.rs.dto.TeamLike;
+import com.seeu.darkside.rs.dto.TeamMerge;
 import com.seeu.darkside.rs.dto.TeamProfile;
 import com.seeu.darkside.teamup.MergeEntity;
 import com.seeu.darkside.teamup.TeamUpEntity;
@@ -48,7 +49,7 @@ public class LikeController {
 		return teamUpService.getAllMutuallyLikedTeams(teamId);
 	}
 
-    @PostMapping
+    @PostMapping("/like")
     @ResponseBody
     @ResponseStatus(CREATED)
     public TeamUpEntity likeTeam(@RequestBody @Valid TeamLike teamLike,
@@ -62,4 +63,17 @@ public class LikeController {
 
         return teamUpService.likeTeam(teamLike);
     }
+
+	@PostMapping("/merge")
+	@ResponseBody
+	@ResponseStatus(CREATED)
+	public MergeEntity mergeTeam(@RequestBody @Valid TeamMerge teamMerge,
+								 BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			throw new LikeValidationException();
+		}
+
+		return teamUpService.mergeTeam(teamMerge);
+	}
 }
