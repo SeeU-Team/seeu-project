@@ -66,7 +66,7 @@ public class TeamController {
 			throw new TeamValidationException();
 		}
 
-		return teamService.createTeam(teamCreationRoot.getTeam(), teamCreationRoot.getProfilePicture(), teamCreationRoot.getProfilePictureName());
+		return teamService.createTeam(teamCreationRoot.getTeam(), teamCreationRoot.getProfilePicture());
 
 		// TODO: Save the base64 picture to AWS and get the s3 bucket name...
 		//String url = "";

@@ -18,17 +18,19 @@ import com.seeu.darkside.teammate.TeamHasUserEntity;
 import com.seeu.darkside.teammate.TeamHasUserRepository;
 import com.seeu.darkside.teammate.TeammateHasNotTeamException;
 import com.seeu.darkside.teammate.TeammateStatus;
+import com.seeu.darkside.utils.GenerateFileUrl;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import static com.seeu.darkside.utils.Constants.TEAM_NOT_FOUND_MSG;
 import static java.util.stream.Collectors.toList;
@@ -37,6 +39,7 @@ import static java.util.stream.Collectors.toList;
 public class TeamServiceImpl implements TeamService {
 
 	private static final String BUCKET_SOURCE = "seeu-bucket";
+	private static final String EXT_PNG = ".png";
 
 	private final TeamRepository teamRepository;
 	private final TeamAdapter teamAdapter;
@@ -74,17 +77,21 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional
-	public TeamProfile createTeam(TeamCreation teamCreation, String imageBase64, String fileName) {
+	public TeamProfile createTeam(TeamCreation teamCreation, String imageBase64) {
 		TeamProfile teamProfile = null;
 		try {
-			TeamEntity teamToSave = extractTeam(teamCreation);
+			String fileNameToSave = UUID.randomUUID().getLeastSignificantBits() + EXT_PNG;
+			byte[] bytes = Base64.decodeBase64(imageBase64);
+			InputStream inputStream = new ByteArrayInputStream(bytes);
+			amazonS3.putObject(BUCKET_SOURCE, fileNameToSave, inputStream, null);
+
+			TeamEntity teamToSave = extractTeam(teamCreation, fileNameToSave);
 			TeamEntity teamSaved = teamRepository.save(teamToSave);
 			Long idTeam = teamSaved.getIdTeam();
 			List<TeamHasAssetEntity> teamHasAssetToSave = extractAssets(teamCreation, idTeam);
 			List<TeamHasCategoryEntity> teamHasCategoryToSave = extractCategories(teamCreation, idTeam);
 			List<TeamHasTagEntity> teamHasTagToSave = extractTags(teamCreation, idTeam);
 			List<TeamHasUserEntity> teamHasUserToSave = extractUsers(teamCreation, idTeam);
-
 
 			// TODO USER
 			teamHasAssetRepository.saveAll(teamHasAssetToSave);
@@ -100,18 +107,13 @@ public class TeamServiceImpl implements TeamService {
 				}
 			}
 
-			// todo Save image base 64, save le nom du fichier dans la bdd
-			String fileExtension = FilenameUtils.getExtension(fileName);
-			String fileNameToSave = teamToSave.getName() + "-" + teamToSave.getIdTeam() + "." + fileExtension;
-			byte[] bytes = Base64.decodeBase64(imageBase64);
-			InputStream inputStream = new ByteArrayInputStream(bytes);
-			amazonS3.putObject(BUCKET_SOURCE, fileNameToSave, inputStream, null);
-
 			List<AssetEntity> assetEntities = getAssetEntitiesFromIds(teamHasAssetToSave);
 			List<CategoryEntity> categoryEntities = getCategoryEntitiesFromIds(teamHasCategoryToSave);
 			List<TagEntity> tagEntities = getTagsEntitiesFromIds(teamHasTagToSave);
 
-			teamProfile = createTeamProfile(teamSaved, teamHasUserToSave, assetEntities, categoryEntities, tagEntities);
+			URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, fileNameToSave);
+
+			teamProfile = createTeamProfile(teamSaved, teamHasUserToSave, assetEntities, categoryEntities, tagEntities, url.toExternalForm());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -137,7 +139,8 @@ public class TeamServiceImpl implements TeamService {
 		List<TeamHasTagEntity> tagEntitiesIds = teamHasTagRepository.findAllByTeamId(idTeam);
 		List<TagEntity> tagEntities = getTagsEntitiesFromIds(tagEntitiesIds);
 
-		return createTeamProfile(teamEntity, userEntities, assetEntities, categoryEntities, tagEntities);
+		URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, teamEntity.getProfilePhotoUrl());
+		return createTeamProfile(teamEntity, userEntities, assetEntities, categoryEntities, tagEntities, url.toExternalForm());
 	}
 
 	@Override
@@ -149,42 +152,43 @@ public class TeamServiceImpl implements TeamService {
 				.collect(toList());
 	}
 
-	/**@Override
-	@Transactional
-	public TeamProfile createTeam(TeamCreation teamCreation, String profilePhotoUrl) {
-		TeamProfile teamProfile = null;
-		try {
-			TeamEntity teamEntity = extractTeam(teamCreation);
-			teamEntity.setProfilePhotoUrl(profilePhotoUrl);
-
-			teamEntity = teamRepository.save(teamEntity);
-			Long idTeam = teamEntity.getIdTeam();
-
-			List<TeamHasAssetEntity> teamHasAssetToSave = extractAssets(teamCreation, idTeam);
-			List<TeamHasCategoryEntity> teamHasCategoryToSave = extractCategories(teamCreation, idTeam);
-			List<TeamHasTagEntity> teamHasTagToSave = extractTags(teamCreation, idTeam);
-			List<TeamHasUserEntity> teamHasUserToSave = extractUsers(teamCreation, idTeam);
-
-			teamHasAssetRepository.saveAll(teamHasAssetToSave);
-			teamHasCategoryRepository.saveAll(teamHasCategoryToSave);
-			teamHasTagRepository.saveAll(teamHasTagToSave);
-			teamHasUserRepository.saveAll(teamHasUserToSave);
-
-			for (int i = 0; i < teamHasUserToSave.size(); i++) {
-				if (i == 0) {
-					teamHasUserToSave.get(i).setStatus(TeammateStatus.LEADER);
-				} else {
-					teamHasUserToSave.get(i).setStatus(TeammateStatus.MEMBER);
-				}
-			}
-
-			teamProfile = createTeamProfile(teamEntity, teamHasUserToSave, teamHasAssetToSave, teamHasCategoryToSave, teamHasTagToSave);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return teamProfile;
-	}**/
+	/**
+	 * @Override
+	 * @Transactional public TeamProfile createTeam(TeamCreation teamCreation, String profilePhotoUrl) {
+	 * TeamProfile teamProfile = null;
+	 * try {
+	 * TeamEntity teamEntity = extractTeam(teamCreation);
+	 * teamEntity.setProfilePhotoUrl(profilePhotoUrl);
+	 * <p>
+	 * teamEntity = teamRepository.save(teamEntity);
+	 * Long idTeam = teamEntity.getIdTeam();
+	 * <p>
+	 * List<TeamHasAssetEntity> teamHasAssetToSave = extractAssets(teamCreation, idTeam);
+	 * List<TeamHasCategoryEntity> teamHasCategoryToSave = extractCategories(teamCreation, idTeam);
+	 * List<TeamHasTagEntity> teamHasTagToSave = extractTags(teamCreation, idTeam);
+	 * List<TeamHasUserEntity> teamHasUserToSave = extractUsers(teamCreation, idTeam);
+	 * <p>
+	 * teamHasAssetRepository.saveAll(teamHasAssetToSave);
+	 * teamHasCategoryRepository.saveAll(teamHasCategoryToSave);
+	 * teamHasTagRepository.saveAll(teamHasTagToSave);
+	 * teamHasUserRepository.saveAll(teamHasUserToSave);
+	 * <p>
+	 * for (int i = 0; i < teamHasUserToSave.size(); i++) {
+	 * if (i == 0) {
+	 * teamHasUserToSave.get(i).setStatus(TeammateStatus.LEADER);
+	 * } else {
+	 * teamHasUserToSave.get(i).setStatus(TeammateStatus.MEMBER);
+	 * }
+	 * }
+	 * <p>
+	 * teamProfile = createTeamProfile(teamEntity, teamHasUserToSave, teamHasAssetToSave, teamHasCategoryToSave, teamHasTagToSave);
+	 * } catch (Exception e) {
+	 * e.printStackTrace();
+	 * }
+	 * <p>
+	 * return teamProfile;
+	 * }
+	 **/
 
 	@Override
 	@Transactional
@@ -230,13 +234,13 @@ public class TeamServiceImpl implements TeamService {
 				.orElseThrow(() -> new TeamNotFoundException(TEAM_NOT_FOUND_MSG + idTeam));
 	}
 
-	private TeamProfile createTeamProfile(TeamEntity teamEntity, List<TeamHasUserEntity> userEntities, List<AssetEntity> assetEntities, List<CategoryEntity> categoryEntities, List<TagEntity> tagEntities) {
+	private TeamProfile createTeamProfile(TeamEntity teamEntity, List<TeamHasUserEntity> userEntities, List<AssetEntity> assetEntities, List<CategoryEntity> categoryEntities, List<TagEntity> tagEntities, String profilePhotoUrl) {
 		return TeamProfile.builder()
 				.id(teamEntity.getIdTeam())
 				.name(teamEntity.getName())
 				.description(teamEntity.getDescription())
 				.place(teamEntity.getPlace())
-				.profilePhotoUrl(teamEntity.getProfilePhotoUrl())
+				.profilePhotoUrl(profilePhotoUrl)
 				.created(teamEntity.getCreated())
 				.updated(teamEntity.getUpdated())
 				.members(userEntities)
@@ -303,12 +307,13 @@ public class TeamServiceImpl implements TeamService {
 				.collect(toList());
 	}
 
-	private TeamEntity extractTeam(TeamCreation teamCreation) {
+	private TeamEntity extractTeam(TeamCreation teamCreation, String profilePhotoUrl) {
 		Date now = new Date();
 		return TeamEntity.builder()
 				.name(teamCreation.getName())
 				.description(teamCreation.getDescription())
 				.place(teamCreation.getPlace())
+				.profilePhotoUrl(profilePhotoUrl)
 				.created(now)
 				.updated(now)
 				.build();

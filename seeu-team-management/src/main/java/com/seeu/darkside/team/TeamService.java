@@ -10,7 +10,7 @@ import java.util.List;
 public interface TeamService {
 	List<TeamDto> getAllTeams();
 
-	TeamProfile createTeam(TeamCreation teamCreation, String imageBase64, String fileName);
+	TeamProfile createTeam(TeamCreation teamCreation, String imageBase64);
 
 	TeamProfile getTeamProfile(Long idTeam);
 
