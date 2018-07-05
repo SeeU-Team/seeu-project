@@ -1,6 +1,6 @@
 package com.seeu.media.tag;
 
-import com.seeu.media.rs.dto.TagDTO;
+import com.seeu.media.rs.dto.TagDto;
 
 import java.util.List;
 
@@ -9,9 +9,9 @@ public interface TagService {
 
     List<TagEntity> getAllTags();
 
-    TagEntity createTag(TagDTO tagDTO);
+    TagEntity createTag(TagDto tagDto);
 
-    TagEntity createTagIfNotExist(TagDTO tagDTO);
+    TagEntity createTagIfNotExist(TagDto tagDto);
 
     void updateTagName(Long tagId, String newName);
 

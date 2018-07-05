@@ -19,13 +19,14 @@ import java.util.List;
 @Setter
 public class TeamProfile {
 
-    private Long idTeam;
+    private Long id;
     private String name;
     private String description;
     private String place;
+    private String profilePhotoUrl;
     private Date created;
     private Date updated;
-    private List<TeamHasUserEntity> teammateList;
+    private List<TeamHasUserEntity> members;
     private List<AssetEntity> assets;
     private List<CategoryEntity> categories;
     private List<TagEntity> tags;

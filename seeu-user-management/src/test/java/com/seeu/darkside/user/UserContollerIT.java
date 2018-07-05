@@ -78,10 +78,8 @@ public class UserContollerIT {
         Date date = new Date();
 
         UserDto user = UserDto.builder()
-                .firstname("fourth")
-                .lastname("lastname4")
+                .name("fourth")
                 .email("fourth@email.com")
-                .password("password4")
                 .description("description4")
                 .profilePhotoUrl("url/picture4.png")
                 .created(date)

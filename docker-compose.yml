@@ -38,7 +38,12 @@ services:
     networks:
       - spring-cloud-network
 
-  seeu-messages:
-    image: oncletom77/seeu-messages
+  seeu-message-management:
+    image: oncletom77/seeu-message-management
+    networks:
+      - spring-cloud-network
+
+  seeu-message:
+    image: oncletom77/seeu-message
     networks:
       - spring-cloud-network

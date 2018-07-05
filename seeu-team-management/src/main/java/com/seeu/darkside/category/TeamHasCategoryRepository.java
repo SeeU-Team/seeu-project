@@ -7,5 +7,8 @@ import java.util.List;
 
 @Repository
 public interface TeamHasCategoryRepository extends JpaRepository<TeamHasCategoryEntity, Long> {
+
     List<TeamHasCategoryEntity> findAllByTeamId(Long idTeam);
+
+    List<TeamHasCategoryEntity> findAllByCategoryId(Long categoryId);
 }

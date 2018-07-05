@@ -22,7 +22,7 @@ public class TeamCreation {
     private String description;
     private String place;
 
-    private List<Teammate> teammateList;
+    private List<Teammate> members;
     private List<Asset> assets;
     private List<Category> categories;
     private List<Tag> tags;

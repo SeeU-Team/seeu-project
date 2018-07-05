@@ -1,6 +1,6 @@
 package com.seeu.media.tag;
 
-import com.seeu.media.rs.dto.TagDTO;
+import com.seeu.media.rs.dto.TagDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,12 +28,12 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagEntity createTag(TagDTO tagDTO) {
+    public TagEntity createTag(TagDto tagDto) {
 
         Date now = new Date();
 
         TagEntity entityToCreate = TagEntity.builder()
-                .name(tagDTO.getName())
+                .name(tagDto.getName())
                 .created(now)
                 .updated(now)
                 .build();

@@ -3,11 +3,10 @@ package com.seeu.media.rs;
 import com.amazonaws.services.s3.model.S3Object;
 import com.seeu.media.asset.AssetEntity;
 import com.seeu.media.asset.AssetService;
-import com.seeu.media.rs.dto.AssetDTO;
+import com.seeu.media.rs.dto.AssetDto;
 import com.seeu.media.rs.exception.AssetFileIsNullException;
 import com.seeu.media.rs.exception.AssetNameIsNullException;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,8 +26,12 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @RequestMapping("/medias/assets")
 public class AssetController {
 
+    private final AssetService assetService;
+
     @Autowired
-    private AssetService assetService;
+    public AssetController(AssetService assetService) {
+        this.assetService = assetService;
+    }
 
     @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
@@ -67,23 +70,23 @@ public class AssetController {
     }
 
     @GetMapping("/dark")
-    public AssetDTO getDarkImageByIdJson(@RequestParam Long assetId, HttpServletResponse response) throws IOException {
+    public AssetDto getDarkImageByIdJson(@RequestParam Long assetId, HttpServletResponse response) throws IOException {
         S3Object s3Object = assetService.getImageDark(assetId);
         InputStream inputStream = s3Object.getObjectContent();
         byte[] image = IOUtils.toByteArray(inputStream);
         String base64String = Base64.encodeBase64String(image);
-        AssetDTO  assetDTO = new AssetDTO(s3Object.getKey(), base64String);
-        return assetDTO;
+        AssetDto assetDto = new AssetDto(s3Object.getKey(), base64String);
+        return assetDto;
     }
 
     @GetMapping("/light")
-    public AssetDTO getLightImageByIdJson(@RequestParam Long assetId, HttpServletResponse response) throws IOException {
+    public AssetDto getLightImageByIdJson(@RequestParam Long assetId, HttpServletResponse response) throws IOException {
         S3Object s3Object = assetService.getImageLight(assetId);
         InputStream inputStream = s3Object.getObjectContent();
         byte[] image = IOUtils.toByteArray(inputStream);
         String base64String = Base64.encodeBase64String(image);
-        AssetDTO  assetDTO = new AssetDTO(s3Object.getKey(), base64String);
-        return assetDTO;
+        AssetDto assetDto = new AssetDto(s3Object.getKey(), base64String);
+        return assetDto;
     }
 
     @PutMapping(value = "/dark", consumes = MULTIPART_FORM_DATA_VALUE)

@@ -59,10 +59,8 @@ public class UserServiceTest {
 
         user1 = UserEntity.builder()
                 .id(1L)
-                .firstname("first")
-                .lastname("lastname1")
+                .name("first")
                 .email("first@email.com")
-                .password("password1")
                 .description("description1")
                 .profilePhotoUrl("url/picture1.png")
                 .created(date)
@@ -71,10 +69,8 @@ public class UserServiceTest {
 
         user2 = UserEntity.builder()
                 .id(2L)
-                .firstname("second")
-                .lastname("lastname2")
+                .name("second")
                 .email("second@email.com")
-                .password("password2")
                 .description("description2")
                 .profilePhotoUrl("url/picture2.png")
                 .created(date)
@@ -83,10 +79,8 @@ public class UserServiceTest {
 
         user3 = UserEntity.builder()
                 .id(3L)
-                .firstname("third")
-                .lastname("lastname1")
+                .name("third")
                 .email("tird@email.com")
-                .password("password3")
                 .description("description3")
                 .profilePhotoUrl("url/picture3.png")
                 .created(date)
@@ -95,10 +89,8 @@ public class UserServiceTest {
 
         user4 = UserEntity.builder()
                 .id(4L)
-                .firstname("fourth")
-                .lastname("lastname4")
+                .name("fourth")
                 .email("fourth@email.com")
-                .password("password4")
                 .description("description4")
                 .profilePhotoUrl("url/picture4.png")
                 .created(date)
@@ -107,10 +99,8 @@ public class UserServiceTest {
 
         userDto1 = UserDto.builder()
                 .id(1L)
-                .firstname("first")
-                .lastname("lastname1")
+                .name("first")
                 .email("first@email.com")
-                .password("password1")
                 .description("description1")
                 .profilePhotoUrl("url/picture1.png")
                 .created(date)
@@ -119,10 +109,8 @@ public class UserServiceTest {
 
         userDto2 = UserDto.builder()
                 .id(2L)
-                .firstname("second")
-                .lastname("lastname2")
+                .name("second")
                 .email("second@email.com")
-                .password("password2")
                 .description("description2")
                 .profilePhotoUrl("url/picture2.png")
                 .created(date)
@@ -131,10 +119,8 @@ public class UserServiceTest {
 
         userDto3 = UserDto.builder()
                 .id(3L)
-                .firstname("third")
-                .lastname("lastname1")
+                .name("third")
                 .email("tird@email.com")
-                .password("password3")
                 .description("description3")
                 .profilePhotoUrl("url/picture3.png")
                 .created(date)
@@ -143,10 +129,8 @@ public class UserServiceTest {
 
         newUserDto4 = UserDto.builder()
                 .id(4L)
-                .firstname("fourth")
-                .lastname("lastname4")
+                .name("fourth")
                 .email("fourth@email.com")
-                .password("passwordEncoded")
                 .description("description ")
                 .profilePhotoUrl("url/picture4.png")
                 .created(date)
@@ -168,9 +152,8 @@ public class UserServiceTest {
         when(userAdapter.dtoToEntity(any(UserDto.class))).thenReturn(user4);
         when(userAdapter.entityToDto(user4)).thenReturn(newUserDto4);
         when(userRepository.findAll()).thenReturn(list);
-        when(userRepository.findOneByEmail(user3.getEmail())).thenReturn(user3);
+        when(userRepository.findOneByEmail(user3.getEmail())).thenReturn(Optional.of(user3));
         when(userRepository.findOneByEmail(user4.getEmail())).thenReturn(null);
-        when(bCryptPasswordEncoder.encode(user4.getPassword())).thenReturn("passwordEncoded");
         when(userRepository.findById(user2.getId())).thenReturn(Optional.of(user2));
         // when(userRepository.getOne(4L)).thenReturn(null);
         when(userRepository.save(any(UserEntity.class))).thenReturn(user4);
@@ -189,7 +172,7 @@ public class UserServiceTest {
             UserDto userByEmail = userService.getUser(id);
             assertThat(userByEmail).isNotNull();
             assertThat(userByEmail.getId()).isEqualTo(user2.getId());
-            assertThat(userByEmail.getFirstname()).isEqualTo(user2.getFirstname());
+            assertThat(userByEmail.getName()).isEqualTo(user2.getName());
         } catch (UserNotFoundException e) {
             fail("Test failed : an unexpected exception has been thrown when trying to retrieve one user with id = " + id);
         }
@@ -212,7 +195,7 @@ public class UserServiceTest {
             UserDto userByEmail = userService.getUserByEmail(email);
             assertThat(userByEmail).isNotNull();
             assertThat(userByEmail.getId()).isEqualTo(user3.getId());
-            assertThat(userByEmail.getFirstname()).isEqualTo(user3.getFirstname());
+            assertThat(userByEmail.getName()).isEqualTo(user3.getName());
         } catch (UserNotFoundException e) {
             fail("Test failed : an exception should have been thrown when trying to retrieve one user with email = " + email);
         }
@@ -232,10 +215,8 @@ public class UserServiceTest {
     public void should_create_new_user() throws UserAlreadyExistsException {
         UserDto userDto4 = UserDto.builder()
                 .id(4L)
-                .firstname("fourth")
-                .lastname("lastname4")
+                .name("fourth")
                 .email("fourth@email.com")
-                .password("password4")
                 .description("description4")
                 .profilePhotoUrl("url/picture4.png")
                 .build();

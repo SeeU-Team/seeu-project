@@ -10,5 +10,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Teammate {
-    private Long idTeammate;
+    private Long id;
 }

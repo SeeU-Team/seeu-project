@@ -22,17 +22,14 @@ public class UserEntity {
     @Column
 	private Long facebookId;
 
-    @Column
-    private String firstname;
+    @Column(name = "user_name")
+    private String name;
 
     @Column
-    private String lastname;
+	private Gender gender;
 
     @Column
     private String email;
-
-    @Column
-    private String password;
 
     @Column
     private String description;
@@ -52,8 +49,7 @@ public class UserEntity {
     public String toString() {
         return "UserEntity{" +
                 "id=" + id +
-                ", firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
+                ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", description='" + description + '\'' +
                 ", profilePhotoUrl='" + profilePhotoUrl + '\'' +

@@ -15,13 +15,11 @@ public class User {
 
 	private Long facebookId;
 
-	private String firstname;
+	private String name;
 
-	private String lastname;
+	private Gender gender;
 
 	private String email;
-
-	private String password;
 
 	private String description;
 

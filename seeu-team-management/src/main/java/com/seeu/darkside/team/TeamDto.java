@@ -15,6 +15,7 @@ public class TeamDto {
     private String name;
     private String description;
     private String place;
+    private String profilePhotoUrl;
     private Date created;
     private Date updated;
 

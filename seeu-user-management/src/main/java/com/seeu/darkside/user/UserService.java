@@ -6,13 +6,15 @@ public interface UserService {
 
     List<UserDto> getAllUsers();
 
-	UserDto getUser(Long id) throws UserNotFoundException;
-	UserDto getUserByEmail(String email) throws UserNotFoundException;
-	UserDto getUserByFacebookId(Long facebookId) throws UserNotFoundException;
+	UserDto getUser(Long id);
+	UserDto getUserByEmail(String email);
+	UserDto getUserByFacebookId(Long facebookId);
+	List<UserDto> getFacebookFriends(String accessToken);
+	List<UserDto> getFriends(Long id);
 
-    UserDto createUser(UserDto userDto) throws UserAlreadyExistsException;
+    UserDto createUser(UserDto userDto);
 
     UserDto updateDescription(Long id, String description);
 
-    void deleteUser(Long id) throws UserNotFoundException;
+    void deleteUser(Long id);
 }

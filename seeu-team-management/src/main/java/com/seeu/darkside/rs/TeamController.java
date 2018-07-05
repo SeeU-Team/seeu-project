@@ -23,20 +23,21 @@ import java.util.List;
 @RequestMapping("/teams")
 public class TeamController {
 
-    @Autowired
-    private TeamService teamService;
+    private final TeamService teamService;
 
-    @PostMapping
-    @ResponseBody
-    @ResponseStatus(HttpStatus.CREATED)
-    public TeamProfile createNewTeam(@RequestBody @Valid TeamCreationRoot teamCreationRoot, BindingResult bindingResult) {
+	@Autowired
+	public TeamController(TeamService teamService) {
+		this.teamService = teamService;
+	}
 
-        if (bindingResult.hasErrors()) {
-            throw new TeamValidationException();
-        }
-
-        return teamService.createTeam(teamCreationRoot.getTeam(), teamCreationRoot.getProfilePicture(), teamCreationRoot.getProfilePictureName());
-    }
+	/**
+	 * DEBUG
+	 * @return
+	 */
+	@GetMapping
+	public List<TeamDto> listTeams() {
+		return teamService.getAllTeams();
+	}
 
     @GetMapping("/{teamId}")
     public TeamProfile getTeamInfo(@PathVariable("teamId") Long teamId) {
@@ -48,20 +49,49 @@ public class TeamController {
         return teamService.getTeamProfileOfMember(memberId);
     }
 
+    @GetMapping(params = {"categoryId"})
+	public List<TeamProfile> getAllTeamsForCategory(@RequestParam("categoryId") Long categoryId) {
+		// TODO: get all teams for category that are not the team asking for, and are not already liked by it, and have not already merged with a team
+		// TODO: maybe introduce algorithm to order the result with the more interesting teams first (all teams that liked this one) ??
+		return teamService.getAllTeamsForCategory(categoryId);
+	}
+
+	@PostMapping
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
+	public TeamProfile createNewTeam(@RequestBody @Valid TeamCreationRoot teamCreationRoot,
+									 BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			throw new TeamValidationException();
+		}
+
+		return teamService.createTeam(teamCreationRoot.getTeam(), teamCreationRoot.getProfilePicture(), teamCreationRoot.getProfilePictureName());
+
+		// TODO: Save the base64 picture to AWS and get the s3 bucket name...
+		//String url = "";
+
+		//return teamService.createTeam(teamCreationRoot.getTeam(), url);
+	}
+
     @PostMapping("/addTeammates")
     public TeamProfile addTeammates(@RequestBody AddTeammate teammates) {
         return teamService.addTeammates(teammates);
     }
 
-    /**
-     * DEBUG
-     *
-     * @return
-     */
-    @GetMapping("/list")
-    public List<TeamDto> listTeams() {
-        return teamService.getAllTeams();
-    }
+    @PutMapping
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void updateTeam(@RequestBody @Valid TeamCreationRoot teamCreationRoot,
+						   BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			throw new TeamValidationException();
+		}
+
+		// TODO: Save the base64 picture to AWS if it has changed
+
+		// TODO: teamService.updateTeam();
+	}
 
     /**
      * DEBUG
