@@ -7,6 +7,7 @@ import com.seeu.darkside.category.TeamHasCategoryEntity;
 import com.seeu.darkside.tag.TagEntity;
 import com.seeu.darkside.tag.TeamHasTagEntity;
 import com.seeu.darkside.teammate.TeamHasUserEntity;
+import com.seeu.darkside.user.UserEntity;
 import lombok.*;
 
 import java.util.Date;
@@ -26,7 +27,7 @@ public class TeamProfile {
     private String profilePhotoUrl;
     private Date created;
     private Date updated;
-    private List<TeamHasUserEntity> members;
+    private List<UserEntity> members;
     private List<AssetEntity> assets;
     private List<CategoryEntity> categories;
     private List<TagEntity> tags;

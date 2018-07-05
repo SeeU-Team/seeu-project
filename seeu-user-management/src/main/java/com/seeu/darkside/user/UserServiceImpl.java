@@ -1,47 +1,54 @@
 package com.seeu.darkside.user;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.seeu.darkside.facebook.FacebookRequestException;
 import com.seeu.darkside.facebook.FacebookService;
 import com.seeu.darkside.facebook.FacebookUser;
 import com.seeu.darkside.message.MessageServiceProxy;
+import com.seeu.darkside.utils.GenerateFileUrl;
+import org.apache.commons.codec.binary.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-    private final UserAdapter userAdapter;
-    private final FacebookService facebookService;
-    private final MessageServiceProxy messageServiceProxy;
+	private static final String BUCKET_SOURCE = "seeu-bucket";
+	private static final String EXT_PNG = ".png";
 
-    public UserServiceImpl(final UserRepository userRepository,
+	private final UserRepository userRepository;
+	private final UserAdapter userAdapter;
+	private final FacebookService facebookService;
+	private final MessageServiceProxy messageServiceProxy;
+	private final AmazonS3 amazonS3;
+
+	public UserServiceImpl(final UserRepository userRepository,
 						   final UserAdapter userAdapter,
-						   final FacebookService facebookService, MessageServiceProxy messageServiceProxy) {
+						   final FacebookService facebookService, MessageServiceProxy messageServiceProxy, AmazonS3 amazonS3) {
 
-        this.userRepository = userRepository;
-        this.userAdapter = userAdapter;
-        this.facebookService = facebookService;
+		this.userRepository = userRepository;
+		this.userAdapter = userAdapter;
+		this.facebookService = facebookService;
 		this.messageServiceProxy = messageServiceProxy;
+		this.amazonS3 = amazonS3;
 	}
 
-    @Override
+	@Override
 	@Transactional(readOnly = true)
-    public List<UserDto> getAllUsers() {
+	public List<UserDto> getAllUsers() {
 
-        return userRepository.findAll()
-            .stream()
-            .map(userAdapter::entityToDto)
-            .collect(toList());
-    }
+		return userRepository.findAll()
+				.stream()
+				.map(userAdapter::entityToDto)
+				.collect(toList());
+	}
 
 	@Override
 	@Transactional(readOnly = true)
@@ -50,7 +57,21 @@ public class UserServiceImpl implements UserService {
 				.findById(id)
 				.orElseThrow(UserNotFoundException::new);
 
-		return userAdapter.entityToDto(userEntity);
+		URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, userEntity.getProfilePhotoUrl());
+
+		UserDto userDto = UserDto.builder()
+				.id(userEntity.getId())
+				.facebookId(userEntity.getFacebookId())
+				.name(userEntity.getName())
+				.gender(userEntity.getGender())
+				.email(userEntity.getEmail())
+				.description(userEntity.getDescription())
+				.profilePhotoUrl(url.toExternalForm())
+				.created(userEntity.getCreated())
+				.updated(userEntity.getUpdated())
+				.build();
+
+		return userDto;
 	}
 
 	@Override
@@ -109,42 +130,47 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-    @Transactional
-    public UserDto createUser(UserDto userDto) {
-
-        final Optional<UserEntity> optionalUser = userRepository.findOneByFacebookId(userDto.getFacebookId());
-        if(optionalUser.isPresent())
-            throw new UserAlreadyExistsException();
-
-        final Date now = new Date();
-        userDto.setCreated(now);
-        userDto.setUpdated(now);
-        UserEntity userEntity = userAdapter.dtoToEntity(userDto);
-        userEntity = userRepository.save(userEntity);
-
-        return userAdapter.entityToDto(userEntity);
-    }
-
-    @Override
 	@Transactional
-    public UserDto updateDescription(Long id, String description) {
-        Date now = new Date();
-        UserEntity userToUpdate = userRepository.getOne(id);
-        userToUpdate.setDescription(description);
-        userToUpdate.setUpdated(now);
+	public UserDto createUser(UserDto userDto) {
+		String fileNameToSave = UUID.randomUUID().getLeastSignificantBits() + EXT_PNG;
+		byte[] bytes = org.apache.commons.codec.binary.Base64.decodeBase64(userDto.getProfilePhotoUrl());
+		InputStream inputStream = new ByteArrayInputStream(bytes);
+		amazonS3.putObject(BUCKET_SOURCE, fileNameToSave, inputStream, null);
 
-        UserEntity save = userRepository.save(userToUpdate);
+		final Optional<UserEntity> optionalUser = userRepository.findOneByFacebookId(userDto.getFacebookId());
+		if (optionalUser.isPresent())
+			throw new UserAlreadyExistsException();
 
-        return userAdapter.entityToDto(save);
-    }
+		final Date now = new Date();
+		userDto.setProfilePhotoUrl(fileNameToSave);
+		userDto.setCreated(now);
+		userDto.setUpdated(now);
+		UserEntity userEntity = userAdapter.dtoToEntity(userDto);
+		userEntity = userRepository.save(userEntity);
 
-    @Override
+		return userAdapter.entityToDto(userEntity);
+	}
+
+	@Override
 	@Transactional
-    public void deleteUser(Long id) {
-        UserEntity userToDelete = userRepository
-                .findById(id)
-                .orElseThrow(UserNotFoundException::new);
+	public UserDto updateDescription(Long id, String description) {
+		Date now = new Date();
+		UserEntity userToUpdate = userRepository.getOne(id);
+		userToUpdate.setDescription(description);
+		userToUpdate.setUpdated(now);
 
-        userRepository.delete(userToDelete);
-    }
+		UserEntity save = userRepository.save(userToUpdate);
+
+		return userAdapter.entityToDto(save);
+	}
+
+	@Override
+	@Transactional
+	public void deleteUser(Long id) {
+		UserEntity userToDelete = userRepository
+				.findById(id)
+				.orElseThrow(UserNotFoundException::new);
+
+		userRepository.delete(userToDelete);
+	}
 }

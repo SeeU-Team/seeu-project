@@ -18,6 +18,9 @@ import com.seeu.darkside.teammate.TeamHasUserEntity;
 import com.seeu.darkside.teammate.TeamHasUserRepository;
 import com.seeu.darkside.teammate.TeammateHasNotTeamException;
 import com.seeu.darkside.teammate.TeammateStatus;
+import com.seeu.darkside.user.UserDto;
+import com.seeu.darkside.user.UserEntity;
+import com.seeu.darkside.user.UserServiceProxy;
 import com.seeu.darkside.utils.GenerateFileUrl;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +53,11 @@ public class TeamServiceImpl implements TeamService {
 	private final AssetServiceProxy assetServiceProxy;
 	private final CategoryServiceProxy categoryServiceProxy;
 	private final TagServiceProxy tagServiceProxy;
+	private final UserServiceProxy userServiceProxy;
 	private final AmazonS3 amazonS3;
 
 	@Autowired
-	public TeamServiceImpl(TeamRepository teamRepository, TeamAdapter teamAdapter, TeamHasAssetRepository teamHasAssetRepository, TeamHasCategoryRepository teamHasCategoryRepository, TeamHasTagRepository teamHasTagRepository, TeamHasUserRepository teamHasUserRepository, AssetServiceProxy assetServiceProxy, CategoryServiceProxy categoryServiceProxy, TagServiceProxy tagServiceProxy, AmazonS3 amazonS3) {
+	public TeamServiceImpl(TeamRepository teamRepository, TeamAdapter teamAdapter, TeamHasAssetRepository teamHasAssetRepository, TeamHasCategoryRepository teamHasCategoryRepository, TeamHasTagRepository teamHasTagRepository, TeamHasUserRepository teamHasUserRepository, AssetServiceProxy assetServiceProxy, CategoryServiceProxy categoryServiceProxy, TagServiceProxy tagServiceProxy, UserServiceProxy userServiceProxy, AmazonS3 amazonS3) {
 		this.teamRepository = teamRepository;
 		this.teamAdapter = teamAdapter;
 		this.teamHasAssetRepository = teamHasAssetRepository;
@@ -63,6 +67,7 @@ public class TeamServiceImpl implements TeamService {
 		this.assetServiceProxy = assetServiceProxy;
 		this.categoryServiceProxy = categoryServiceProxy;
 		this.tagServiceProxy = tagServiceProxy;
+		this.userServiceProxy = userServiceProxy;
 		this.amazonS3 = amazonS3;
 	}
 
@@ -110,10 +115,11 @@ public class TeamServiceImpl implements TeamService {
 			List<AssetEntity> assetEntities = getAssetEntitiesFromIds(teamHasAssetToSave);
 			List<CategoryEntity> categoryEntities = getCategoryEntitiesFromIds(teamHasCategoryToSave);
 			List<TagEntity> tagEntities = getTagsEntitiesFromIds(teamHasTagToSave);
+			List<UserEntity> members = getAllMembersFromIds(teamHasUserToSave);
 
 			URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, fileNameToSave);
 
-			teamProfile = createTeamProfile(teamSaved, teamHasUserToSave, assetEntities, categoryEntities, tagEntities, url.toExternalForm());
+			teamProfile = createTeamProfile(teamSaved, members, assetEntities, categoryEntities, tagEntities, url.toExternalForm());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -129,6 +135,7 @@ public class TeamServiceImpl implements TeamService {
 
 
 		List<TeamHasUserEntity> userEntities = teamHasUserRepository.findAllByTeamId(idTeam);
+		List<UserEntity> allMembers = getAllMembersFromIds(userEntities);
 
 		List<TeamHasAssetEntity> assetEntitiesIds = teamHasAssetRepository.findAllByTeamId(idTeam);
 		List<AssetEntity> assetEntities = getAssetEntitiesFromIds(assetEntitiesIds);
@@ -140,7 +147,7 @@ public class TeamServiceImpl implements TeamService {
 		List<TagEntity> tagEntities = getTagsEntitiesFromIds(tagEntitiesIds);
 
 		URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, teamEntity.getProfilePhotoUrl());
-		return createTeamProfile(teamEntity, userEntities, assetEntities, categoryEntities, tagEntities, url.toExternalForm());
+		return createTeamProfile(teamEntity, allMembers, assetEntities, categoryEntities, tagEntities, url.toExternalForm());
 	}
 
 	@Override
@@ -234,7 +241,7 @@ public class TeamServiceImpl implements TeamService {
 				.orElseThrow(() -> new TeamNotFoundException(TEAM_NOT_FOUND_MSG + idTeam));
 	}
 
-	private TeamProfile createTeamProfile(TeamEntity teamEntity, List<TeamHasUserEntity> userEntities, List<AssetEntity> assetEntities, List<CategoryEntity> categoryEntities, List<TagEntity> tagEntities, String profilePhotoUrl) {
+	private TeamProfile createTeamProfile(TeamEntity teamEntity, List<UserEntity> members, List<AssetEntity> assetEntities, List<CategoryEntity> categoryEntities, List<TagEntity> tagEntities, String profilePhotoUrl) {
 		return TeamProfile.builder()
 				.id(teamEntity.getIdTeam())
 				.name(teamEntity.getName())
@@ -243,7 +250,7 @@ public class TeamServiceImpl implements TeamService {
 				.profilePhotoUrl(profilePhotoUrl)
 				.created(teamEntity.getCreated())
 				.updated(teamEntity.getUpdated())
-				.members(userEntities)
+				.members(members)
 				.assets(assetEntities)
 				.categories(categoryEntities)
 				.tags(tagEntities)
@@ -339,5 +346,26 @@ public class TeamServiceImpl implements TeamService {
 		for (TeamHasTagEntity tagEntity : tagEntitiesIds)
 			tagEntities.add(tagServiceProxy.getTagInfo(tagEntity.getTagId()));
 		return tagEntities;
+	}
+
+	private List<UserEntity> getAllMembersFromIds(List<TeamHasUserEntity> usersEntitiesIds) {
+		List<UserEntity> userEntities = new ArrayList<>();
+		for (TeamHasUserEntity usersEntitiesId : usersEntitiesIds) {
+			UserDto oneUser = userServiceProxy.getOneUser(usersEntitiesId.getUserId());
+			UserEntity userEntity = UserEntity.builder()
+					.id(oneUser.getId())
+					.facebookId(oneUser.getFacebookId())
+					.name(oneUser.getName())
+					.gender(oneUser.getGender())
+					.email(oneUser.getEmail())
+					.description(oneUser.getDescription())
+					.profilePhotoUrl(oneUser.getProfilePhotoUrl())
+					.status(usersEntitiesId.getStatus())
+					.created(oneUser.getCreated())
+					.updated(oneUser.getUpdated())
+					.build();
+			userEntities.add(userEntity);
+		}
+		return userEntities;
 	}
 }

@@ -1,14 +1,13 @@
 package com.seeu.darkside.rs;
 
-import com.seeu.darkside.facebook.FacebookRequestException;
-import com.seeu.darkside.user.*;
+import com.seeu.darkside.user.UserDto;
+import com.seeu.darkside.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
