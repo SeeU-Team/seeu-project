@@ -1,6 +1,5 @@
 package com.seeu.darkside.user;
 
-import com.seeu.darkside.teammate.TeammateStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

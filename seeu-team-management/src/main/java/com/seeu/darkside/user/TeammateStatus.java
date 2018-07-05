@@ -1,4 +1,4 @@
-package com.seeu.darkside.teammate;
+package com.seeu.darkside.user;
 
 public enum TeammateStatus {
 	LEADER,

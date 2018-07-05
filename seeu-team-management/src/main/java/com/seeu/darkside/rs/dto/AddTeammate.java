@@ -1,6 +1,6 @@
 package com.seeu.darkside.rs.dto;
 
-import com.seeu.darkside.teammate.Teammate;
+import com.seeu.darkside.user.Teammate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -3,7 +3,7 @@ package com.seeu.darkside.rs.dto;
 import com.seeu.darkside.asset.Asset;
 import com.seeu.darkside.category.Category;
 import com.seeu.darkside.tag.Tag;
-import com.seeu.darkside.teammate.Teammate;
+import com.seeu.darkside.user.Teammate;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;

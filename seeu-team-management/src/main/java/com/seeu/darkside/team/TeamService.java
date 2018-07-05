@@ -5,6 +5,8 @@ import com.seeu.darkside.rs.dto.TeamCreation;
 import com.seeu.darkside.rs.dto.TeamHasUser;
 import com.seeu.darkside.rs.dto.TeamProfile;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public interface TeamService {
@@ -23,4 +25,6 @@ public interface TeamService {
 	TeamProfile addTeammates(AddTeammate teammates);
 
 	void checkIfTeamExist(Long idTeam);
+
+	void updateTeam(TeamCreation team, String profilePicture);
 }

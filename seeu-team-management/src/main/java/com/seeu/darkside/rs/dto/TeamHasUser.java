@@ -1,6 +1,6 @@
 package com.seeu.darkside.rs.dto;
 
-import com.seeu.darkside.teammate.TeammateStatus;
+import com.seeu.darkside.user.TeammateStatus;
 import lombok.*;
 
 @Builder

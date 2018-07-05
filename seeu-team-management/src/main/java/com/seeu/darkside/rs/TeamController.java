@@ -1,20 +1,17 @@
 package com.seeu.darkside.rs;
 
 import com.seeu.darkside.asset.Asset;
-import com.seeu.darkside.asset.AssetEntity;
-import com.seeu.darkside.asset.AssetServiceProxy;
 import com.seeu.darkside.category.Category;
 import com.seeu.darkside.rs.dto.*;
 import com.seeu.darkside.tag.Tag;
 import com.seeu.darkside.team.TeamDto;
 import com.seeu.darkside.team.TeamService;
-import com.seeu.darkside.teammate.Teammate;
+import com.seeu.darkside.user.Teammate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponseWrapper;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,14 +80,10 @@ public class TeamController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void updateTeam(@RequestBody @Valid TeamCreationRoot teamCreationRoot,
 						   BindingResult bindingResult) {
-
 		if (bindingResult.hasErrors()) {
 			throw new TeamValidationException();
 		}
-
-		// TODO: Save the base64 picture to AWS if it has changed
-
-		// TODO: teamService.updateTeam();
+		teamService.updateTeam(teamCreationRoot.getTeam(), teamCreationRoot.getProfilePicture());
 	}
 
     /**

@@ -1,4 +1,4 @@
-package com.seeu.darkside.teammate;
+package com.seeu.darkside.user;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
