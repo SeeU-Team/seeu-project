@@ -42,9 +42,9 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagEntity createTagIfNotExist(TagDTO tagDTO) {
+    public TagEntity createTagIfNotExist(TagDto tagDto) {
 
-        TagEntity tagEntityByName = tagRepository.findTagEntityByName(tagDTO.getName());
+        TagEntity tagEntityByName = tagRepository.findTagEntityByName(tagDto.getName());
 
         if (tagEntityByName != null)
             return tagEntityByName;
@@ -52,7 +52,7 @@ public class TagServiceImpl implements TagService {
         Date now = new Date();
 
         TagEntity entityToCreate = TagEntity.builder()
-                .name(tagDTO.getName())
+                .name(tagDto.getName())
                 .created(now)
                 .updated(now)
                 .build();
