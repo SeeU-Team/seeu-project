@@ -23,17 +23,22 @@ public class AssetServiceImpl implements AssetService {
 	}
 
 	@Override
+	public void deleteAll(Long teamId) {
+		List<TeamHasAssetEntity> allByTeamId = teamHasAssetRepository.findAllByTeamId(teamId);
+		teamHasAssetRepository.deleteAll(allByTeamId);
+	}
+
+	@Override
 	public void saveAll(List<TeamHasAssetEntity> teamHasAssetToSave) {
 		teamHasAssetRepository.saveAll(teamHasAssetToSave);
 	}
 
 	@Override
-	public List<TeamHasAssetEntity> extractAssets(TeamCreation teamCreation, Long idTeam) {
-		if (null == teamCreation.getAssets()) {
+	public List<TeamHasAssetEntity> extractAssets(List<Asset> assets, Long idTeam) {
+		if (null == assets)
 			return new ArrayList<>();
-		}
 
-		return teamCreation.getAssets()
+		return assets
 				.stream()
 				.map(asset -> TeamHasAssetEntity.builder()
 						.teamId(idTeam)

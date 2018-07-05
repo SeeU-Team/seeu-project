@@ -1,7 +1,5 @@
 package com.seeu.darkside.user;
 
-import com.seeu.darkside.rs.dto.TeamCreation;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -13,7 +11,7 @@ public interface UserService {
 
 	List<UserEntity> getAllMembersFromIds(List<TeamHasUserEntity> usersEntitiesIds);
 
-	List<TeamHasUserEntity> extractUsers(TeamCreation teamCreation, Long idTeam);
+	List<TeamHasUserEntity> extractUsers(List<Teammate> members, Long idTeam);
 
 	List<TeamHasUserEntity> findAllByTeamId(Long idTeam);
 

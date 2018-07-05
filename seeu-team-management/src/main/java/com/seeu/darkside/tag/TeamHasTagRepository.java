@@ -8,4 +8,6 @@ import java.util.List;
 @Repository
 public interface TeamHasTagRepository extends JpaRepository<TeamHasTagEntity, Long> {
     List<TeamHasTagEntity> findAllByTeamId(Long idTeam);
+
+	void deleteAllByTeamId(Long teamId);
 }

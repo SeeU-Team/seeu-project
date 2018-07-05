@@ -1,9 +1,6 @@
 package com.seeu.darkside.team;
 
-import com.seeu.darkside.rs.dto.AddTeammate;
-import com.seeu.darkside.rs.dto.TeamCreation;
-import com.seeu.darkside.rs.dto.TeamHasUser;
-import com.seeu.darkside.rs.dto.TeamProfile;
+import com.seeu.darkside.rs.dto.*;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -26,5 +23,5 @@ public interface TeamService {
 
 	void checkIfTeamExist(Long idTeam);
 
-	void updateTeam(TeamCreation team, String profilePicture);
+	void updateTeam(TeamUpdate team, String profilePicture);
 }

@@ -8,9 +8,11 @@ import java.util.List;
  * Created by Robin on 05/07/2018.
  */
 public interface AssetService {
+	void deleteAll(Long teamId);
+
 	void saveAll(List<TeamHasAssetEntity> teamHasAssetToSave);
 
-	List<TeamHasAssetEntity> extractAssets(TeamCreation teamCreation, Long idTeam);
+	List<TeamHasAssetEntity> extractAssets(List<Asset> assets, Long idTeam);
 
 	List<AssetEntity> getAssetEntitiesFromIds(List<TeamHasAssetEntity> teamHasAssetEntities);
 

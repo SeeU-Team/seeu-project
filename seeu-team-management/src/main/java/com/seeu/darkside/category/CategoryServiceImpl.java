@@ -23,6 +23,12 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
+	public void deleteAll(Long teamId) {
+		List<TeamHasCategoryEntity> allByTeamId = teamHasCategoryRepository.findAllByTeamId(teamId);
+		teamHasCategoryRepository.deleteAll(allByTeamId);
+	}
+
+	@Override
 	public void saveAll(List<TeamHasCategoryEntity> teamHasCategoryToSave) {
 		teamHasCategoryRepository.saveAll(teamHasCategoryToSave);
 	}
@@ -36,12 +42,12 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public List<TeamHasCategoryEntity> extractCategories(TeamCreation teamCreation, Long idTeam) {
-		if (null == teamCreation.getCategories()) {
+	public List<TeamHasCategoryEntity> extractCategories(List<Category> categories, Long idTeam) {
+		if (null == categories) {
 			return new ArrayList<>();
 		}
 
-		return teamCreation.getCategories()
+		return categories
 				.stream()
 				.map(category -> TeamHasCategoryEntity.builder()
 						.teamId(idTeam)

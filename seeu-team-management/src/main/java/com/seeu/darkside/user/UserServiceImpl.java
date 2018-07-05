@@ -1,6 +1,5 @@
 package com.seeu.darkside.user;
 
-import com.seeu.darkside.rs.dto.TeamCreation;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -52,12 +51,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<TeamHasUserEntity> extractUsers(TeamCreation teamCreation, Long idTeam) {
-		if (null == teamCreation.getMembers()) {
+	public List<TeamHasUserEntity> extractUsers(List<Teammate> members, Long idTeam) {
+		if (null == members) {
 			return new ArrayList<>();
 		}
 
-		return teamCreation.getMembers()
+		return members
 				.stream()
 				.map(teammate -> TeamHasUserEntity.builder()
 						.teamId(idTeam)

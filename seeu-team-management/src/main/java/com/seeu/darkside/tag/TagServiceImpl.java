@@ -1,6 +1,5 @@
 package com.seeu.darkside.tag;
 
-import com.seeu.darkside.rs.dto.TeamCreation;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,6 +20,12 @@ public class TagServiceImpl implements TagService {
 	}
 
 	@Override
+	public void deleteAll(Long teamId) {
+		List<TeamHasTagEntity> allByTeamId = teamHasTagRepository.findAllByTeamId(teamId);
+		teamHasTagRepository.deleteAll(allByTeamId);
+	}
+
+	@Override
 	public void saveAll(List<TeamHasTagEntity> teamHasTagToSave) {
 		teamHasTagRepository.saveAll(teamHasTagToSave);
 	}
@@ -34,13 +39,13 @@ public class TagServiceImpl implements TagService {
 	}
 
 	@Override
-	public List<TeamHasTagEntity> extractTags(TeamCreation teamCreation, Long idTeam) {
-		if (null == teamCreation.getTags()) {
+	public List<TeamHasTagEntity> extractTags(List<Tag> tags, Long idTeam) {
+		if (null == tags) {
 			return new ArrayList<>();
 		}
 
 		List<TeamHasTagEntity> tagEntities = new ArrayList<>();
-		for (Tag tag : teamCreation.getTags()) {
+		for (Tag tag : tags) {
 			TagEntity newTagIfNotExist = tagServiceProxy.createNewTagIfNotExist(new TagDTO(null, tag.getTagName()));
 			TeamHasTagEntity teamHasTagEntity = TeamHasTagEntity.builder().teamId(idTeam).tagId(newTagIfNotExist.getIdTag()).build();
 			tagEntities.add(teamHasTagEntity);

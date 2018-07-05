@@ -78,12 +78,8 @@ public class TeamController {
 
     @PutMapping
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void updateTeam(@RequestBody @Valid TeamCreationRoot teamCreationRoot,
-						   BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			throw new TeamValidationException();
-		}
-		teamService.updateTeam(teamCreationRoot.getTeam(), teamCreationRoot.getProfilePicture());
+	public void updateTeam(@RequestBody TeamUpdateRoot teamUpdateRoot) {
+		teamService.updateTeam(teamUpdateRoot.getTeam(), teamUpdateRoot.getProfilePicture());
 	}
 
     /**

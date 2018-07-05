@@ -7,5 +7,7 @@ import java.util.List;
 
 @Repository
 public interface TeamHasAssetRepository extends JpaRepository<TeamHasAssetEntity, Long> {
-    List<TeamHasAssetEntity> findAllByTeamId(Long idTeam);
+	List<TeamHasAssetEntity> findAllByTeamId(Long idTeam);
+
+	void deleteAllByTeamId(Long teamId);
 }

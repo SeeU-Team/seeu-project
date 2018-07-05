@@ -11,4 +11,6 @@ public interface TeamHasCategoryRepository extends JpaRepository<TeamHasCategory
     List<TeamHasCategoryEntity> findAllByTeamId(Long idTeam);
 
     List<TeamHasCategoryEntity> findAllByCategoryId(Long categoryId);
+
+    void deleteAllByTeamId(Long teamId);
 }
