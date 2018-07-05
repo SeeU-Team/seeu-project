@@ -17,4 +17,6 @@ public class FacebookUser {
 
 	@JsonProperty(value = "name")
 	private String name;
+
+	private String gender;
 }

@@ -1,6 +1,7 @@
 package com.seeu.darkside.gateway.security;
 
 import com.seeu.darkside.gateway.user.FacebookUser;
+import com.seeu.darkside.gateway.user.Gender;
 import com.seeu.darkside.gateway.user.User;
 import com.seeu.darkside.gateway.user.UserServiceProxy;
 import feign.FeignException;
@@ -17,7 +18,7 @@ import javax.validation.constraints.NotNull;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-	private static final String FACEBOOK_USER_INFO_URL = "https://graph.facebook.com/me?fields=id,name&access_token=";
+	private static final String FACEBOOK_USER_INFO_URL = "https://graph.facebook.com/me?fields=id,name,gender&access_token=";
 
 	@Autowired
 	UserServiceProxy userServiceProxy;
@@ -60,10 +61,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	private User createNewUser(FacebookUser facebookUser) {
 		final User user = User.builder()
 				.facebookId(facebookUser.getId())
-				.firstname(facebookUser.getName())
-				.lastname("")
+				.name(facebookUser.getName())
+				.gender(Gender.valueOf(facebookUser.getGender().toUpperCase()))
 				.email("toto@toto.fr")
-				.password("Azerty1234")
 				.description("")
 				.profilePhotoUrl("")
 				.build();
