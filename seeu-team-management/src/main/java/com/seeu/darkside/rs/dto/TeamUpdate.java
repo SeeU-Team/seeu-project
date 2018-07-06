@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 public class TeamUpdate {
 
-    private long idTeam;
+    private Long id;
     private String name;
     private String description;
     private String place;

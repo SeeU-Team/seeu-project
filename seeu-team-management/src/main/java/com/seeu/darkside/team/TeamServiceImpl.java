@@ -185,7 +185,7 @@ public class TeamServiceImpl implements TeamService {
 	public void updateTeam(TeamUpdate team, String profilePicture) {
 		TeamProfile teamProfile = null;
 		try {
-			TeamEntity teamToUpdate = teamRepository.getOne(team.getIdTeam());
+			TeamEntity teamToUpdate = teamRepository.getOne(team.getId());
 			String fileNameToSave = teamToUpdate.getProfilePhotoUrl();
 
 			if (profilePicture != null)
@@ -205,7 +205,7 @@ public class TeamServiceImpl implements TeamService {
 			List<TeamHasAssetEntity> teamHasAssetToSave = assetService.extractAssets(team.getAssets(), idTeam);
 			List<TeamHasCategoryEntity> teamHasCategoryToSave = categoryService.extractCategories(team.getCategories(), idTeam);
 			List<TeamHasTagEntity> teamHasTagToSave = tagService.extractTags(team.getTags(), idTeam);
-			//List<TeamHasUserEntity> teamHasUserToSave = userService.extractUsers(team.getMembers(), idTeam);
+			//List<TeamHasUserEntity> teamHasUserToSave = userService.extractUsers(team.getMembers(), id);
 
 			assetService.deleteAll(idTeam);
 			categoryService.deleteAll(idTeam);

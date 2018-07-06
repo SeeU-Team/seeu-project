@@ -39,6 +39,7 @@ public class AppConfig {
                 .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials()))
                 .build();
     }
+
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
