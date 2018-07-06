@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -205,7 +206,10 @@ public class TeamServiceImpl implements TeamService {
 			List<TeamHasAssetEntity> teamHasAssetToSave = assetService.extractAssets(team.getAssets(), idTeam);
 			List<TeamHasCategoryEntity> teamHasCategoryToSave = categoryService.extractCategories(team.getCategories(), idTeam);
 			List<TeamHasTagEntity> teamHasTagToSave = tagService.extractTags(team.getTags(), idTeam);
-			//List<TeamHasUserEntity> teamHasUserToSave = userService.extractUsers(team.getMembers(), idTeam);
+
+			List<TeamHasUserEntity> teamHasUserFromDto = userService.extractUsers(team.getMembers(), idTeam);
+			List<TeamHasUserEntity> members = userService.getAllMembersByTeamId(idTeam);
+			userService.updateMembers(teamHasUserFromDto, members);
 
 			assetService.deleteAll(idTeam);
 			categoryService.deleteAll(idTeam);
@@ -214,7 +218,6 @@ public class TeamServiceImpl implements TeamService {
 			assetService.saveAll(teamHasAssetToSave);
 			categoryService.saveAll(teamHasCategoryToSave);
 			tagService.saveAll(teamHasTagToSave);
-			//userService.saveAll(teamHasUserToSave);
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -9,6 +9,10 @@ import java.util.Optional;
 public interface UserService {
 	void saveAll(List<TeamHasUserEntity> teamHasUserToSave);
 
+	void deleteAll(List<TeamHasUserEntity> teamHasUserToSave);
+
+	List<TeamHasUserEntity> getAllMembersByTeamId(Long teamId);
+
 	List<UserEntity> getAllMembersFromIds(List<TeamHasUserEntity> usersEntitiesIds);
 
 	List<TeamHasUserEntity> extractUsers(List<Teammate> members, Long idTeam);
@@ -16,4 +20,6 @@ public interface UserService {
 	List<TeamHasUserEntity> findAllByTeamId(Long idTeam);
 
 	Optional<TeamHasUserEntity> findByUserId(Long memberId);
+
+	List<TeamHasUserEntity> updateMembers(List<TeamHasUserEntity> teamHasUserFromDto, List<TeamHasUserEntity> members);
 }
