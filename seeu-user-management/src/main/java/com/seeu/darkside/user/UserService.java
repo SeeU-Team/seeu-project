@@ -18,5 +18,5 @@ public interface UserService {
 
     void deleteUser(Long id);
 
-	void update(UserDto userDto);
+	void update(UserDto userDto, String profilePicture);
 }

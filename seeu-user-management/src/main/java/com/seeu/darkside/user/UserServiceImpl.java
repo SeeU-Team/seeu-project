@@ -6,16 +6,17 @@ import com.seeu.darkside.facebook.FacebookService;
 import com.seeu.darkside.facebook.FacebookUser;
 import com.seeu.darkside.message.MessageServiceProxy;
 import com.seeu.darkside.utils.GenerateFileUrl;
-import org.apache.commons.codec.binary.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -57,41 +58,27 @@ public class UserServiceImpl implements UserService {
 				.findById(id)
 				.orElseThrow(UserNotFoundException::new);
 
-		URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, userEntity.getProfilePhotoUrl());
-
-		UserDto userDto = UserDto.builder()
-				.id(userEntity.getId())
-				.facebookId(userEntity.getFacebookId())
-				.name(userEntity.getName())
-				.gender(userEntity.getGender())
-				.email(userEntity.getEmail())
-				.description(userEntity.getDescription())
-				.profilePhotoUrl(url.toExternalForm())
-				.created(userEntity.getCreated())
-				.updated(userEntity.getUpdated())
-				.build();
-
-		return userDto;
+		return getCompleteUserDto(userEntity);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public UserDto getUserByEmail(String email) {
-		UserEntity userByEmail = userRepository
+		UserEntity userEntity = userRepository
 				.findOneByEmail(email)
 				.orElseThrow(UserNotFoundException::new);
 
-		return userAdapter.entityToDto(userByEmail);
+		return getCompleteUserDto(userEntity);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public UserDto getUserByFacebookId(Long facebookId) {
-		UserEntity userByEmail = userRepository
+		UserEntity userEntity = userRepository
 				.findOneByFacebookId(facebookId)
 				.orElseThrow(UserNotFoundException::new);
 
-		return userAdapter.entityToDto(userByEmail);
+		return getCompleteUserDto(userEntity);
 	}
 
 	@Override
@@ -101,13 +88,7 @@ public class UserServiceImpl implements UserService {
 
 		return facebookUserFriends
 				.stream()
-				.map(facebookUser -> {
-					try {
-						return getUserByFacebookId(facebookUser.getId());
-					} catch (UserNotFoundException e) {
-						return null;
-					}
-				})
+				.map(facebookUser -> getUserByFacebookId(facebookUser.getId()))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}
@@ -118,13 +99,7 @@ public class UserServiceImpl implements UserService {
 		// If already one message has been sent between this user and another user, it is a friend
 		return messageServiceProxy.getFriendsOfUser(id)
 				.stream()
-				.map(userId -> {
-					try {
-						return this.getUser(userId);
-					} catch (UserNotFoundException e) {
-						return null;
-					}
-				})
+				.map(this::getUser)
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}
@@ -132,11 +107,12 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public UserDto createUser(UserDto userDto) {
-		String fileNameToSave = savePngInAmazonS3(BUCKET_SOURCE, userDto.getProfilePhotoUrl());
-
 		final Optional<UserEntity> optionalUser = userRepository.findOneByFacebookId(userDto.getFacebookId());
 		if (optionalUser.isPresent())
 			throw new UserAlreadyExistsException();
+
+		// When we create a user, the profilePhotoUrl contains the user's facebook profile photo url
+		String fileNameToSave = saveFacebookProfilePhotoInAmazonS3(userDto.getProfilePhotoUrl());
 
 		final Date now = new Date();
 		userDto.setProfilePhotoUrl(fileNameToSave);
@@ -145,7 +121,7 @@ public class UserServiceImpl implements UserService {
 		UserEntity userEntity = userAdapter.dtoToEntity(userDto);
 		userEntity = userRepository.save(userEntity);
 
-		return userAdapter.entityToDto(userEntity);
+		return getCompleteUserDto(userEntity);
 	}
 
 	@Override
@@ -172,15 +148,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void update(UserDto userDto) {
+	public void update(UserDto userDto, String profilePicture) {
 		UserEntity userEntity = userRepository
 				.findById(userDto.getId())
 				.orElseThrow(UserNotFoundException::new);
 
 		String fileName = userEntity.getProfilePhotoUrl();
 
-		if (userDto.getProfilePhotoUrl() != null) {
-			fileName = savePngInAmazonS3(BUCKET_SOURCE, userDto.getProfilePhotoUrl());
+		if (null != profilePicture) {
+			fileName = savePngInAmazonS3(profilePicture);
 		}
 
 		Date newUpdatedDate = new Date();
@@ -195,13 +171,37 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(userEntity);
 	}
 
-	private String savePngInAmazonS3(String bucketName, String profilePhotoBase64) {
+	private String savePngInAmazonS3(String profilePhotoBase64) {
 		String fileNameToSave = UUID.randomUUID().getLeastSignificantBits() + EXT_PNG;
-		byte[] bytes = org.apache.commons.codec.binary.Base64.decodeBase64(profilePhotoBase64);
+		byte[] bytes = decodeBase64(profilePhotoBase64);
 		InputStream inputStream = new ByteArrayInputStream(bytes);
 		amazonS3.putObject(BUCKET_SOURCE, fileNameToSave, inputStream, null);
 
 		return fileNameToSave;
+	}
+
+	private String saveFacebookProfilePhotoInAmazonS3(String url) {
+		String fileNameToSave;
+
+		try {
+			fileNameToSave = UUID.randomUUID().getLeastSignificantBits() + EXT_PNG;
+			InputStream inputStream = new URL(url).openStream();
+			amazonS3.putObject(BUCKET_SOURCE, fileNameToSave, inputStream, null);
+		} catch (IOException e) {
+			e.printStackTrace();
+			fileNameToSave = null;
+		}
+
+		return fileNameToSave;
+	}
+
+	private UserDto getCompleteUserDto(UserEntity userEntity) {
+		URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, userEntity.getProfilePhotoUrl());
+
+		UserDto userDto = userAdapter.entityToDto(userEntity);
+		userDto.setProfilePhotoUrl(url.toExternalForm());
+
+		return userDto;
 	}
 }
 

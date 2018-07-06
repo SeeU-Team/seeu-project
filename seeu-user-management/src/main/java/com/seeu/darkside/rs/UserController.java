@@ -2,6 +2,7 @@ package com.seeu.darkside.rs;
 
 import com.seeu.darkside.user.UserDto;
 import com.seeu.darkside.user.UserService;
+import com.seeu.darkside.user.UserUpdateRoot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
@@ -63,8 +64,14 @@ public class UserController {
 
     @PutMapping
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody UserDto userDto) {
-        userService.update(userDto);
+    public void update(@RequestBody @Valid UserUpdateRoot userUpdateRoot,
+					   BindingResult bindingResult) {
+
+    	if (bindingResult.hasErrors()) {
+    		throw new UserValidationException();
+		}
+
+        userService.update(userUpdateRoot.getMember(), userUpdateRoot.getProfilePicture());
     }
 
 	@PutMapping("{id}")

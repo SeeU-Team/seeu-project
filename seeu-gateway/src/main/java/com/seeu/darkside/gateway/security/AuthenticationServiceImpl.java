@@ -18,10 +18,14 @@ import javax.validation.constraints.NotNull;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-	private static final String FACEBOOK_USER_INFO_URL = "https://graph.facebook.com/me?fields=id,name,gender&access_token=";
+	private static final String FACEBOOK_USER_INFO_URL = "https://graph.facebook.com/me?fields=id,name,gender,picture.type(large)&access_token=";
+
+	private final UserServiceProxy userServiceProxy;
 
 	@Autowired
-	UserServiceProxy userServiceProxy;
+	public AuthenticationServiceImpl(UserServiceProxy userServiceProxy) {
+		this.userServiceProxy = userServiceProxy;
+	}
 
 	@Override
 	public Tuple getAuthenticationToken(@NotNull String accessToken) throws FacebookRequestException {
@@ -63,9 +67,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				.facebookId(facebookUser.getId())
 				.name(facebookUser.getName())
 				.gender(Gender.valueOf(facebookUser.getGender().toUpperCase()))
-				.email("toto@toto.fr")
 				.description("")
-				.profilePhotoUrl("")
+				.profilePhotoUrl(facebookUser.getPicture().getData().getUrl())
 				.build();
 
 		return userServiceProxy.createNewUser(user);

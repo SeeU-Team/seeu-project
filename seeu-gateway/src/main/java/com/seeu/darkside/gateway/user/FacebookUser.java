@@ -15,8 +15,9 @@ public class FacebookUser {
 //	@JsonProperty(value = "id")
 	private Long id;
 
-	@JsonProperty(value = "name")
 	private String name;
 
 	private String gender;
+
+	private Picture picture;
 }
