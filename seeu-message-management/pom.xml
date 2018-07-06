@@ -15,6 +15,7 @@
     <description>SeeU microservice for message management</description>
 
     <properties>
+        <aws-sdk-s3.version>1.11.271</aws-sdk-s3.version>
         <mysql.version>5.1.44</mysql.version>
     </properties>
 
@@ -38,6 +39,11 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>${aws-sdk-s3.version}</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
