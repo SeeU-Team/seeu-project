@@ -25,4 +25,13 @@ public class TeamHasUserEntity {
 
     @Column
     private TeammateStatus status;
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean sameSame = false;
+        if (obj != null && obj instanceof TeamHasUserEntity) {
+            sameSame = this.userId == ((TeamHasUserEntity) obj).getUserId();
+        }
+        return sameSame;
+    }
 }

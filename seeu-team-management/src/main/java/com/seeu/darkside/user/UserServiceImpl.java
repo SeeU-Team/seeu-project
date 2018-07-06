@@ -29,24 +29,19 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public void deleteAll(List<TeamHasUserEntity> teamHasUserToSave) {
+		teamHasUserRepository.deleteAll(teamHasUserToSave);
+	}
+
+	@Override
+	public List<TeamHasUserEntity> getAllMembersByTeamId(Long teamId) {
+		List<TeamHasUserEntity> allByTeamId = teamHasUserRepository.findAllByTeamId(teamId);
+		return allByTeamId;
+	}
+
+	@Override
 	public List<UserEntity> getAllMembersFromIds(List<TeamHasUserEntity> usersEntitiesIds) {
-		List<UserEntity> userEntities = new ArrayList<>();
-		for (TeamHasUserEntity usersEntitiesId : usersEntitiesIds) {
-			UserDto oneUser = userServiceProxy.getOneUser(usersEntitiesId.getUserId());
-			UserEntity userEntity = UserEntity.builder()
-					.id(oneUser.getId())
-					.facebookId(oneUser.getFacebookId())
-					.name(oneUser.getName())
-					.gender(oneUser.getGender())
-					.email(oneUser.getEmail())
-					.description(oneUser.getDescription())
-					.profilePhotoUrl(oneUser.getProfilePhotoUrl())
-					.status(usersEntitiesId.getStatus())
-					.created(oneUser.getCreated())
-					.updated(oneUser.getUpdated())
-					.build();
-			userEntities.add(userEntity);
-		}
+		List<UserEntity> userEntities = getUsersFromMemberIds(usersEntitiesIds);
 		return userEntities;
 	}
 
@@ -73,5 +68,45 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Optional<TeamHasUserEntity> findByUserId(Long memberId) {
 		return teamHasUserRepository.findByUserId(memberId);
+	}
+
+	@Override
+	public List<TeamHasUserEntity> updateMembers(List<TeamHasUserEntity> teamHasUserFromDto, List<TeamHasUserEntity> members) {
+		List<TeamHasUserEntity> membersToAdd = new ArrayList<>();
+		List<TeamHasUserEntity> membersToRemove = new ArrayList<>();
+		for (TeamHasUserEntity member : members) {
+			if (!teamHasUserFromDto.contains(member))
+				membersToRemove.add(member);
+		}
+		for (TeamHasUserEntity teamHasUserEntity : teamHasUserFromDto) {
+			if (!members.contains(teamHasUserEntity))
+				membersToAdd.add(teamHasUserEntity);
+		}
+
+		teamHasUserRepository.deleteAll(membersToRemove);
+		teamHasUserRepository.saveAll(membersToAdd);
+
+		return membersToAdd;
+	}
+
+	private List<UserEntity> getUsersFromMemberIds(List<TeamHasUserEntity> usersEntitiesIds) {
+		List<UserEntity> userEntities = new ArrayList<>();
+		for (TeamHasUserEntity usersEntitiesId : usersEntitiesIds) {
+			UserDto oneUser = userServiceProxy.getOneUser(usersEntitiesId.getUserId());
+			UserEntity userEntity = UserEntity.builder()
+					.id(oneUser.getId())
+					.facebookId(oneUser.getFacebookId())
+					.name(oneUser.getName())
+					.gender(oneUser.getGender())
+					.email(oneUser.getEmail())
+					.description(oneUser.getDescription())
+					.profilePhotoUrl(oneUser.getProfilePhotoUrl())
+					.status(usersEntitiesId.getStatus())
+					.created(oneUser.getCreated())
+					.updated(oneUser.getUpdated())
+					.build();
+			userEntities.add(userEntity);
+		}
+		return userEntities;
 	}
 }
