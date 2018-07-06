@@ -8,6 +8,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-    Optional<UserEntity> findOneByEmail(String email);
-    Optional<UserEntity> findOneByFacebookId(Long facebookId);
+	Optional<UserEntity> findOneByEmail(String email);
+
+	Optional<UserEntity> findOneByFacebookId(Long facebookId);
 }

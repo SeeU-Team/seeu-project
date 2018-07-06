@@ -61,10 +61,16 @@ public class UserController {
         return userService.createUser(userDto);
     }
 
-    @PutMapping("{id}")
-    public UserDto updateDescription(@PathVariable("id") Long id, @RequestBody String description) {
-        return userService.updateDescription(id, description);
+    @PutMapping
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@RequestBody UserDto userDto) {
+        userService.update(userDto);
     }
+
+	@PutMapping("{id}")
+	public UserDto updateDescription(@PathVariable("id") Long id, @RequestBody String description) {
+		return userService.updateDescription(id, description);
+	}
 
     @DeleteMapping("{id}")
     @ResponseStatus(NO_CONTENT)

@@ -132,10 +132,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public UserDto createUser(UserDto userDto) {
-		String fileNameToSave = UUID.randomUUID().getLeastSignificantBits() + EXT_PNG;
-		byte[] bytes = org.apache.commons.codec.binary.Base64.decodeBase64(userDto.getProfilePhotoUrl());
-		InputStream inputStream = new ByteArrayInputStream(bytes);
-		amazonS3.putObject(BUCKET_SOURCE, fileNameToSave, inputStream, null);
+		String fileNameToSave = savePngInAmazonS3(BUCKET_SOURCE, userDto.getProfilePhotoUrl());
 
 		final Optional<UserEntity> optionalUser = userRepository.findOneByFacebookId(userDto.getFacebookId());
 		if (optionalUser.isPresent())
@@ -173,4 +170,38 @@ public class UserServiceImpl implements UserService {
 
 		userRepository.delete(userToDelete);
 	}
+
+	@Override
+	public void update(UserDto userDto) {
+		UserEntity userEntity = userRepository
+				.findById(userDto.getId())
+				.orElseThrow(UserNotFoundException::new);
+
+		String fileName = userEntity.getProfilePhotoUrl();
+
+		if (userDto.getProfilePhotoUrl() != null) {
+			fileName = savePngInAmazonS3(BUCKET_SOURCE, userDto.getProfilePhotoUrl());
+		}
+
+		Date newUpdatedDate = new Date();
+
+		userEntity.setName(userDto.getName());
+		userEntity.setGender(userDto.getGender());
+		userEntity.setEmail(userDto.getEmail());
+		userEntity.setDescription(userDto.getDescription());
+		userEntity.setProfilePhotoUrl(fileName);
+		userEntity.setUpdated(newUpdatedDate);
+
+		userRepository.save(userEntity);
+	}
+
+	private String savePngInAmazonS3(String bucketName, String profilePhotoBase64) {
+		String fileNameToSave = UUID.randomUUID().getLeastSignificantBits() + EXT_PNG;
+		byte[] bytes = org.apache.commons.codec.binary.Base64.decodeBase64(profilePhotoBase64);
+		InputStream inputStream = new ByteArrayInputStream(bytes);
+		amazonS3.putObject(BUCKET_SOURCE, fileNameToSave, inputStream, null);
+
+		return fileNameToSave;
+	}
 }
+

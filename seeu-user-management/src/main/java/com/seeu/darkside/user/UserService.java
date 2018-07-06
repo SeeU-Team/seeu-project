@@ -17,4 +17,6 @@ public interface UserService {
     UserDto updateDescription(Long id, String description);
 
     void deleteUser(Long id);
+
+	void update(UserDto userDto);
 }
