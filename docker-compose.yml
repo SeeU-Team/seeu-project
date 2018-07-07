@@ -2,6 +2,9 @@ version: '3.6'
 
 networks:
   spring-cloud-network:
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
 
 services:
   seeu-config:
@@ -22,26 +25,36 @@ services:
       - spring-cloud-network
     ports:
       - "${GATEWAY_PORT}:8001"
+    env_file:
+      - .env
 
   seeu-user-management:
     image: oncletom77/seeu-user-management
     networks:
       - spring-cloud-network
+    env_file:
+      - .env
 
   seeu-team-management:
     image: oncletom77/seeu-team-management
     networks:
       - spring-cloud-network
+    env_file:
+      - .env
 
   seeu-media-management:
     image: oncletom77/seeu-media-management
     networks:
       - spring-cloud-network
+    env_file:
+      - .env
 
   seeu-message-management:
     image: oncletom77/seeu-message-management
     networks:
       - spring-cloud-network
+    env_file:
+      - .env
 
   seeu-message:
     image: oncletom77/seeu-message

@@ -11,8 +11,12 @@ import static org.springframework.http.HttpMethod.POST;
 @Configuration
 public class SecurityConfiguration {
 
+	private final ApiServerSecurityContextRepository securityContextRepository;
+
 	@Autowired
-	private ApiServerSecurityContextRepository securityContextRepository;
+	public SecurityConfiguration(ApiServerSecurityContextRepository securityContextRepository) {
+		this.securityContextRepository = securityContextRepository;
+	}
 
 	@Bean
 	SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) throws Exception {

@@ -13,7 +13,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-@PropertySource("classpath:amazon-keys.properties")
 public class AppConfig {
 
     @Value("${cloud.aws.credentials.accessKey}")

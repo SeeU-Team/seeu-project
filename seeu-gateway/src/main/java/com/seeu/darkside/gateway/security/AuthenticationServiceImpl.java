@@ -21,10 +21,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	private static final String FACEBOOK_USER_INFO_URL = "https://graph.facebook.com/me?fields=id,name,gender,picture.type(large)&access_token=";
 
 	private final UserServiceProxy userServiceProxy;
+	private final TokenAuthenticationUtil tokenAuthenticationUtil;
 
 	@Autowired
-	public AuthenticationServiceImpl(UserServiceProxy userServiceProxy) {
+	public AuthenticationServiceImpl(UserServiceProxy userServiceProxy, TokenAuthenticationUtil tokenAuthenticationUtil) {
 		this.userServiceProxy = userServiceProxy;
+		this.tokenAuthenticationUtil = tokenAuthenticationUtil;
 	}
 
 	@Override
@@ -55,7 +57,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			}
 		}
 
-		final String token = TokenAuthenticationUtil.generateToken(user);
+		final String token = tokenAuthenticationUtil.generateToken(user);
 
 		return TupleBuilder
 				.tuple()

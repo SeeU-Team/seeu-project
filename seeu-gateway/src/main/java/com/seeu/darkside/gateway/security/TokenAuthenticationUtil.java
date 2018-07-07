@@ -13,18 +13,17 @@ import java.util.Date;
 public class TokenAuthenticationUtil {
 
 	@Value("${token.config.secret}")
-	private static String secret;
+	private String secret;
 
 	@Value("${token.config.expiration-time}")
-	private static long expirationTime = 86_400_000;
+	private long expirationTime;
 
 	public static final String TOKEN_PREFIX = "Bearer";
 
-	public static byte[] getSecretKey() {
+	public byte[] getSecretKey() {
 		byte[] secretBytes;
 
 		try {
-			secret = (null == secret) ? "ThisIsASecret" : secret;
 			secretBytes = secret.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			secretBytes = secret.getBytes();
@@ -33,12 +32,12 @@ public class TokenAuthenticationUtil {
 		return secretBytes;
 	}
 
-	public static String generateToken(final User user) {
+	public String generateToken(final User user) {
 		return Jwts.builder()
 //				.claim("user", user)
 				.setSubject(user.getId().toString())
 				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-				.signWith(SignatureAlgorithm.HS512, TokenAuthenticationUtil.getSecretKey())
+				.signWith(SignatureAlgorithm.HS512, getSecretKey())
 				.compact();
 	}
 }

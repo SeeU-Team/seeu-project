@@ -2,6 +2,7 @@ package com.seeu.darkside.gateway.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,6 +20,13 @@ import static com.seeu.darkside.gateway.security.TokenAuthenticationUtil.TOKEN_P
 @Component
 public class ApiServerSecurityContextRepository implements ServerSecurityContextRepository {
 
+	private final TokenAuthenticationUtil tokenAuthenticationUtil;
+
+	@Autowired
+	public ApiServerSecurityContextRepository(TokenAuthenticationUtil tokenAuthenticationUtil) {
+		this.tokenAuthenticationUtil = tokenAuthenticationUtil;
+	}
+
 	@Override
 	public Mono<Void> save(ServerWebExchange serverWebExchange, SecurityContext securityContext) {
 		return Mono.empty();
@@ -33,7 +41,7 @@ public class ApiServerSecurityContextRepository implements ServerSecurityContext
 			try {
 				// parse the token.
 				final Claims claims = Jwts.parser()
-						.setSigningKey(TokenAuthenticationUtil.getSecretKey())
+						.setSigningKey(tokenAuthenticationUtil.getSecretKey())
 						.parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
 						.getBody();
 
