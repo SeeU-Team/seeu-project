@@ -1,6 +1,6 @@
 spring:
   application:
-     name: seeu-gateway
+    name: seeu-gateway
   cloud:
     config:
       uri: http://seeu-config:8888

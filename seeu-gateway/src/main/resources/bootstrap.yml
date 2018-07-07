@@ -1,6 +1,6 @@
 spring:
   application:
-     name: seeu-gateway
+    name: seeu-gateway
   cloud:
     config:
       uri: http://localhost:8888
@@ -9,4 +9,3 @@ token:
   config:
     expiration-time: 86_400_000 # one day in millisecond
     secret: ThisIsASecret
-

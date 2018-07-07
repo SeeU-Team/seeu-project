@@ -3,4 +3,3 @@ spring:
     name: seeu-user-management
   jpa:
     database: h2
-

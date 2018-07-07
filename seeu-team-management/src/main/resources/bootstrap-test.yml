@@ -3,4 +3,3 @@ spring:
     name: seeu-team-management
   jpa:
     database: h2
-

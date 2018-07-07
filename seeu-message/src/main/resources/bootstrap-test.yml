@@ -1,5 +1,3 @@
 spring:
   application:
     name: seeu-message
-#  jpa:
-#    database: h2
