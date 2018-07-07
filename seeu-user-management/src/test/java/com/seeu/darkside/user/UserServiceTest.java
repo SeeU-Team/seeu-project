@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 
 @RunWith(MockitoJUnitRunner.class)
+@Ignore
 public class UserServiceTest {
 
     @InjectMocks
