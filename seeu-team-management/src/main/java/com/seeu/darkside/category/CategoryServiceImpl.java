@@ -1,6 +1,5 @@
 package com.seeu.darkside.category;
 
-import com.seeu.darkside.rs.dto.TeamCreation;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
 				.stream()
 				.map(category -> TeamHasCategoryEntity.builder()
 						.teamId(idTeam)
-						.categoryId(category.getIdCategory())
+						.categoryId(category.getId())
 						.build())
 				.collect(toList());
 	}

@@ -185,42 +185,37 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public void updateTeam(TeamUpdate team, String profilePicture) {
 		TeamProfile teamProfile = null;
-		try {
-			TeamEntity teamToUpdate = teamRepository.getOne(team.getId());
-			String fileNameToSave = teamToUpdate.getProfilePhotoUrl();
+		TeamEntity teamToUpdate = teamRepository.getOne(team.getId());
+		String fileNameToSave = teamToUpdate.getProfilePhotoUrl();
 
-			if (profilePicture != null)
-				fileNameToSave = savePngInAmazonS3(profilePicture);
+		if (profilePicture != null)
+			fileNameToSave = savePngInAmazonS3(profilePicture);
 
-			Date newDateUpdated = new Date();
-			teamToUpdate.setName(team.getName());
-			teamToUpdate.setDescription(team.getDescription());
-			teamToUpdate.setPlace(team.getPlace());
-			teamToUpdate.setProfilePhotoUrl(fileNameToSave);
-			teamToUpdate.setUpdated(newDateUpdated);
+		Date newDateUpdated = new Date();
+		teamToUpdate.setName(team.getName());
+		teamToUpdate.setDescription(team.getDescription());
+		teamToUpdate.setPlace(team.getPlace());
+		teamToUpdate.setProfilePhotoUrl(fileNameToSave);
+		teamToUpdate.setUpdated(newDateUpdated);
 
-			Long idTeam = teamToUpdate.getIdTeam();
+		Long idTeam = teamToUpdate.getIdTeam();
 
-			teamRepository.save(teamToUpdate);
+		teamRepository.save(teamToUpdate);
 
-			List<TeamHasAssetEntity> teamHasAssetToSave = assetService.extractAssets(team.getAssets(), idTeam);
-			List<TeamHasCategoryEntity> teamHasCategoryToSave = categoryService.extractCategories(team.getCategories(), idTeam);
-			List<TeamHasTagEntity> teamHasTagToSave = tagService.extractTags(team.getTags(), idTeam);
-			List<TeamHasUserEntity> teamHasUserFromDto = userService.extractUsers(team.getMembers(), idTeam);
-			List<TeamHasUserEntity> members = userService.getAllMembersByTeamId(idTeam);
-			userService.updateMembers(teamHasUserFromDto, members);
+		List<TeamHasAssetEntity> teamHasAssetToSave = assetService.extractAssets(team.getAssets(), idTeam);
+		List<TeamHasCategoryEntity> teamHasCategoryToSave = categoryService.extractCategories(team.getCategories(), idTeam);
+		List<TeamHasTagEntity> teamHasTagToSave = tagService.extractTags(team.getTags(), idTeam);
+		List<TeamHasUserEntity> teamHasUserFromDto = userService.extractUsers(team.getMembers(), idTeam);
+		List<TeamHasUserEntity> members = userService.getAllMembersByTeamId(idTeam);
+		userService.updateMembers(teamHasUserFromDto, members);
 
-			assetService.deleteAll(idTeam);
-			categoryService.deleteAll(idTeam);
-			tagService.deleteAll(idTeam);
+		assetService.deleteAll(idTeam);
+		categoryService.deleteAll(idTeam);
+		tagService.deleteAll(idTeam);
 
-			assetService.saveAll(teamHasAssetToSave);
-			categoryService.saveAll(teamHasCategoryToSave);
-			tagService.saveAll(teamHasTagToSave);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		assetService.saveAll(teamHasAssetToSave);
+		categoryService.saveAll(teamHasCategoryToSave);
+		tagService.saveAll(teamHasTagToSave);
 	}
 
 	private String savePngInAmazonS3(String fileInBase64) {

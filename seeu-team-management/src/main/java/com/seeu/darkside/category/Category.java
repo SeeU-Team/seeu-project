@@ -10,5 +10,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Category {
-    private Long idCategory;
+    private Long id;
 }
