@@ -11,6 +11,7 @@ import com.seeu.darkside.rs.dto.*;
 import com.seeu.darkside.tag.TagEntity;
 import com.seeu.darkside.tag.TagService;
 import com.seeu.darkside.tag.TeamHasTagEntity;
+import com.seeu.darkside.teamup.TeamUpEntity;
 import com.seeu.darkside.teamup.TeamUpService;
 import com.seeu.darkside.user.*;
 import com.seeu.darkside.utils.GenerateFileUrl;
@@ -98,11 +99,43 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<TeamProfile> getAllTeamsForCategory(Long categoryId) {
+	public TeamHasUser getTeamProfileOfMember(Long memberId) {
+
+		TeamHasUserEntity teamHasUserEntity = userService
+				.findByUserId(memberId)
+				.orElseThrow(TeammateHasNotTeamException::new);
+
+		TeamProfile teamProfile = getTeamProfile(teamHasUserEntity.getTeamId());
+
+		return TeamHasUser.builder()
+				.memberId(teamHasUserEntity.getUserId())
+				.team(teamProfile)
+				.status(teamHasUserEntity.getStatus())
+				.build();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<TeamProfile> getAllTeamsOfCategoryForTeam(Long categoryId, Long teamId) {
+		// TODO: get all teams for category that are not the team asking for, and are not already liked by it, and have not already merged with a team
+		// TODO: maybe introduce algorithm to order the result with the more interesting teams first (all teams that liked this one) ??
+		final List<TeamUpEntity> allTeamsLikedByCurrentTeam = teamUpService.getAllTeamsLikedByTeam(teamId);
+
 		return categoryService.findAllByCategoryId(categoryId)
 				.stream()
+				// remove all teams already liked by the current team
+				.filter(teamHasCategoryEntity -> !hasAlreadyBeenLiked(teamHasCategoryEntity.getTeamId(), allTeamsLikedByCurrentTeam))
+				// remove the current team in the result
+				.filter(teamHasCategoryEntity -> !teamId.equals(teamHasCategoryEntity.getTeamId()))
 				.map(teamHasCategoryEntity -> getTeamProfile(teamHasCategoryEntity.getTeamId()))
 				.collect(toList());
+	}
+
+	@Override
+	public void checkIfTeamExist(Long idTeam) {
+		teamRepository
+				.findById(idTeam)
+				.orElseThrow(() -> new TeamNotFoundException(TEAM_NOT_FOUND_MSG + idTeam));
 	}
 
 	@Override
@@ -121,30 +154,6 @@ public class TeamServiceImpl implements TeamService {
 		userService.saveAll(teamHasUserEntities);
 
 		return getTeamProfile(teammates.getIdTeam());
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public TeamHasUser getTeamProfileOfMember(Long memberId) {
-
-		TeamHasUserEntity teamHasUserEntity = userService
-				.findByUserId(memberId)
-				.orElseThrow(TeammateHasNotTeamException::new);
-
-		TeamProfile teamProfile = getTeamProfile(teamHasUserEntity.getTeamId());
-
-		return TeamHasUser.builder()
-				.memberId(teamHasUserEntity.getUserId())
-				.team(teamProfile)
-				.status(teamHasUserEntity.getStatus())
-				.build();
-	}
-
-	@Override
-	public void checkIfTeamExist(Long idTeam) {
-		teamRepository
-				.findById(idTeam)
-				.orElseThrow(() -> new TeamNotFoundException(TEAM_NOT_FOUND_MSG + idTeam));
 	}
 
 	@Override
@@ -257,5 +266,21 @@ public class TeamServiceImpl implements TeamService {
 				.created(now)
 				.updated(now)
 				.build();
+	}
+
+	/**
+	 * Determines if the teamId is present as liked team in the list of TeamUpEntity.
+	 * @param teamId the team to find
+	 * @param alreadyLikedTeams the list of TeamUp
+	 * @return true if the team has been liked. Otherwise, return false
+	 */
+	private boolean hasAlreadyBeenLiked(Long teamId, List<TeamUpEntity> alreadyLikedTeams) {
+		for (TeamUpEntity alreadyLikedTeam : alreadyLikedTeams) {
+			if (teamId.equals(alreadyLikedTeam.getIdLiked())) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

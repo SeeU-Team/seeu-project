@@ -19,6 +19,10 @@ public interface TeamUpService {
 
 	Optional<Long> getMergedTeamId(Long teamId);
 
+	List<TeamUpEntity> getAllTeamsLikedByTeam(Long teamId);
+
+	List<MergeEntity> getAllTeamsAlreadyMergedByTeam(Long teamId);
+
 	TeamUpEntity likeTeam(TeamLike teamLike) throws TeamNotFoundException;
 
 	MergeEntity mergeTeam(TeamMerge teamMerge);

@@ -59,6 +59,11 @@ public class LikeController {
 				.orElseThrow(() -> new TeamNotFoundException("No merged team found for the team with id " + teamId));
 	}
 
+	@GetMapping(value = "/allMerged", params = "teamId")
+	public List<MergeEntity> getAllMergedTeamsByTeam(@RequestParam("teamId") Long teamId) {
+		return teamUpService.getAllTeamsAlreadyMergedByTeam(teamId);
+	}
+
     @PostMapping("/like")
     @ResponseBody
     @ResponseStatus(CREATED)

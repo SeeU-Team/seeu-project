@@ -15,4 +15,8 @@ public interface TeamUpRepository extends JpaRepository<TeamUpEntity, Long> {
 
     @Query("select t from TeamUpEntity t where t.idLike = ?1 or t.idLiked = ?1")
     List<TeamUpEntity> findAllByIdLikeOrIdLiked(Long id);
+
+	// Override the query because the spring jpa is lost with the field IdLike (the sql 'like' word).
+	@Query("select t from TeamUpEntity t where t.idLike = ?1")
+    List<TeamUpEntity> findAllByIdLike(Long idLike);
 }

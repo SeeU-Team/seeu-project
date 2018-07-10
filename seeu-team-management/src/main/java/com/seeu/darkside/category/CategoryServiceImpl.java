@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -34,10 +35,9 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	public List<CategoryEntity> getCategoryEntitiesFromIds(List<TeamHasCategoryEntity> categoryEntitiesIds) {
-		List<CategoryEntity> categoryEntities = new ArrayList<>();
-		for (TeamHasCategoryEntity categoryEntityId : categoryEntitiesIds)
-			categoryEntities.add(categoryServiceProxy.getCategoryInfo(categoryEntityId.getCategoryId()));
-		return categoryEntities;
+		return categoryEntitiesIds.stream()
+				.map(teamHasCategoryEntity -> categoryServiceProxy.getCategoryInfo(teamHasCategoryEntity.getCategoryId()))
+				.collect(toList());
 	}
 
 	@Override

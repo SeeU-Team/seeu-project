@@ -46,11 +46,10 @@ public class TeamController {
         return teamService.getTeamProfileOfMember(memberId);
     }
 
-    @GetMapping(params = {"categoryId"})
-	public List<TeamProfile> getAllTeamsForCategory(@RequestParam("categoryId") Long categoryId) {
-		// TODO: get all teams for category that are not the team asking for, and are not already liked by it, and have not already merged with a team
-		// TODO: maybe introduce algorithm to order the result with the more interesting teams first (all teams that liked this one) ??
-		return teamService.getAllTeamsForCategory(categoryId);
+    @GetMapping(params = {"categoryId", "teamId"})
+	public List<TeamProfile> getAllTeamsOfCategoryForTeam(@RequestParam("categoryId") Long categoryId,
+													@RequestParam("teamId") Long teamId) {
+		return teamService.getAllTeamsOfCategoryForTeam(categoryId, teamId);
 	}
 
 	@PostMapping

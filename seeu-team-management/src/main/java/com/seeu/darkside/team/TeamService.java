@@ -9,19 +9,17 @@ import java.util.List;
 public interface TeamService {
 	List<TeamDto> getAllTeams();
 
-	TeamProfile createTeam(TeamCreation teamCreation, String imageBase64);
-
 	TeamProfile getTeamProfile(Long idTeam);
 
 	TeamHasUser getTeamProfileOfMember(Long memberId);
 
-	List<TeamProfile> getAllTeamsForCategory(Long categoryId);
+	List<TeamProfile> getAllTeamsOfCategoryForTeam(Long categoryId, Long teamId);
 
-	//TeamProfile createTeam(TeamCreation teamCreation, String profilePhotoUrl);
+	void checkIfTeamExist(Long idTeam);
 
 	TeamProfile addTeammates(AddTeammate teammates);
 
-	void checkIfTeamExist(Long idTeam);
+	TeamProfile createTeam(TeamCreation teamCreation, String imageBase64);
 
 	void updateTeam(TeamUpdate team, String profilePicture);
 }

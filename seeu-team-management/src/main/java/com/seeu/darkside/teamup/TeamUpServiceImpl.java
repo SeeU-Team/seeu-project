@@ -76,6 +76,18 @@ public class TeamUpServiceImpl implements TeamUpService {
 		return Optional.empty();
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<TeamUpEntity> getAllTeamsLikedByTeam(Long teamId) {
+    	return teamUpRepository.findAllByIdLike(teamId);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<MergeEntity> getAllTeamsAlreadyMergedByTeam(Long teamId) {
+		return mergeRepository.findAllByIdFirst(teamId);
+	}
+
     @Override
     @Transactional
     public TeamUpEntity likeTeam(TeamLike teamLike) {

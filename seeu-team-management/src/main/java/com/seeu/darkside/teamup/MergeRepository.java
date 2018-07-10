@@ -15,4 +15,6 @@ public interface MergeRepository extends JpaRepository<MergeEntity, Long> {
 
 	@Query("select m from MergeEntity m where m.idFirst = ?1 or m.idSecond = ?1")
 	List<MergeEntity> findAllByIdFirstOrIdSecond(Long idTeam);
+
+	List<MergeEntity> findAllByIdFirst(Long idFirst);
 }
