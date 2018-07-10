@@ -3,9 +3,12 @@ package com.seeu.darkside.user;
 import com.amazonaws.services.s3.AmazonS3;
 import com.seeu.darkside.facebook.FacebookRequestException;
 import com.seeu.darkside.facebook.FacebookService;
-import com.seeu.darkside.facebook.FacebookUser;
 import com.seeu.darkside.message.MessageServiceProxy;
+import com.seeu.darkside.team.TeamServiceProxy;
 import com.seeu.darkside.utils.GenerateFileUrl;
+import feign.FeignException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,16 +32,22 @@ public class UserServiceImpl implements UserService {
 	private final FacebookService facebookService;
 	private final MessageServiceProxy messageServiceProxy;
 	private final AmazonS3 amazonS3;
+	private final TeamServiceProxy teamServiceProxy;
 
+	@Autowired
 	public UserServiceImpl(final UserRepository userRepository,
 						   final UserAdapter userAdapter,
-						   final FacebookService facebookService, MessageServiceProxy messageServiceProxy, AmazonS3 amazonS3) {
+						   final FacebookService facebookService,
+						   final MessageServiceProxy messageServiceProxy,
+						   final AmazonS3 amazonS3,
+						   final TeamServiceProxy teamServiceProxy) {
 
 		this.userRepository = userRepository;
 		this.userAdapter = userAdapter;
 		this.facebookService = facebookService;
 		this.messageServiceProxy = messageServiceProxy;
 		this.amazonS3 = amazonS3;
+		this.teamServiceProxy = teamServiceProxy;
 	}
 
 	@Override
@@ -84,12 +93,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserDto> getFacebookFriends(String accessToken) throws FacebookRequestException {
-		List<FacebookUser> facebookUserFriends = facebookService.getFacebookUserFriends(accessToken);
 
-		return facebookUserFriends
+		return facebookService.getFacebookUserFriends(accessToken)
 				.stream()
 				.map(facebookUser -> getUserByFacebookId(facebookUser.getId()))
 				.filter(Objects::nonNull)
+				// remove all users that already belong to a team
+				.filter(userDto -> !alreadyBelongsToATeam(userDto))
 				.collect(toList());
 	}
 
@@ -202,6 +212,26 @@ public class UserServiceImpl implements UserService {
 		userDto.setProfilePhotoUrl(url.toExternalForm());
 
 		return userDto;
+	}
+
+	/**
+	 * Determines if the user belongs to a team or not.
+	 * @param userDto the user
+	 * @return true if the user already belongs to a team. Otherwise, return false
+	 */
+	private boolean alreadyBelongsToATeam(UserDto userDto) {
+		try {
+			teamServiceProxy.getTeamOfMember(userDto.getId());
+			return true;
+		} catch (FeignException e) {
+			if (HttpStatus.NOT_FOUND.value() == e.status()) {
+				return false;
+			} else {
+				e.printStackTrace();
+			}
+		}
+
+		return false;
 	}
 }
 
