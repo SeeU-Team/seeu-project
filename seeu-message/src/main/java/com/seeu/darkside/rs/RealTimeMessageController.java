@@ -34,7 +34,9 @@ public class RealTimeMessageController {
 		CompleteMessageDto<User> completeMessageDto = messageService.createUserMessage(userId, newMessage);
 
 		// Send the message back to its owner
-		messagingTemplate.convertAndSend("/topic/user/" + completeMessageDto.getOwner().getId(), completeMessageDto);
+		if (!userId.equals(completeMessageDto.getOwner().getId())) {
+			messagingTemplate.convertAndSend("/topic/user/" + completeMessageDto.getOwner().getId(), completeMessageDto);
+		}
 
 		return completeMessageDto;
 	}
