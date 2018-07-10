@@ -50,6 +50,32 @@ public class TeamUpServiceImpl implements TeamUpService {
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public Optional<Long> getMergedTeamId(Long teamId) {
+		List<MergeEntity> mergeEntities = mergeRepository.findAllByIdFirstOrIdSecond(teamId);
+
+		for (int i = 0; i < mergeEntities.size() - 1; i++) {
+			for (int j = i + 1; j < mergeEntities.size(); j++) {
+				MergeEntity firstMerge = mergeEntities.get(i);
+				MergeEntity secondMerge = mergeEntities.get(j);
+
+				// Mutually merged
+				if (firstMerge.getIdFirst().equals(secondMerge.getIdSecond())
+						&& firstMerge.getIdSecond().equals(secondMerge.getIdFirst())) {
+
+					Long otherTeamId = firstMerge.getIdFirst().equals(teamId)
+							? firstMerge.getIdSecond()
+							: firstMerge.getIdFirst();
+
+					return Optional.of(otherTeamId);
+				}
+			}
+		}
+
+		return Optional.empty();
+	}
+
     @Override
     @Transactional
     public TeamUpEntity likeTeam(TeamLike teamLike) {
@@ -113,11 +139,8 @@ public class TeamUpServiceImpl implements TeamUpService {
 	 * @param teamMerge the merge to do
 	 */
 	private void checkNotAlreadyMerge(TeamMerge teamMerge) {
-		List<MergeEntity> firstList = mergeRepository.findAllByIdFirstOrIdSecond(teamMerge.getIdFirst());
-		boolean hasFirstTeamMerged = getMergedTeamId(firstList, teamMerge.getIdFirst()).isPresent();
-
-		List<MergeEntity> secondList = mergeRepository.findAllByIdFirstOrIdSecond(teamMerge.getIdSecond());
-		boolean hasSecondTeamMerged = getMergedTeamId(secondList, teamMerge.getIdSecond()).isPresent();
+		boolean hasFirstTeamMerged = getMergedTeamId(teamMerge.getIdFirst()).isPresent();
+		boolean hasSecondTeamMerged = getMergedTeamId(teamMerge.getIdSecond()).isPresent();
 
 		if (hasFirstTeamMerged
 				|| hasSecondTeamMerged) {
@@ -158,28 +181,5 @@ public class TeamUpServiceImpl implements TeamUpService {
 				.stream()
 				.distinct()
 				.collect(Collectors.toList());
-	}
-
-	private Optional<Long> getMergedTeamId(List<MergeEntity> mergeEntities, Long teamId) {
-
-		for (int i = 0; i < mergeEntities.size() - 1; i++) {
-			for (int j = i + 1; i < mergeEntities.size(); j++) {
-				MergeEntity firstMerge = mergeEntities.get(i);
-				MergeEntity secondMerge = mergeEntities.get(j);
-
-				// Mutually merged
-				if (firstMerge.getIdFirst().equals(secondMerge.getIdSecond())
-						&& firstMerge.getIdSecond().equals(secondMerge.getIdFirst())) {
-
-					Long otherTeamId = firstMerge.getIdFirst().equals(teamId)
-							? firstMerge.getIdSecond()
-							: firstMerge.getIdFirst();
-
-					return Optional.of(otherTeamId);
-				}
-			}
-		}
-
-		return Optional.empty();
 	}
 }

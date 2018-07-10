@@ -3,11 +3,12 @@ package com.seeu.darkside.rs;
 import com.seeu.darkside.rs.dto.TeamLike;
 import com.seeu.darkside.rs.dto.TeamMerge;
 import com.seeu.darkside.rs.dto.TeamProfile;
+import com.seeu.darkside.team.TeamNotFoundException;
+import com.seeu.darkside.team.TeamService;
 import com.seeu.darkside.teamup.MergeEntity;
 import com.seeu.darkside.teamup.TeamUpEntity;
 import com.seeu.darkside.teamup.TeamUpService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,18 +16,19 @@ import javax.validation.Valid;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("/likes")
 public class LikeController {
 
     private final TeamUpService teamUpService;
+    private final TeamService teamService;
 
     @Autowired
-    public LikeController(TeamUpService teamUpService) {
+    public LikeController(TeamUpService teamUpService, TeamService teamService) {
         this.teamUpService = teamUpService;
-    }
+		this.teamService = teamService;
+	}
 
 	/**
 	 * DEBUG
@@ -47,6 +49,14 @@ public class LikeController {
     @GetMapping(params = "teamId")
     public List<TeamProfile> getAllMutuallyLikedTeams(@RequestParam("teamId") Long teamId) {
 		return teamUpService.getAllMutuallyLikedTeams(teamId);
+	}
+
+	@GetMapping(value = "/merged", params = "teamId")
+	public TeamProfile getMergedTeam(@RequestParam("teamId") Long teamId) {
+		return teamUpService
+				.getMergedTeamId(teamId)
+				.map(teamService::getTeamProfile)
+				.orElseThrow(() -> new TeamNotFoundException("No merged team found for the team with id " + teamId));
 	}
 
     @PostMapping("/like")

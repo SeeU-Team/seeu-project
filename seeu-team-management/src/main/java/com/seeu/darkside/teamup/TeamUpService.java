@@ -7,6 +7,7 @@ import com.seeu.darkside.team.TeamNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TeamUpService {
 
@@ -16,8 +17,9 @@ public interface TeamUpService {
 
 	List<TeamProfile> getAllMutuallyLikedTeams(Long teamId);
 
+	Optional<Long> getMergedTeamId(Long teamId);
+
 	TeamUpEntity likeTeam(TeamLike teamLike) throws TeamNotFoundException;
 
-	@Transactional
 	MergeEntity mergeTeam(TeamMerge teamMerge);
 }

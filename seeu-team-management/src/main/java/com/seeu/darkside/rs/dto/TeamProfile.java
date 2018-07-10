@@ -27,4 +27,6 @@ public class TeamProfile {
     private List<AssetEntity> assets;
     private List<CategoryEntity> categories;
     private List<TagEntity> tags;
+
+    private boolean merged;
 }
