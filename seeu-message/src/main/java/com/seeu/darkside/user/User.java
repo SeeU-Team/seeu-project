@@ -15,6 +15,8 @@ public class User {
 
 	private Long facebookId;
 
+	private String appInstanceId;
+
 	private String name;
 
 	private Gender gender;

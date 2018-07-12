@@ -1,6 +1,9 @@
 package com.seeu.darkside.rs;
 
-import com.seeu.darkside.message.*;
+import com.seeu.darkside.message.CompleteMessageDto;
+import com.seeu.darkside.message.MessageDto;
+import com.seeu.darkside.message.MessageService;
+import com.seeu.darkside.message.NewMessage;
 import com.seeu.darkside.team.Team;
 import com.seeu.darkside.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +33,7 @@ public class RealTimeMessageController {
 
 	@MessageMapping("/toUser/{userId}")
 	@SendTo("/topic/user/{userId}")
-	public CompleteMessageDto newUserMessage(@DestinationVariable Long userId, NewMessage<User> newMessage) {
+	public CompleteMessageDto<User> newUserMessage(@DestinationVariable Long userId, NewMessage<User> newMessage) {
 		CompleteMessageDto<User> completeMessageDto = messageService.createUserMessage(userId, newMessage);
 
 		// Send the message back to its owner
