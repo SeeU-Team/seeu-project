@@ -1,10 +1,8 @@
 package com.seeu.darkside.gateway.user;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient("seeu-user-management")
 public interface UserServiceProxy {
@@ -14,4 +12,8 @@ public interface UserServiceProxy {
 
 	@PostMapping(value = "/users")
 	User createNewUser(@RequestBody User userDto);
+
+	@PutMapping("/users/{id}/appInstanceId")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	void updateAppInstanceId(@PathVariable("id") Long id, @RequestBody String appInstanceId);
 }

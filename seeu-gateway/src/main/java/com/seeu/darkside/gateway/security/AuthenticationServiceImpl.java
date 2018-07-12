@@ -7,6 +7,7 @@ import com.seeu.darkside.gateway.user.UserServiceProxy;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.tuple.Tuple;
 import org.springframework.tuple.TupleBuilder;
@@ -30,13 +31,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	@Override
-	public Tuple getAuthenticationToken(@NotNull String accessToken) throws FacebookRequestException {
+	public Tuple getAuthenticationToken(@NotNull LoginBody loginBody) throws FacebookRequestException {
 		FacebookUser facebookUser;
 		User user;
 
 		try {
 			final RestTemplate restTemplate = new RestTemplate();
-			facebookUser = restTemplate.getForObject(FACEBOOK_USER_INFO_URL + accessToken, FacebookUser.class);
+			facebookUser = restTemplate.getForObject(FACEBOOK_USER_INFO_URL + loginBody.getAccessToken(), FacebookUser.class);
 		} catch (RestClientException e) {
 			throw new FacebookRequestException("An error occurred while trying to get user information", e);
 		}
@@ -47,11 +48,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		try {
 			user = userServiceProxy.getOneByFacebookId(facebookUser.getId());
+
+			userServiceProxy.updateAppInstanceId(user.getId(), loginBody.getAppInstanceId());
 		} catch (FeignException e) {
 			if (e.status() == HttpStatus.NOT_FOUND.value()) {
 				// TODO: if user doesn't already exist in DB, add it without any check ?? Or get a signal from caller that this is a first connection ??
 				// throw new UsernameNotFoundException("The user doesn't exist yet in the database");
-				user = createNewUser(facebookUser);
+				user = createNewUser(facebookUser, loginBody.getAppInstanceId());
 			} else {
 				throw e;
 			}
@@ -64,9 +67,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				.of("USER", user, "TOKEN", token);
 	}
 
-	private User createNewUser(FacebookUser facebookUser) {
+	private User createNewUser(FacebookUser facebookUser, @Nullable String appInstanceId) {
 		final User user = User.builder()
 				.facebookId(facebookUser.getId())
+				.appInstanceId(appInstanceId)
 				.name(facebookUser.getName())
 				.gender(Gender.valueOf(facebookUser.getGender().toUpperCase()))
 				.description("")
