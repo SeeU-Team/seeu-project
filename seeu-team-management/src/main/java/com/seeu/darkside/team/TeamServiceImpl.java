@@ -7,6 +7,7 @@ import com.seeu.darkside.asset.TeamHasAssetEntity;
 import com.seeu.darkside.category.CategoryEntity;
 import com.seeu.darkside.category.CategoryService;
 import com.seeu.darkside.category.TeamHasCategoryEntity;
+import com.seeu.darkside.notification.MessagingRegistrationServiceProxy;
 import com.seeu.darkside.rs.dto.*;
 import com.seeu.darkside.tag.TagEntity;
 import com.seeu.darkside.tag.TagService;
@@ -45,6 +46,7 @@ public class TeamServiceImpl implements TeamService {
 	private final AssetService assetService;
 	private final CategoryService categoryService;
 	private final TeamUpService teamUpService;
+	private final MessagingRegistrationServiceProxy messagingRegistrationServiceProxy;
 
 	@Autowired
 	public TeamServiceImpl(TeamRepository teamRepository,
@@ -54,7 +56,8 @@ public class TeamServiceImpl implements TeamService {
 						   AssetService assetService,
 						   CategoryService categoryService,
 						   AmazonS3 amazonS3,
-						   @Lazy TeamUpService teamUpService) {
+						   @Lazy TeamUpService teamUpService,
+						   MessagingRegistrationServiceProxy messagingRegistrationServiceProxy) {
 		this.teamRepository = teamRepository;
 		this.teamAdapter = teamAdapter;
 		this.amazonS3 = amazonS3;
@@ -63,6 +66,7 @@ public class TeamServiceImpl implements TeamService {
 		this.assetService = assetService;
 		this.categoryService = categoryService;
 		this.teamUpService = teamUpService;
+		this.messagingRegistrationServiceProxy = messagingRegistrationServiceProxy;
 	}
 
 	@Override
@@ -117,7 +121,7 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<TeamProfile> getAllTeamsOfCategoryForTeam(Long categoryId, Long teamId) {
-		// TODO: get all teams for category that are not the team asking for, and are not already liked by it, and have not already merged with a team
+		// TODO: get all teams for category that have not already merged with a team
 		// TODO: maybe introduce algorithm to order the result with the more interesting teams first (all teams that liked this one) ??
 		final List<TeamUpEntity> allTeamsLikedByCurrentTeam = teamUpService.getAllTeamsLikedByTeam(teamId);
 
@@ -186,6 +190,8 @@ public class TeamServiceImpl implements TeamService {
 		List<CategoryEntity> categoryEntities = categoryService.getCategoryEntitiesFromIds(teamHasCategoryToSave);
 		List<TagEntity> tagEntities = tagService.getTagsEntitiesFromIds(teamHasTagToSave);
 		List<UserEntity> members = userService.getAllMembersFromIds(teamHasUserToSave);
+
+		updateTeamRegistrationTopics(teamHasUserToSave, members, idTeam);
 
 		URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, fileName);
 
@@ -282,5 +288,22 @@ public class TeamServiceImpl implements TeamService {
 		}
 
 		return false;
+	}
+
+	private void updateTeamRegistrationTopics(List<TeamHasUserEntity> teamHasUserToSave, List<UserEntity> users, Long teamId) {
+		List<String> registrationTokens = users.stream()
+				.map(UserEntity::getAppInstanceId)
+				.collect(toList());
+
+		messagingRegistrationServiceProxy.registerTeamTopic(registrationTokens, teamId);
+
+		// Register the leader to the leader topic
+		teamHasUserToSave.stream()
+				.filter(teamHasUserEntity -> TeammateStatus.LEADER.equals(teamHasUserEntity.getStatus()))
+				.findFirst()
+				.ifPresent(teamHasUserEntity -> users.stream()
+						.filter(userEntity -> teamHasUserEntity.getUserId().equals(userEntity.getId()))
+						.findFirst()
+						.ifPresent(userEntity -> messagingRegistrationServiceProxy.registerLeaderTopic(userEntity.getAppInstanceId(), teamId)));
 	}
 }

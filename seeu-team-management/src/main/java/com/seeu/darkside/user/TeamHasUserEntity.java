@@ -3,6 +3,7 @@ package com.seeu.darkside.user;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Builder
 @NoArgsConstructor
@@ -27,11 +28,16 @@ public class TeamHasUserEntity {
     private TeammateStatus status;
 
     @Override
-    public boolean equals(Object obj) {
-        boolean sameSame = false;
-        if (obj != null && obj instanceof TeamHasUserEntity) {
-            sameSame = this.userId == ((TeamHasUserEntity) obj).getUserId();
-        }
-        return sameSame;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TeamHasUserEntity)) return false;
+        TeamHasUserEntity that = (TeamHasUserEntity) o;
+        return Objects.equals(userId, that.userId);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(userId);
     }
 }

@@ -86,6 +86,9 @@ public class UserServiceImpl implements UserService {
 		teamHasUserRepository.deleteAll(membersToRemove);
 		teamHasUserRepository.saveAll(membersToAdd);
 
+		// TODO: remove registration for team topic for membersToRemove
+		// TODO: add registration for team topic for membersToAdd
+
 		return membersToAdd;
 	}
 
@@ -96,6 +99,7 @@ public class UserServiceImpl implements UserService {
 			UserEntity userEntity = UserEntity.builder()
 					.id(oneUser.getId())
 					.facebookId(oneUser.getFacebookId())
+					.appInstanceId(oneUser.getAppInstanceId())
 					.name(oneUser.getName())
 					.gender(oneUser.getGender())
 					.email(oneUser.getEmail())

@@ -21,6 +21,8 @@ public class UserDto {
     @NotNull
     private Long facebookId;
 
+    private String appInstanceId;
+
 	@NotEmpty
     private String name;
 
