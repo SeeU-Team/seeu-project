@@ -4,7 +4,10 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.seeu.darkside.facebook.FacebookRequestException;
 import com.seeu.darkside.facebook.FacebookService;
 import com.seeu.darkside.message.MessageServiceProxy;
+import com.seeu.darkside.notification.MessagingRegistrationServiceProxy;
+import com.seeu.darkside.team.TeamHasUser;
 import com.seeu.darkside.team.TeamServiceProxy;
+import com.seeu.darkside.team.TeammateStatus;
 import com.seeu.darkside.utils.GenerateFileUrl;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,7 @@ public class UserServiceImpl implements UserService {
 	private final MessageServiceProxy messageServiceProxy;
 	private final AmazonS3 amazonS3;
 	private final TeamServiceProxy teamServiceProxy;
+	private final MessagingRegistrationServiceProxy messagingRegistrationServiceProxy;
 
 	@Autowired
 	public UserServiceImpl(final UserRepository userRepository,
@@ -40,7 +44,8 @@ public class UserServiceImpl implements UserService {
 						   final FacebookService facebookService,
 						   final MessageServiceProxy messageServiceProxy,
 						   final AmazonS3 amazonS3,
-						   final TeamServiceProxy teamServiceProxy) {
+						   final TeamServiceProxy teamServiceProxy,
+						   MessagingRegistrationServiceProxy messagingRegistrationServiceProxy) {
 
 		this.userRepository = userRepository;
 		this.userAdapter = userAdapter;
@@ -48,6 +53,7 @@ public class UserServiceImpl implements UserService {
 		this.messageServiceProxy = messageServiceProxy;
 		this.amazonS3 = amazonS3;
 		this.teamServiceProxy = teamServiceProxy;
+		this.messagingRegistrationServiceProxy = messagingRegistrationServiceProxy;
 	}
 
 	@Override
@@ -131,6 +137,8 @@ public class UserServiceImpl implements UserService {
 		UserEntity userEntity = userAdapter.dtoToEntity(userDto);
 		userEntity = userRepository.save(userEntity);
 
+		updateRegistrationTopics(userEntity);
+
 		return getCompleteUserDto(userEntity);
 	}
 
@@ -158,6 +166,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public void update(UserDto userDto, String profilePicture) {
 		UserEntity userEntity = userRepository
 				.findById(userDto.getId())
@@ -179,6 +188,40 @@ public class UserServiceImpl implements UserService {
 		userEntity.setUpdated(newUpdatedDate);
 
 		userRepository.save(userEntity);
+	}
+
+	@Override
+	@Transactional
+	public void updateAppInstanceId(Long id, String appInstanceId) {
+		UserEntity userEntity = userRepository
+				.findById(id)
+				.orElseThrow(UserNotFoundException::new);
+
+		userEntity.setAppInstanceId(appInstanceId);
+
+		userEntity = userRepository.save(userEntity);
+
+		updateRegistrationTopics(userEntity);
+	}
+
+	private void updateRegistrationTopics(UserEntity userEntity) {
+		String appInstanceId = userEntity.getAppInstanceId();
+
+		if (null == appInstanceId) {
+			return;
+		}
+
+		try {
+			messagingRegistrationServiceProxy.registerUserTopic(appInstanceId, userEntity.getId());
+			TeamHasUser teamHasUser = teamServiceProxy.getTeamOfMember(userEntity.getId());
+			messagingRegistrationServiceProxy.registerTeamTopic(Collections.singletonList(appInstanceId), teamHasUser.getTeam().getId());
+
+			if (TeammateStatus.LEADER.equals(teamHasUser.getStatus())) {
+				messagingRegistrationServiceProxy.registerLeaderTopic(appInstanceId, teamHasUser.getTeam().getId());
+			}
+		} catch (FeignException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private String savePngInAmazonS3(String profilePhotoBase64) {

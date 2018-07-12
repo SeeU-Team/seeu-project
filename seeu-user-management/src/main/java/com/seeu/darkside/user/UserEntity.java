@@ -22,6 +22,9 @@ public class UserEntity {
     @Column
 	private Long facebookId;
 
+    @Column(name = "app_instance_id")
+	private String appInstanceId;
+
     @Column(name = "user_name")
     private String name;
 
