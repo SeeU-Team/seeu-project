@@ -48,7 +48,7 @@ public class TagContollerIT {
                 .get("/tags?tagId=2")
         .then()
                 .statusCode(200)
-                .body("idTag", is(2))
+                .body("id", is(2))
                 .body("name", is("tag2"));
     }
 

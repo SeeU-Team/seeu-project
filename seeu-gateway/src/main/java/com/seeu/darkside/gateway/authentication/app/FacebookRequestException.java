@@ -1,4 +1,4 @@
-package com.seeu.darkside.gateway.security;
+package com.seeu.darkside.gateway.authentication.app;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

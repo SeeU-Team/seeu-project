@@ -1,5 +1,6 @@
 package com.seeu.darkside.gateway.security;
 
+import com.seeu.darkside.gateway.admin.AdminEntity;
 import com.seeu.darkside.gateway.user.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,7 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 @Component
-public class TokenAuthenticationUtil {
+public class TokenAuthentication {
 
 	@Value("${token.config.secret}")
 	private String secret;
@@ -36,6 +37,15 @@ public class TokenAuthenticationUtil {
 		return Jwts.builder()
 //				.claim("user", user)
 				.setSubject(user.getId().toString())
+				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+				.signWith(SignatureAlgorithm.HS512, getSecretKey())
+				.compact();
+	}
+
+	public String generateToken(final AdminEntity adminEntity) {
+		return Jwts.builder()
+//				.claim("admin", adminEntity)
+				.setSubject(adminEntity.getId().toString())
 				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
 				.signWith(SignatureAlgorithm.HS512, getSecretKey())
 				.compact();

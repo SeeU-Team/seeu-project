@@ -1,5 +1,6 @@
 package com.seeu.darkside.message;
 
+import com.seeu.darkside.notification.NotificationService;
 import com.seeu.darkside.rs.MessageCreationException;
 import com.seeu.darkside.team.Team;
 import com.seeu.darkside.user.User;
@@ -13,9 +14,11 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 public class MessageServiceImpl implements MessageService {
 
 	private final MessageServiceProxy messageService;
+	private final NotificationService notificationService;
 
-	public MessageServiceImpl(MessageServiceProxy messageService) {
+	public MessageServiceImpl(MessageServiceProxy messageService, NotificationService notificationService) {
 		this.messageService = messageService;
+		this.notificationService = notificationService;
 	}
 
 	@Override
@@ -31,6 +34,7 @@ public class MessageServiceImpl implements MessageService {
 
 		try {
 			result = messageService.createUserMessage(messageDto);
+			notificationService.sendUserToUserMessageNotification(result, userId);
 		} catch (FeignException e) {
 			handleMessageServiceProxyException(e);
 		}
@@ -51,6 +55,7 @@ public class MessageServiceImpl implements MessageService {
 
 		try {
 			result = messageService.createUserMessage(messageDto);
+			notificationService.sendTeamMessageNotification(result, teamId);
 		} catch (FeignException e) {
 			handleMessageServiceProxyException(e);
 		}
@@ -71,6 +76,7 @@ public class MessageServiceImpl implements MessageService {
 
 		try {
 			result = messageService.createTeamMessage(messageDto);
+			notificationService.sendBeforeMessageNotification(result, teamId);
 		} catch (FeignException e) {
 			handleMessageServiceProxyException(e);
 		}

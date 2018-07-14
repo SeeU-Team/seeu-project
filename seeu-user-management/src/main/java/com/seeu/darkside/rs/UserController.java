@@ -74,6 +74,12 @@ public class UserController {
         userService.update(userUpdateRoot.getMember(), userUpdateRoot.getProfilePicture());
     }
 
+    @PutMapping("/{id}/appInstanceId")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void updateAppInstanceId(@PathVariable("id") Long id, @RequestBody String appInstanceId) {
+		userService.updateAppInstanceId(id, appInstanceId);
+	}
+
 	@PutMapping("{id}")
 	public UserDto updateDescription(@PathVariable("id") Long id, @RequestBody String description) {
 		return userService.updateDescription(id, description);

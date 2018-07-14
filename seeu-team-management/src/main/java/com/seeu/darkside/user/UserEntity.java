@@ -1,9 +1,6 @@
 package com.seeu.darkside.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -12,6 +9,8 @@ import java.util.Date;
 
 @Data
 @Builder
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserEntity {
@@ -20,6 +19,8 @@ public class UserEntity {
 
     @NotNull
     private Long facebookId;
+
+    private String appInstanceId;
 
 	@NotEmpty
     private String name;

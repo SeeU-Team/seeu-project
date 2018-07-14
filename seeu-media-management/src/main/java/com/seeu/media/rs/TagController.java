@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -27,7 +28,7 @@ public class TagController {
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public TagEntity createNewTagIfNotExist(@RequestBody TagDto tagDto) {
+    public TagEntity createNewTagIfNotExist(@RequestBody @Valid TagDto tagDto) {
 
         if (tagDto.getName() == null) {
             throw new TagNameIsNullException("Tag name is null");
@@ -35,28 +36,24 @@ public class TagController {
         return tagService.createTagIfNotExist(tagDto);
     }
 
-    @GetMapping
-    public TagEntity getTagInfo(@RequestParam Long tagId) {
+    @GetMapping("/{id}")
+    public TagEntity getTagInfo(@PathVariable("id") Long tagId) {
         return tagService.getTag(tagId);
     }
 
     @PutMapping
     public ResponseEntity updateTagInfo(@RequestBody TagDto tag) {
-        tagService.updateTagName(tag.getIdTag(), tag.getName());
+        tagService.updateTagName(tag.getId(), tag.getName());
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @DeleteMapping
-    public ResponseEntity deleteTag(@RequestParam Long idTag) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteTag(@PathVariable("id") Long idTag) {
         tagService.deleteTag(idTag);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    /**
-     * DEBUG
-     * @return
-     */
-    @GetMapping("/list")
+    @GetMapping
     public List<TagEntity> listTags() {
         return tagService.getAllTags();
     }

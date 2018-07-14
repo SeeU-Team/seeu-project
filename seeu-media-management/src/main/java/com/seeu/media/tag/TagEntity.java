@@ -1,13 +1,13 @@
 package com.seeu.media.tag;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Builder
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -17,7 +17,7 @@ public class TagEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_tag")
-    private Long idTag;
+    private Long id;
 
     @Column
     private String name;
@@ -30,42 +30,10 @@ public class TagEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updated;
 
-    public Long getIdTag() {
-        return idTag;
-    }
-
-    public void setIdTag(Long idTag) {
-        this.idTag = idTag;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public Date getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(Date updated) {
-        this.updated = updated;
-    }
-
     @Override
     public String toString() {
         return "TagEntity{" +
-                "idTag=" + idTag +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", created=" + created +
                 ", updated=" + updated +

@@ -19,4 +19,6 @@ public interface UserService {
     void deleteUser(Long id);
 
 	void update(UserDto userDto, String profilePicture);
+
+	void updateAppInstanceId(Long id, String appInstanceId);
 }

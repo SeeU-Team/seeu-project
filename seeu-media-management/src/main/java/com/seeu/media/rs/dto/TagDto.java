@@ -1,30 +1,20 @@
 package com.seeu.media.rs.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class TagDto {
-    private Long idTag;
 
+    private Long id;
+
+    @NotNull
+    @NotEmpty
     private String name;
-
-    public Long getIdTag() {
-        return idTag;
-    }
-
-    public void setIdTag(Long idTag) {
-        this.idTag = idTag;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }
