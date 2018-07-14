@@ -22,5 +22,5 @@ public interface AssetService {
 
     void updateImageLight(MultipartFile imageLight, Long assetId);
 
-	List<AssetEntity> getAssetsWithUrls(Long assetId);
+	List<AssetEntity> getAssetsWithUrls();
 }
