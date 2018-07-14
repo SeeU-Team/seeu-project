@@ -36,7 +36,7 @@ public class AssetController {
     @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity createAsset(@RequestParam("imageDark") MultipartFile imageDark, @RequestParam("imageLight") MultipartFile imageLight, @RequestParam("name") String name) {
+    public void createAsset(@RequestParam("imageDark") MultipartFile imageDark, @RequestParam("imageLight") MultipartFile imageLight, @RequestParam("name") String name) {
 
         if (imageLight == null)
             throw new AssetFileIsNullException("Asset file 1 or 2 is null");
@@ -44,8 +44,6 @@ public class AssetController {
             throw new AssetNameIsNullException("Asset name is null");
 
         assetService.createAsset(imageDark, imageLight, name);
-
-        return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping
