@@ -148,4 +148,9 @@ public class AssetServiceImpl implements AssetService {
 
 		return allAssets;
 	}
-}
+
+	@Override
+	public void deleteAsset(Long idAsset) {
+		assetRepository.deleteById(idAsset);
+	}
+}	

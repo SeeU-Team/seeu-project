@@ -123,6 +123,12 @@ public class AssetController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @DeleteMapping("/{idAsset}")
+    public ResponseEntity deleteCategory(@PathVariable("idAsset") Long idAsset) {
+        assetService.deleteAsset(idAsset);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
     /**
      * DEBUG
      *
