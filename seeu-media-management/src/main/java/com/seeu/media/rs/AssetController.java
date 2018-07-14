@@ -54,7 +54,7 @@ public class AssetController {
     }
 
     @GetMapping("/all")
-    public List<AssetEntity> getAssetInfoWithImage() {
+    public List <AssetEntity> getAssetInfoWithImage() {
         return assetService.getAssetsWithUrls();
     }
 

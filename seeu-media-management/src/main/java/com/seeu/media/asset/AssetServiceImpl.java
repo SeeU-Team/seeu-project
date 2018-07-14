@@ -129,7 +129,7 @@ public class AssetServiceImpl implements AssetService {
 	}
 
 	@Override
-	public List<AssetEntity> getAssetsWithUrls(Long assetId) {
+	public List<AssetEntity> getAssetsWithUrls() {
 		List<AssetEntity> allAssets = getAllAssets();
 
 		for (AssetEntity asset : allAssets) {
