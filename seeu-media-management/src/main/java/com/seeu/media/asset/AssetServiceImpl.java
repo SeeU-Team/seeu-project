@@ -45,14 +45,19 @@ public class AssetServiceImpl implements AssetService {
 
 	@Override
 	public AssetEntity createAsset(MultipartFile imageDark, MultipartFile imageLight, String name) {
-		String file1extension = FilenameUtils.getExtension(imageDark.getOriginalFilename());
+		String darkFileName = "";
+		if (imageDark != null) {
+			String file1extension = FilenameUtils.getExtension(imageDark.getOriginalFilename());
+			darkFileName = name + DARK_VALUE + file1extension;
+		}
 		String file2extension = FilenameUtils.getExtension(imageLight.getOriginalFilename());
-		String darkFileName = name + DARK_VALUE + file1extension;
 		String lightFileName = name + LIGHT_VALUE + file2extension;
 		Date now = new Date();
 
 		try {
-			amazonS3.putObject(BUCKET_SOURCE, darkFileName, imageDark.getInputStream(), null);
+			if (imageDark != null) {
+				amazonS3.putObject(BUCKET_SOURCE, darkFileName, imageDark.getInputStream(), null);
+			}
 			amazonS3.putObject(BUCKET_SOURCE, lightFileName, imageLight.getInputStream(), null);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -133,9 +138,11 @@ public class AssetServiceImpl implements AssetService {
 		List<AssetEntity> allAssets = getAllAssets();
 
 		for (AssetEntity asset : allAssets) {
-			URL urlDark = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, asset.getImageDark());
+			if (asset.getImageDark() != null) {
+				URL urlDark = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, asset.getImageDark());
+				asset.setImageDark(urlDark.toExternalForm());
+			}
 			URL urlLight = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, asset.getImageLight());
-			asset.setImageDark(urlDark.toExternalForm());
 			asset.setImageLight(urlLight.toExternalForm());
 		}
 

@@ -38,7 +38,7 @@ public class AssetController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity createAsset(@RequestParam("imageDark") MultipartFile imageDark, @RequestParam("imageLight") MultipartFile imageLight, @RequestParam("name") String name) {
 
-        if (imageDark == null || imageLight == null)
+        if (imageLight == null)
             throw new AssetFileIsNullException("Asset file 1 or 2 is null");
         if (name == null)
             throw new AssetNameIsNullException("Asset name is null");
