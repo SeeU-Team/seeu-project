@@ -53,21 +53,11 @@ public class AssetController {
         return assetService.getAsset(assetId);
     }
 
-    @GetMapping("/dark/download")
-    public void getDarkImageById(@RequestParam Long assetId, HttpServletResponse response) throws IOException {
-        S3Object s3Object = assetService.getImageDark(assetId);
-        InputStream inputStream = s3Object.getObjectContent();
-        response.setHeader("Content-Disposition", "attachment; filename=" + s3Object.getKey());
-        FileCopyUtils.copy(inputStream, response.getOutputStream());
+    @GetMapping("/{id}")
+    public AssetEntity getAssetInfoWithImage(@PathVariable("id") Long assetId) {
+        return assetService.getAssetWithUrls(assetId);
     }
 
-    @GetMapping("/light/download")
-    public void getLightImageById(@RequestParam Long assetId, HttpServletResponse response) throws IOException {
-        S3Object s3Object = assetService.getImageLight(assetId);
-        InputStream inputStream = s3Object.getObjectContent();
-        response.setHeader("Content-Disposition", "attachment; filename=" + s3Object.getKey());
-        FileCopyUtils.copy(inputStream, response.getOutputStream());
-    }
 
     @GetMapping("/dark")
     public AssetDto getDarkImageByIdJson(@RequestParam Long assetId, HttpServletResponse response) throws IOException {
@@ -87,6 +77,22 @@ public class AssetController {
         String base64String = Base64.encodeBase64String(image);
         AssetDto assetDto = new AssetDto(s3Object.getKey(), base64String);
         return assetDto;
+    }
+
+    @GetMapping("/dark/download")
+    public void getDarkImageById(@RequestParam Long assetId, HttpServletResponse response) throws IOException {
+        S3Object s3Object = assetService.getImageDark(assetId);
+        InputStream inputStream = s3Object.getObjectContent();
+        response.setHeader("Content-Disposition", "attachment; filename=" + s3Object.getKey());
+        FileCopyUtils.copy(inputStream, response.getOutputStream());
+    }
+
+    @GetMapping("/light/download")
+    public void getLightImageById(@RequestParam Long assetId, HttpServletResponse response) throws IOException {
+        S3Object s3Object = assetService.getImageLight(assetId);
+        InputStream inputStream = s3Object.getObjectContent();
+        response.setHeader("Content-Disposition", "attachment; filename=" + s3Object.getKey());
+        FileCopyUtils.copy(inputStream, response.getOutputStream());
     }
 
     @PutMapping(value = "/dark", consumes = MULTIPART_FORM_DATA_VALUE)
