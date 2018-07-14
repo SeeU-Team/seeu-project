@@ -4,12 +4,10 @@ import com.seeu.darkside.gateway.authentication.admin.AdminLoginBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
@@ -22,6 +20,11 @@ public class AdminController {
 		this.adminService = adminService;
 	}
 
+	@GetMapping
+	public List<AdminEntity> getAllAdmins() {
+		return adminService.getAllAdmins();
+	}
+
 	@PostMapping
 	public ResponseEntity addAdmin(@RequestBody @Valid AdminLoginBody adminBody) {
 		try {
@@ -31,5 +34,10 @@ public class AdminController {
 		}
 
 		return new ResponseEntity(HttpStatus.CREATED);
+	}
+
+	@DeleteMapping("/{id}")
+	public void deleteAdmin(@PathVariable("id") Long id) {
+		adminService.deleteAdmin(id);
 	}
 }
