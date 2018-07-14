@@ -53,9 +53,9 @@ public class AssetController {
         return assetService.getAsset(assetId);
     }
 
-    @GetMapping("/{id}")
-    public AssetEntity getAssetInfoWithImage(@PathVariable("id") Long assetId) {
-        return assetService.getAssetWithUrls(assetId);
+    @GetMapping("/all")
+    public List<AssetEntity> getAssetInfoWithImage() {
+        return assetService.getAssetsWithUrls();
     }
 
 

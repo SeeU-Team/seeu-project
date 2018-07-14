@@ -129,17 +129,16 @@ public class AssetServiceImpl implements AssetService {
 	}
 
 	@Override
-	public AssetEntity getAssetWithUrls(Long assetId) {
+	public List<AssetEntity> getAssetsWithUrls(Long assetId) {
+		List<AssetEntity> allAssets = getAllAssets();
 
+		for (AssetEntity asset : allAssets) {
+			URL urlDark = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, asset.getImageDark());
+			URL urlLight = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, asset.getImageLight());
+			asset.setImageDark(urlDark.toExternalForm());
+			asset.setImageLight(urlLight.toExternalForm());
+		}
 
-		AssetEntity assetEntity = assetRepository.getOne(assetId);
-
-		URL urlDark = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, assetEntity.getImageDark());
-		URL urlLight = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, assetEntity.getImageLight());
-
-		assetEntity.setImageDark(urlDark.toExternalForm());
-		assetEntity.setImageLight(urlLight.toExternalForm());
-
-		return assetEntity;
+		return allAssets;
 	}
 }
