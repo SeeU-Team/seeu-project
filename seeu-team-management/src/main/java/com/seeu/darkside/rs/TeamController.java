@@ -5,6 +5,7 @@ import com.seeu.darkside.category.Category;
 import com.seeu.darkside.rs.dto.*;
 import com.seeu.darkside.tag.Tag;
 import com.seeu.darkside.team.TeamDto;
+import com.seeu.darkside.team.TeamPicture;
 import com.seeu.darkside.team.TeamService;
 import com.seeu.darkside.user.Teammate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,10 +47,15 @@ public class TeamController {
         return teamService.getTeamProfileOfMember(memberId);
     }
 
-    @GetMapping(params = {"categoryId", "teamId"})
+	@GetMapping(params = {"categoryId", "teamId"})
 	public List<TeamProfile> getAllTeamsOfCategoryForTeam(@RequestParam("categoryId") Long categoryId,
-													@RequestParam("teamId") Long teamId) {
+														  @RequestParam("teamId") Long teamId) {
 		return teamService.getAllTeamsOfCategoryForTeam(categoryId, teamId);
+	}
+
+	@GetMapping("/pictures")
+	public List<TeamPicture> getTeamsPictures() {
+		return teamService.getAllTeamsPictures();
 	}
 
 	@PostMapping

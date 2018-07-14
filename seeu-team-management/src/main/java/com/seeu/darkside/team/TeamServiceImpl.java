@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -76,6 +77,20 @@ public class TeamServiceImpl implements TeamService {
 				.stream()
 				.map(teamAdapter::entityToDto)
 				.collect(toList());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<TeamPicture> getAllTeamsPictures() {
+		List<TeamEntity> teamEntities = teamRepository.findAll();
+		List<TeamPicture> teamPictures = new ArrayList<>();
+		for (TeamEntity teamEntity : teamEntities) {
+			String pictureKey = teamEntity.getProfilePhotoUrl();
+			URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, pictureKey);
+			TeamPicture  teamPicture = new TeamPicture(pictureKey, url.toExternalForm());
+			teamPictures.add(teamPicture);
+		}
+		return teamPictures;
 	}
 
 	@Override
