@@ -19,7 +19,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagEntity getTag(Long tagId) {
-        return tagRepository.findTagEntityByIdTag(tagId);
+        return tagRepository.findTagEntityById(tagId);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void updateTagName(Long tagId, String newName) {
-        TagEntity tagToUpdate = tagRepository.findTagEntityByIdTag(tagId);
+        TagEntity tagToUpdate = tagRepository.findTagEntityById(tagId);
         Date now = new Date();
         if (tagToUpdate== null)
             throw new TagNotFoundException("Tag not found exception");
@@ -74,7 +74,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void deleteTag(Long tagId) {
-        TagEntity tagToDelete = tagRepository.findTagEntityByIdTag(tagId);
+        TagEntity tagToDelete = tagRepository.findTagEntityById(tagId);
         if (tagToDelete == null)
             throw new TagNotFoundException("Tag not found exception");
         tagRepository.delete(tagToDelete);

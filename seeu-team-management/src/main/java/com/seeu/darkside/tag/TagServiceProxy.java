@@ -9,8 +9,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @FeignClient("seeu-media-management")
 public interface TagServiceProxy {
 
-	@GetMapping("/medias/tags")
-	TagEntity getTagInfo(@RequestParam("tagId") Long tagId);
+	@GetMapping("/medias/tags/{id}")
+	TagEntity getTagInfo(@PathVariable("id") Long tagId);
 
 	@PostMapping(value = "/medias/tags", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	TagEntity createNewTagIfNotExist(@RequestBody TagDTO tagDTO);

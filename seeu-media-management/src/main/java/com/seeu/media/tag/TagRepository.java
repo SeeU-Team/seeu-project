@@ -7,7 +7,7 @@ import java.util.List;
 
 @Repository
 public interface TagRepository extends JpaRepository<TagEntity, Long> {
-    TagEntity findTagEntityByIdTag(Long idTag);
+    TagEntity findTagEntityById(Long idTag);
 
     @Override
     List<TagEntity> findAll();
