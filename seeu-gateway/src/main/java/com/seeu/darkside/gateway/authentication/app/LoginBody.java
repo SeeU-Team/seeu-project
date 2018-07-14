@@ -1,4 +1,4 @@
-package com.seeu.darkside.gateway.security;
+package com.seeu.darkside.gateway.authentication.app;
 
 import lombok.*;
 

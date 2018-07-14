@@ -15,16 +15,16 @@ import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 
-import static com.seeu.darkside.gateway.security.TokenAuthenticationUtil.TOKEN_PREFIX;
+import static com.seeu.darkside.gateway.security.TokenAuthentication.TOKEN_PREFIX;
 
 @Component
 public class ApiServerSecurityContextRepository implements ServerSecurityContextRepository {
 
-	private final TokenAuthenticationUtil tokenAuthenticationUtil;
+	private final TokenAuthentication tokenAuthentication;
 
 	@Autowired
-	public ApiServerSecurityContextRepository(TokenAuthenticationUtil tokenAuthenticationUtil) {
-		this.tokenAuthenticationUtil = tokenAuthenticationUtil;
+	public ApiServerSecurityContextRepository(TokenAuthentication tokenAuthentication) {
+		this.tokenAuthentication = tokenAuthentication;
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class ApiServerSecurityContextRepository implements ServerSecurityContext
 			try {
 				// parse the token.
 				final Claims claims = Jwts.parser()
-						.setSigningKey(tokenAuthenticationUtil.getSecretKey())
+						.setSigningKey(tokenAuthentication.getSecretKey())
 						.parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
 						.getBody();
 
