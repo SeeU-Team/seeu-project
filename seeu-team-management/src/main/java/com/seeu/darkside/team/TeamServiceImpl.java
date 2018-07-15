@@ -88,7 +88,8 @@ public class TeamServiceImpl implements TeamService {
 			String pictureKey = teamEntity.getProfilePhotoUrl();
 			URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, pictureKey);
 			TeamPicture teamPicture = new TeamPicture(teamEntity.getIdTeam(), pictureKey, url.toExternalForm());
-			teamPictures.add(teamPicture);
+			if (teamEntity.getProfilePhotoUrl() != null)
+				teamPictures.add(teamPicture);
 		}
 		return teamPictures;
 	}
