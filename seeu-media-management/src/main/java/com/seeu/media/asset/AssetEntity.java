@@ -1,13 +1,13 @@
 package com.seeu.media.asset;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Builder
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -17,7 +17,7 @@ public class AssetEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_asset")
-    private Long idAsset;
+    private Long id;
 
     @Column
     private String name;
@@ -36,58 +36,10 @@ public class AssetEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updated;
 
-    public Long getIdAsset() {
-        return idAsset;
-    }
-
-    public void setIdAsset(Long idAsset) {
-        this.idAsset = idAsset;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getImageDark() {
-        return imageDark;
-    }
-
-    public void setImageDark(String imageDark) {
-        this.imageDark = imageDark;
-    }
-
-    public String getImageLight() {
-        return imageLight;
-    }
-
-    public void setImageLight(String imageLight) {
-        this.imageLight = imageLight;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public Date getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(Date updated) {
-        this.updated = updated;
-    }
-
     @Override
     public String toString() {
         return "AssetEntity{" +
-                "idAsset=" + idAsset +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", imageDark='" + imageDark + '\'' +
                 ", imageLight='" + imageLight + '\'' +

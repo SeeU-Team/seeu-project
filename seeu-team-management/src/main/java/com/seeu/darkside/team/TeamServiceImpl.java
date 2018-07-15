@@ -1,6 +1,7 @@
 package com.seeu.darkside.team;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.seeu.darkside.asset.AssetDto;
 import com.seeu.darkside.asset.AssetEntity;
 import com.seeu.darkside.asset.AssetService;
 import com.seeu.darkside.asset.TeamHasAssetEntity;
@@ -103,7 +104,7 @@ public class TeamServiceImpl implements TeamService {
 		List<TeamHasUserEntity> userEntities = userService.findAllByTeamId(idTeam);
 		List<UserEntity> allMembers = userService.getAllMembersFromIds(userEntities);
 		List<TeamHasAssetEntity> assetEntitiesIds = assetService.findAllByTeamId(idTeam);
-		List<AssetEntity> assetEntities = assetService.getAssetEntitiesFromIds(assetEntitiesIds);
+		List<AssetDto> assetEntities = assetService.getAssetEntitiesFromIds(assetEntitiesIds);
 		List<TeamHasCategoryEntity> categoryEntitiesIds = categoryService.findAllByTeamId(idTeam);
 		List<CategoryEntity> categoryEntities = categoryService.getCategoryEntitiesFromIds(categoryEntitiesIds);
 		List<TeamHasTagEntity> tagEntitiesIds = tagService.findAllByTeamId(idTeam);
@@ -188,11 +189,6 @@ public class TeamServiceImpl implements TeamService {
 		List<TeamHasTagEntity> teamHasTagToSave = tagService.extractTags(teamCreation.getTags(), idTeam);
 		List<TeamHasUserEntity> teamHasUserToSave = userService.extractUsers(teamCreation.getMembers(), idTeam);
 
-		assetService.saveAll(teamHasAssetToSave);
-		categoryService.saveAll(teamHasCategoryToSave);
-		tagService.saveAll(teamHasTagToSave);
-		userService.saveAll(teamHasUserToSave);
-
 		for (int i = 0; i < teamHasUserToSave.size(); i++) {
 			if (i == 0) {
 				teamHasUserToSave.get(i).setStatus(TeammateStatus.LEADER);
@@ -201,7 +197,12 @@ public class TeamServiceImpl implements TeamService {
 			}
 		}
 
-		List<AssetEntity> assetEntities = assetService.getAssetEntitiesFromIds(teamHasAssetToSave);
+		assetService.saveAll(teamHasAssetToSave);
+		categoryService.saveAll(teamHasCategoryToSave);
+		tagService.saveAll(teamHasTagToSave);
+		userService.saveAll(teamHasUserToSave);
+
+		List<AssetDto> assetEntities = assetService.getAssetEntitiesFromIds(teamHasAssetToSave);
 		List<CategoryEntity> categoryEntities = categoryService.getCategoryEntitiesFromIds(teamHasCategoryToSave);
 		List<TagEntity> tagEntities = tagService.getTagsEntitiesFromIds(teamHasTagToSave);
 		List<UserEntity> members = userService.getAllMembersFromIds(teamHasUserToSave);
@@ -258,7 +259,7 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	private TeamProfile createTeamProfile(TeamEntity teamEntity, List<UserEntity> members,
-										  List<AssetEntity> assetEntities, List<CategoryEntity> categoryEntities,
+										  List<AssetDto> assetEntities, List<CategoryEntity> categoryEntities,
 										  List<TagEntity> tagEntities, String profilePhotoUrl,
 										  boolean isMerged) {
 		return TeamProfile.builder()

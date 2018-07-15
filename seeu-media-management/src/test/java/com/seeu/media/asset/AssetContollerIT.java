@@ -48,7 +48,7 @@ public class AssetContollerIT {
                 .get("/assets?assetId=2")
         .then()
                 .statusCode(200)
-                .body("idAsset", is(2))
+                .body("id", is(2))
                 .body("name", is("asset2"))
                 .body("mediaId", is(222));
     }

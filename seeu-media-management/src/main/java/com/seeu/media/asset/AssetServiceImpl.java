@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AssetServiceImpl implements AssetService {
@@ -35,7 +36,9 @@ public class AssetServiceImpl implements AssetService {
 
 	@Override
 	public AssetEntity getAsset(Long assetId) {
-		return assetRepository.findOneByIdAsset(assetId);
+		AssetEntity assetEntity = assetRepository.findOneById(assetId);
+
+		return getAssetWithUrl(assetEntity);
 	}
 
 	@Override
@@ -86,7 +89,7 @@ public class AssetServiceImpl implements AssetService {
 
 	@Override
 	public S3Object getImageDark(Long idAsset) {
-		AssetEntity oneByIdAsset = assetRepository.findOneByIdAsset(idAsset);
+		AssetEntity oneByIdAsset = assetRepository.findOneById(idAsset);
 		if (oneByIdAsset == null)
 			throw new AssetNotFoundException("Asset not Found Exception");
 		S3Object s3Object = amazonS3.getObject(BUCKET_SOURCE, oneByIdAsset.getImageDark());
@@ -96,7 +99,7 @@ public class AssetServiceImpl implements AssetService {
 
 	@Override
 	public S3Object getImageLight(Long idAsset) {
-		AssetEntity oneByIdAsset = assetRepository.findOneByIdAsset(idAsset);
+		AssetEntity oneByIdAsset = assetRepository.findOneById(idAsset);
 		if (oneByIdAsset == null)
 			throw new AssetNotFoundException("Asset not Found Exception");
 		S3Object s3Object = amazonS3.getObject(BUCKET_SOURCE, oneByIdAsset.getImageLight());
@@ -105,7 +108,7 @@ public class AssetServiceImpl implements AssetService {
 
 	@Override
 	public void updateImageDark(MultipartFile imageDark, Long idAsset) {
-		AssetEntity entityToUpdate = assetRepository.findOneByIdAsset(idAsset);
+		AssetEntity entityToUpdate = assetRepository.findOneById(idAsset);
 		if (entityToUpdate == null)
 			throw new AssetNotFoundException("Asset not Found Exception");
 		String imageName = entityToUpdate.getImageDark();
@@ -121,7 +124,7 @@ public class AssetServiceImpl implements AssetService {
 
 	@Override
 	public void updateImageLight(MultipartFile imageLight, Long assetId) {
-		AssetEntity entityToUpdate = assetRepository.findOneByIdAsset(assetId);
+		AssetEntity entityToUpdate = assetRepository.findOneById(assetId);
 		String imageName = entityToUpdate.getImageLight();
 		try {
 			amazonS3.putObject(BUCKET_SOURCE, imageName, imageLight.getInputStream(), null);
@@ -135,22 +138,25 @@ public class AssetServiceImpl implements AssetService {
 
 	@Override
 	public List<AssetEntity> getAssetsWithUrls() {
-		List<AssetEntity> allAssets = getAllAssets();
-
-		for (AssetEntity asset : allAssets) {
-			if (asset.getImageDark() != null) {
-				URL urlDark = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, asset.getImageDark());
-				asset.setImageDark(urlDark.toExternalForm());
-			}
-			URL urlLight = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, asset.getImageLight());
-			asset.setImageLight(urlLight.toExternalForm());
-		}
-
-		return allAssets;
+		return getAllAssets().stream()
+				.map(this::getAssetWithUrl)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public void deleteAsset(Long idAsset) {
 		assetRepository.deleteById(idAsset);
+	}
+
+	private AssetEntity getAssetWithUrl(AssetEntity asset) {
+		if (asset.getImageDark() != null) {
+			URL urlDark = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, asset.getImageDark());
+			asset.setImageDark(urlDark.toExternalForm());
+		}
+
+		URL urlLight = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, asset.getImageLight());
+		asset.setImageLight(urlLight.toExternalForm());
+
+		return asset;
 	}
 }	
