@@ -1,10 +1,10 @@
 package com.seeu.darkside.asset;
 
-import com.seeu.darkside.rs.dto.TeamCreation;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -42,18 +42,23 @@ public class AssetServiceImpl implements AssetService {
 				.stream()
 				.map(asset -> TeamHasAssetEntity.builder()
 						.teamId(idTeam)
-						.assetId(asset.getIdAsset())
+						.assetId(asset.getId())
 						.assetMediaId(asset.getIdMedia())
 						.build())
 				.collect(toList());
 	}
 
 	@Override
-	public List<AssetEntity> getAssetEntitiesFromIds(List<TeamHasAssetEntity> teamHasAssetEntities) {
-		List<AssetEntity> assetEntities = new ArrayList<>();
-		for (TeamHasAssetEntity assetEntitiesId : teamHasAssetEntities)
-			assetEntities.add(assetServiceProxy.getAssetInfo(assetEntitiesId.getAssetId()));
-		return assetEntities;
+	public List<AssetDto> getAssetEntitiesFromIds(List<TeamHasAssetEntity> teamHasAssetEntities) {
+		return teamHasAssetEntities.stream()
+				.map(teamHasAssetEntity -> assetServiceProxy.getAssetInfo(teamHasAssetEntity.getAssetId()))
+				.map(assetEntity -> AssetDto.builder()
+						.id(assetEntity.getId())
+						.name(assetEntity.getName())
+						.imageDark(assetEntity.getImageDark())
+						.imageLight(assetEntity.getImageLight())
+						.build())
+				.collect(Collectors.toList());
 	}
 
 	@Override

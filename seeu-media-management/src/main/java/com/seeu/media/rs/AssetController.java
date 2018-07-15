@@ -46,13 +46,13 @@ public class AssetController {
         assetService.createAsset(imageDark, imageLight, name);
     }
 
-    @GetMapping
-    public AssetEntity getAssetInfo(@RequestParam Long assetId) {
+    @GetMapping("/{id}")
+    public AssetEntity getAssetInfo(@PathVariable("id") Long assetId) {
         return assetService.getAsset(assetId);
     }
 
-    @GetMapping("/all")
-    public List <AssetEntity> getAssetInfoWithImage() {
+    @GetMapping
+    public List<AssetEntity> getAllAssetsWithImage() {
         return assetService.getAssetsWithUrls();
     }
 
@@ -124,7 +124,7 @@ public class AssetController {
     }
 
     @DeleteMapping("/{idAsset}")
-    public ResponseEntity deleteCategory(@PathVariable("idAsset") Long idAsset) {
+    public ResponseEntity deleteAsset(@PathVariable("idAsset") Long idAsset) {
         assetService.deleteAsset(idAsset);
         return new ResponseEntity(HttpStatus.OK);
     }

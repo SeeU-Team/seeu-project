@@ -1,7 +1,5 @@
 package com.seeu.darkside.asset;
 
-import com.seeu.darkside.rs.dto.TeamCreation;
-
 import java.util.List;
 
 /**
@@ -14,7 +12,7 @@ public interface AssetService {
 
 	List<TeamHasAssetEntity> extractAssets(List<Asset> assets, Long idTeam);
 
-	List<AssetEntity> getAssetEntitiesFromIds(List<TeamHasAssetEntity> teamHasAssetEntities);
+	List<AssetDto> getAssetEntitiesFromIds(List<TeamHasAssetEntity> teamHasAssetEntities);
 
 	List<TeamHasAssetEntity> findAllByTeamId(Long idTeam);
 }

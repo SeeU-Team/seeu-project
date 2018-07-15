@@ -6,6 +6,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +21,12 @@ public class AdminServiceImpl implements AdminService {
 		this.adminRepository = adminRepository;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 		this.tokenAuthentication = tokenAuthentication;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<AdminEntity> getAllAdmins() {
+		return adminRepository.findAll();
 	}
 
 	@Override
@@ -54,5 +61,10 @@ public class AdminServiceImpl implements AdminService {
 				.build();
 
 		adminRepository.save(adminEntity);
+	}
+
+	@Override
+	public void deleteAdmin(Long id) {
+		adminRepository.deleteById(id);
 	}
 }

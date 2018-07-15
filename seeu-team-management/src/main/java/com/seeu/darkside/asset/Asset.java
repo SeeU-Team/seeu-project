@@ -11,6 +11,6 @@ import lombok.Setter;
 @Setter
 public class Asset {
 
-    private Long idAsset;
+    private Long id;
     private Long idMedia;
 }
