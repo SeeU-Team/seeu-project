@@ -153,4 +153,4 @@ public class AssetServiceImpl implements AssetService {
 	public void deleteAsset(Long idAsset) {
 		assetRepository.deleteById(idAsset);
 	}
-}	
+}
