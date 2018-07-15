@@ -10,7 +10,6 @@ import com.seeu.darkside.team.TeamServiceProxy;
 import com.seeu.darkside.team.TeammateStatus;
 import com.seeu.darkside.utils.GenerateFileUrl;
 import feign.FeignException;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -207,7 +206,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void deletePictureById(Long id) {
-
 		UserEntity userEntity = userRepository
 				.findById(id)
 				.orElseThrow(UserNotFoundException::new);
@@ -219,11 +217,12 @@ public class UserServiceImpl implements UserService {
 	public List<UserPicture> getAllUsersPictures() {
 		List<UserEntity> userEntities = userRepository.findAll();
 		List<UserPicture> userPictures = new ArrayList<>();
-		for (UserEntity userEntity: userEntities) {
+		for (UserEntity userEntity : userEntities) {
 			String pictureKey = userEntity.getProfilePhotoUrl();
 			URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, pictureKey);
 			UserPicture userPicture = new UserPicture(userEntity.getId(), pictureKey, url.toExternalForm());
-			userPictures.add(userPicture);
+			if (userEntity.getProfilePhotoUrl() != null)
+				userPictures.add(userPicture);
 		}
 		return userPictures;
 	}
@@ -283,6 +282,7 @@ public class UserServiceImpl implements UserService {
 
 	/**
 	 * Determines if the user belongs to a team or not.
+	 *
 	 * @param userDto the user
 	 * @return true if the user already belongs to a team. Otherwise, return false
 	 */
