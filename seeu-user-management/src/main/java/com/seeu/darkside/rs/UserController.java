@@ -1,6 +1,7 @@
 package com.seeu.darkside.rs;
 
 import com.seeu.darkside.user.UserDto;
+import com.seeu.darkside.user.UserPicture;
 import com.seeu.darkside.user.UserService;
 import com.seeu.darkside.user.UserUpdateRoot;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,11 @@ public class UserController {
 		return userService.getFriends(id);
 	}
 
+	@GetMapping("/pictures")
+	public List<UserPicture> getTeamsPictures() {
+		return userService.getAllUsersPictures();
+	}
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto createNewUser(@RequestBody @Valid UserDto userDto,
@@ -91,4 +97,8 @@ public class UserController {
         userService.deleteUser(id);
     }
 
+	@DeleteMapping("/pictures/{id}")
+	public void deletePictureTeam(@PathVariable("id") Long id) {
+		userService.deletePictureById(id);
+	}
 }

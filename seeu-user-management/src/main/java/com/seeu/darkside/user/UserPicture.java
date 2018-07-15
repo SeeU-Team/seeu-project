@@ -1,11 +1,11 @@
-package com.seeu.darkside.team;
+package com.seeu.darkside.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class TeamPicture {
+public class UserPicture {
 
 	private Long id;
 	private String pictureKey;

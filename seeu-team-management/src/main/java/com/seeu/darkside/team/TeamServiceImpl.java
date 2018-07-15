@@ -2,7 +2,6 @@ package com.seeu.darkside.team;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.seeu.darkside.asset.AssetDto;
-import com.seeu.darkside.asset.AssetEntity;
 import com.seeu.darkside.asset.AssetService;
 import com.seeu.darkside.asset.TeamHasAssetEntity;
 import com.seeu.darkside.category.CategoryEntity;
@@ -88,7 +87,7 @@ public class TeamServiceImpl implements TeamService {
 		for (TeamEntity teamEntity : teamEntities) {
 			String pictureKey = teamEntity.getProfilePhotoUrl();
 			URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, pictureKey);
-			TeamPicture  teamPicture = new TeamPicture(pictureKey, url.toExternalForm());
+			TeamPicture teamPicture = new TeamPicture(teamEntity.getIdTeam(), pictureKey, url.toExternalForm());
 			teamPictures.add(teamPicture);
 		}
 		return teamPictures;
@@ -249,6 +248,15 @@ public class TeamServiceImpl implements TeamService {
 		tagService.saveAll(teamHasTagToSave);
 	}
 
+	@Override
+	public void deletePictureByIdTeam(Long id) {
+		TeamEntity teamEntity = teamRepository
+				.findById(id)
+				.orElseThrow(() -> new TeamNotFoundException(TEAM_NOT_FOUND_MSG + id));
+		teamEntity.setProfilePhotoUrl(null);
+		teamRepository.save(teamEntity);
+	}
+
 	private String savePngInAmazonS3(String fileInBase64) {
 		String fileNameToSave = UUID.randomUUID().getLeastSignificantBits() + EXT_PNG;
 		byte[] bytes = Base64.decodeBase64(fileInBase64);
@@ -292,7 +300,8 @@ public class TeamServiceImpl implements TeamService {
 
 	/**
 	 * Determines if the teamId is present as liked team in the list of TeamUpEntity.
-	 * @param teamId the team to find
+	 *
+	 * @param teamId            the team to find
 	 * @param alreadyLikedTeams the list of TeamUp
 	 * @return true if the team has been liked. Otherwise, return false
 	 */

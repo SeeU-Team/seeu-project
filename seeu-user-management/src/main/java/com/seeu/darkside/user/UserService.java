@@ -21,4 +21,8 @@ public interface UserService {
 	void update(UserDto userDto, String profilePicture);
 
 	void updateAppInstanceId(Long id, String appInstanceId);
+
+	void deletePictureById(Long id);
+
+	List<UserPicture> getAllUsersPictures();
 }

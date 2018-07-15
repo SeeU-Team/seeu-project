@@ -10,6 +10,7 @@ import com.seeu.darkside.team.TeamServiceProxy;
 import com.seeu.darkside.team.TeammateStatus;
 import com.seeu.darkside.utils.GenerateFileUrl;
 import feign.FeignException;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -202,6 +203,29 @@ public class UserServiceImpl implements UserService {
 		userEntity = userRepository.save(userEntity);
 
 		updateRegistrationTopics(userEntity);
+	}
+
+	@Override
+	public void deletePictureById(Long id) {
+
+		UserEntity userEntity = userRepository
+				.findById(id)
+				.orElseThrow(UserNotFoundException::new);
+		userEntity.setProfilePhotoUrl(null);
+		userRepository.save(userEntity);
+	}
+
+	@Override
+	public List<UserPicture> getAllUsersPictures() {
+		List<UserEntity> userEntities = userRepository.findAll();
+		List<UserPicture> userPictures = new ArrayList<>();
+		for (UserEntity userEntity: userEntities) {
+			String pictureKey = userEntity.getProfilePhotoUrl();
+			URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, pictureKey);
+			UserPicture userPicture = new UserPicture(userEntity.getId(), pictureKey, url.toExternalForm());
+			userPictures.add(userPicture);
+		}
+		return userPictures;
 	}
 
 	private void updateRegistrationTopics(UserEntity userEntity) {

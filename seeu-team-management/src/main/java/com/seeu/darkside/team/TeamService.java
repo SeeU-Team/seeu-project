@@ -26,4 +26,6 @@ public interface TeamService {
 	TeamProfile createTeam(TeamCreation teamCreation, String imageBase64);
 
 	void updateTeam(TeamUpdate team, String profilePicture);
+
+	void deletePictureByIdTeam(Long id);
 }
