@@ -10,6 +10,9 @@ import java.util.Date;
 public class GenerateFileUrl {
 
 	public static URL generateUrlFromFile(AmazonS3 amazonS3, String bucketName, String fileName) {
+		if (fileName == null) {
+			return null;
+		}
 		Date expiration = new Date();
 		long expTimeMillis = expiration.getTime();
 		expTimeMillis += 1000 * 60 * 60;
