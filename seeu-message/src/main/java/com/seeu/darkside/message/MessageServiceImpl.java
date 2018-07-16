@@ -5,6 +5,7 @@ import com.seeu.darkside.rs.MessageCreationException;
 import com.seeu.darkside.team.Team;
 import com.seeu.darkside.user.User;
 import feign.FeignException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -16,6 +17,7 @@ public class MessageServiceImpl implements MessageService {
 	private final MessageServiceProxy messageService;
 	private final NotificationService notificationService;
 
+	@Autowired
 	public MessageServiceImpl(MessageServiceProxy messageService, NotificationService notificationService) {
 		this.messageService = messageService;
 		this.notificationService = notificationService;

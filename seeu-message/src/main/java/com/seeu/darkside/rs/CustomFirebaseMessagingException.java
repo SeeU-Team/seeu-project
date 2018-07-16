@@ -5,9 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-public class CustomFirebaseMessaginException extends RuntimeException {
+public class CustomFirebaseMessagingException extends RuntimeException {
 
-	public CustomFirebaseMessaginException(FirebaseMessagingException e) {
+	public CustomFirebaseMessagingException(FirebaseMessagingException e) {
 		super(e);
 	}
 }

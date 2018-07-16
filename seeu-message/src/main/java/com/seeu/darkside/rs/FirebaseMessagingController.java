@@ -35,4 +35,10 @@ public class FirebaseMessagingController {
 	public void registerLeaderTopic(@RequestBody String appInstanceId, @PathVariable("teamId") Long teamId) {
 		registrationService.registerLeaderTopic(appInstanceId, teamId);
 	}
+
+	@PostMapping("/unregistration/team/{teamId}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void unregisterMembersToTopic(@RequestBody List<String> unregistrationTokens, @PathVariable("teamId") Long teamId) {
+		registrationService.unregisterMembersFromTeam(unregistrationTokens, teamId);
+	}
 }

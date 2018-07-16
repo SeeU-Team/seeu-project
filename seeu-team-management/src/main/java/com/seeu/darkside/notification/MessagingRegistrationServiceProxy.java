@@ -19,4 +19,8 @@ public interface MessagingRegistrationServiceProxy {
 	@PostMapping("/firebase/registration/leader/{teamId}")
 	@ResponseStatus(HttpStatus.CREATED)
 	void registerLeaderTopic(@RequestBody String appInstanceId, @PathVariable("teamId") Long teamId);
+
+	@PostMapping("/unregistration/team/{teamId}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	void unregisterMembersFromTeamTopic(@RequestBody List<String> unregistrationTokens, @PathVariable("teamId") Long teamId);
 }

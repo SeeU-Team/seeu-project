@@ -1,10 +1,13 @@
 package com.seeu.darkside.user;
 
+import com.seeu.darkside.notification.MessagingRegistrationServiceProxy;
+import feign.FeignException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import static java.util.stream.Collectors.toList;
 
@@ -16,12 +19,15 @@ public class UserServiceImpl implements UserService {
 
 	private final TeamHasUserRepository teamHasUserRepository;
 	private final UserServiceProxy userServiceProxy;
+	private final MessagingRegistrationServiceProxy messagingRegistrationServiceProxy;
 
-	public UserServiceImpl(TeamHasUserRepository teamHasUserRepository, UserServiceProxy userServiceProxy) {
+	public UserServiceImpl(TeamHasUserRepository teamHasUserRepository,
+						   UserServiceProxy userServiceProxy,
+						   MessagingRegistrationServiceProxy messagingRegistrationServiceProxy) {
 		this.teamHasUserRepository = teamHasUserRepository;
 		this.userServiceProxy = userServiceProxy;
+		this.messagingRegistrationServiceProxy = messagingRegistrationServiceProxy;
 	}
-
 
 	@Override
 	public void saveAll(List<TeamHasUserEntity> teamHasUserToSave) {
@@ -86,8 +92,8 @@ public class UserServiceImpl implements UserService {
 		teamHasUserRepository.deleteAll(membersToRemove);
 		teamHasUserRepository.saveAll(membersToAdd);
 
-		// TODO: remove registration for team topic for membersToRemove
-		// TODO: add registration for team topic for membersToAdd
+		unregisterMembersFromTeamTopic(membersToRemove);
+		registerNewMembersToTeamTopic(membersToAdd);
 
 		return membersToAdd;
 	}
@@ -112,5 +118,45 @@ public class UserServiceImpl implements UserService {
 			userEntities.add(userEntity);
 		}
 		return userEntities;
+	}
+
+	private void unregisterMembersFromTeamTopic(List<TeamHasUserEntity> membersToRemove) {
+		if (null == membersToRemove
+				|| membersToRemove.isEmpty()) {
+			return;
+		}
+
+		List<String> unregistrationTokens = getUsersFromMemberIds(membersToRemove)
+				.stream()
+				.map(UserEntity::getAppInstanceId)
+				.collect(toList());
+
+		try {
+			messagingRegistrationServiceProxy.unregisterMembersFromTeamTopic(unregistrationTokens, membersToRemove.get(0).getTeamId());
+		} catch (FeignException e) {
+			Logger logger = Logger.getLogger(this.getClass().getName());
+			logger.warning("Update team : Remove members from team topic failed");
+			e.printStackTrace();
+		}
+	}
+
+	private void registerNewMembersToTeamTopic(List<TeamHasUserEntity> membersToAdd) {
+		if (null == membersToAdd
+				|| membersToAdd.isEmpty()) {
+			return;
+		}
+
+		List<String> registrationTokens = getUsersFromMemberIds(membersToAdd)
+				.stream()
+				.map(UserEntity::getAppInstanceId)
+				.collect(toList());
+
+		try {
+			messagingRegistrationServiceProxy.registerTeamTopic(registrationTokens, membersToAdd.get(0).getTeamId());
+		} catch (FeignException e) {
+			Logger logger = Logger.getLogger(this.getClass().getName());
+			logger.warning("Update team : Add members to team topic failed");
+			e.printStackTrace();
+		}
 	}
 }

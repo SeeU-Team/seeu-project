@@ -1,12 +1,16 @@
 package com.seeu.darkside.user;
 
 public enum TeammateStatus {
-	LEADER(0),
-	MEMBER(1);
+	LEADER((short) 0),
+	MEMBER((short) 1);
 
-	private int value;
+	private short value;
 
-	TeammateStatus(int value) {
+	TeammateStatus(short value) {
 		this.value = value;
+	}
+
+	public short getValue() {
+		return value;
 	}
 }
