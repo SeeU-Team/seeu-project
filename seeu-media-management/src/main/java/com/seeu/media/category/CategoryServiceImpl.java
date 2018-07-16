@@ -14,11 +14,13 @@ public class CategoryServiceImpl implements CategoryService{
 
     private final CategoryRepository categoryRepository;
     private final CategoryAdapter categoryAdapter;
+    private final TeamHasCategoryServiceProxy teamHasCategoryServiceProxy;
 
     @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryAdapter categoryAdapter) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryAdapter categoryAdapter, TeamHasCategoryServiceProxy teamHasCategoryServiceProxy) {
         this.categoryRepository = categoryRepository;
 		this.categoryAdapter = categoryAdapter;
+		this.teamHasCategoryServiceProxy = teamHasCategoryServiceProxy;
 	}
 
     @Override
@@ -66,5 +68,6 @@ public class CategoryServiceImpl implements CategoryService{
     public void deleteCategory(Long categoryId) {
         CategoryEntity categoryToDelete = categoryRepository.getOne(categoryId);
         categoryRepository.delete(categoryToDelete);
+		teamHasCategoryServiceProxy.deleteCategoryTeam(categoryId);
     }
 }

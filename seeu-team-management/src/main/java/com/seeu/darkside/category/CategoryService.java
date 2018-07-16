@@ -19,4 +19,6 @@ public interface CategoryService {
 	List<TeamHasCategoryEntity> findAllByTeamId(Long idTeam);
 
 	List<TeamHasCategoryEntity> findAllByCategoryId(Long categoryId);
+
+	void deleteTeamHasCategory(Long id);
 }

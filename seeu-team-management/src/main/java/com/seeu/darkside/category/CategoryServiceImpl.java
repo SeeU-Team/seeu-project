@@ -64,4 +64,10 @@ public class CategoryServiceImpl implements CategoryService {
 	public List<TeamHasCategoryEntity> findAllByCategoryId(Long categoryId) {
 		return teamHasCategoryRepository.findAllByCategoryId(categoryId);
 	}
+
+	@Override
+	public void deleteTeamHasCategory(Long id) {
+		List<TeamHasCategoryEntity> teamHasCategoryEntities = teamHasCategoryRepository.findAllByCategoryId(id);
+		teamHasCategoryRepository.deleteAll(teamHasCategoryEntities);
+	}
 }
