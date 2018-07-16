@@ -229,6 +229,11 @@ public class UserServiceImpl implements UserService {
 		return userPictures;
 	}
 
+	@Override
+	public void deleteAllUsers() {
+		userRepository.deleteAll();
+	}
+
 	private void updateRegistrationTopics(UserEntity userEntity) {
 		String appInstanceId = userEntity.getAppInstanceId();
 

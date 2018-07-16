@@ -101,4 +101,9 @@ public class UserController {
 	public void deletePictureTeam(@PathVariable("id") Long id) {
 		userService.deletePictureById(id);
 	}
+
+	@DeleteMapping("/delete")
+	public void deleteAllUsers() {
+		userService.deleteAllUsers();
+	}
 }
