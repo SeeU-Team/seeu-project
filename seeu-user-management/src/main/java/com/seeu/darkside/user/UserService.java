@@ -25,4 +25,6 @@ public interface UserService {
 	void deletePictureById(Long id);
 
 	List<UserPicture> getAllUsersPictures();
+
+	void deleteAllUsers();
 }

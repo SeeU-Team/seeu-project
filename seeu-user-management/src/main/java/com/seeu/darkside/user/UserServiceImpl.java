@@ -221,10 +221,16 @@ public class UserServiceImpl implements UserService {
 			String pictureKey = userEntity.getProfilePhotoUrl();
 			URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, pictureKey);
 			UserPicture userPicture = new UserPicture(userEntity.getId(), pictureKey, url.toExternalForm());
-			if (userEntity.getProfilePhotoUrl() != null)
+			if (userEntity.getProfilePhotoUrl() != null) {
 				userPictures.add(userPicture);
+			}
 		}
 		return userPictures;
+	}
+
+	@Override
+	public void deleteAllUsers() {
+		userRepository.deleteAll();
 	}
 
 	private void updateRegistrationTopics(UserEntity userEntity) {
