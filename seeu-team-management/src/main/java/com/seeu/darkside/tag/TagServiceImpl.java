@@ -46,7 +46,7 @@ public class TagServiceImpl implements TagService {
 
 		List<TeamHasTagEntity> tagEntities = new ArrayList<>();
 		for (Tag tag : tags) {
-			TagEntity newTagIfNotExist = tagServiceProxy.createNewTagIfNotExist(new TagDTO(null, tag.getTagName()));
+			TagEntity newTagIfNotExist = tagServiceProxy.createNewTagIfNotExist(new TagDTO(null, tag.getName()));
 			TeamHasTagEntity teamHasTagEntity = TeamHasTagEntity.builder().teamId(idTeam).tagId(newTagIfNotExist.getId()).build();
 			tagEntities.add(teamHasTagEntity);
 		}

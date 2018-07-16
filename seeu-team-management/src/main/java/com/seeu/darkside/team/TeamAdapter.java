@@ -7,7 +7,7 @@ public class TeamAdapter {
 
     public TeamEntity dtoToEntity(TeamDto teamDto) {
         return TeamEntity.builder()
-                .idTeam(teamDto.getIdTeam())
+                .idTeam(teamDto.getId())
                 .name(teamDto.getName())
                 .description(teamDto.getDescription())
                 .place(teamDto.getPlace())
@@ -19,7 +19,7 @@ public class TeamAdapter {
 
     public TeamDto entityToDto(TeamEntity teamEntity) {
         return TeamDto.builder()
-                .idTeam(teamEntity.getIdTeam())
+                .id(teamEntity.getIdTeam())
                 .name(teamEntity.getName())
                 .description(teamEntity.getDescription())
                 .place(teamEntity.getPlace())

@@ -28,6 +28,7 @@ import static com.seeu.darkside.message.ConversationType.USER_TO_USER;
 @Service
 public class NotificationServiceImpl implements NotificationService {
 	private final Logger logger;
+	private final ObjectMapper objectMapper;
 
 	private final GoogleCredential googleCredential;
 	private final FirebaseConfig firebaseConfig;
@@ -35,6 +36,7 @@ public class NotificationServiceImpl implements NotificationService {
 	@Autowired
 	public NotificationServiceImpl(GoogleCredential googleCredential, FirebaseConfig firebaseConfig) {
 		logger = Logger.getLogger(this.getClass().getName());
+		objectMapper = new ObjectMapper();
 		this.googleCredential = googleCredential;
 		this.firebaseConfig = firebaseConfig;
 	}
@@ -46,21 +48,21 @@ public class NotificationServiceImpl implements NotificationService {
 		topics.add("user-" + userId);
 
 		ConditionFirebaseMessage firebaseMessage = new ConditionFirebaseMessage(
-				getData(completeMessageDto, USER_TO_USER),
+				getMessageData(completeMessageDto, USER_TO_USER),
 				Android.getAndroidHighPriority(),
 				topics);
 
-		sendFirebaseMessage(firebaseMessage, completeMessageDto.getId());
+		sendFirebaseMessage(firebaseMessage);
 	}
 
 	@Override
 	public void sendTeamMessageNotification(CompleteMessageDto<User> completeMessageDto, Long teamId) {
 		TopicFirebaseMessage firebaseMessage = new TopicFirebaseMessage(
-				getData(completeMessageDto, USER_TO_TEAM),
+				getMessageData(completeMessageDto, USER_TO_TEAM),
 				Android.getAndroidHighPriority(),
 				"team-" + teamId);
 
-		sendFirebaseMessage(firebaseMessage, completeMessageDto.getId());
+		sendFirebaseMessage(firebaseMessage);
 	}
 
 	@Override
@@ -70,22 +72,48 @@ public class NotificationServiceImpl implements NotificationService {
 		topics.add("leader-" + teamId);
 
 		ConditionFirebaseMessage firebaseMessage = new ConditionFirebaseMessage(
-				getData(completeMessageDto, TEAM_TO_BEFORE),
+				getMessageData(completeMessageDto, TEAM_TO_BEFORE),
 				Android.getAndroidHighPriority(),
 				topics);
 
-		sendFirebaseMessage(firebaseMessage, completeMessageDto.getId());
+		sendFirebaseMessage(firebaseMessage);
 	}
 
-	private Map<String, String> getData(CompleteMessageDto completeMessageDto, ConversationType type) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		String jsonMessage;
-		try {
-			jsonMessage = objectMapper.writeValueAsString(completeMessageDto);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			jsonMessage = null;
-		}
+	@Override
+	public void sendTeamUpNotification(Team team, Long teamIdLiked) {
+		sendNotificationToTeam(team, teamIdLiked, "TEAMUP");
+	}
+
+	@Override
+	public void sendReciprocalTeamUpNotification(Team firstTeam, Team secondTeam) {
+		sendNotificationToTeam(firstTeam, secondTeam.getId(), "RECIPROCALTEAMUP");
+		sendNotificationToTeam(secondTeam, firstTeam.getId(), "RECIPROCALTEAMUP");
+	}
+
+	@Override
+	public void sendMergeNotification(Team firstTeam, Team secondTeam) {
+		sendNotificationToTeam(firstTeam, secondTeam.getId(), "MERGE");
+		sendNotificationToTeam(secondTeam, firstTeam.getId(), "MERGE");
+	}
+
+	private void sendNotificationToTeam(Team team, Long teamIdDest, String typeNotif) {
+		String topic = "team-" + teamIdDest;
+		String jsonTeam = getJsonObject(team);
+
+		Map<String, String> data = new HashMap<>(2);
+		data.put("type", typeNotif);
+		data.put("team", jsonTeam);
+
+		TopicFirebaseMessage firebaseMessage = new TopicFirebaseMessage(
+				data,
+				Android.getAndroidHighPriority(),
+				topic);
+
+		sendFirebaseMessage(firebaseMessage);
+	}
+
+	private Map<String, String> getMessageData(CompleteMessageDto completeMessageDto, ConversationType type) {
+		String jsonMessage = getJsonObject(completeMessageDto);
 
 		Map<String, String> data = new HashMap<>(3);
 		data.put("type", "MESSAGE");
@@ -95,7 +123,7 @@ public class NotificationServiceImpl implements NotificationService {
 		return data;
 	}
 
-	private <T extends FirebaseMessage> void sendFirebaseMessage(T firebaseMessage, Long messageId) {
+	private <T extends FirebaseMessage> void sendFirebaseMessage(T firebaseMessage) {
 		RestTemplate restTemplate = new RestTemplate();
 
 		RootFirebaseMessage<T> rootFirebaseMessage = RootFirebaseMessage.<T>builder()
@@ -111,11 +139,11 @@ public class NotificationServiceImpl implements NotificationService {
 			ResponseEntity<SendNotificationResult> response = restTemplate.postForEntity(firebaseConfig.getUrl(), httpEntity, SendNotificationResult.class);
 
 			if (!HttpStatus.OK.equals(response.getStatusCode())) {
-				logger.severe("Error from firebase server while sending new message notification (messageId=" + messageId + ")");
+				logger.severe("Error from firebase server while sending new notification");
 				logger.severe(response.toString());
 			}
 		} catch (RestClientException | IOException e) {
-			logger.severe("Error from firebase server while sending new message notification (messageId=" + messageId + ")");
+			logger.severe("Error from firebase server while sending new notification");
 			e.printStackTrace();
 		}
 	}
@@ -123,5 +151,17 @@ public class NotificationServiceImpl implements NotificationService {
 	private String getAccessToken() throws IOException {
 		googleCredential.refreshToken();
 		return googleCredential.getAccessToken();
+	}
+
+	private String getJsonObject(Object object) {
+		String jsonValue;
+		try {
+			jsonValue = objectMapper.writeValueAsString(object);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			jsonValue = null;
+		}
+
+		return jsonValue;
 	}
 }

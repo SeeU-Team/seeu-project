@@ -84,7 +84,7 @@ public class TeamServiceTest {
                 .build();
 
         teamDto1 = TeamDto.builder()
-                .idTeam(1L)
+                .id(1L)
                 .name("team 1")
                 .description("desc 1")
                 .place("palce 1")
@@ -93,7 +93,7 @@ public class TeamServiceTest {
                 .build();
 
         teamDto2 = TeamDto.builder()
-                .idTeam(2L)
+                .id(2L)
                 .name("team 2")
                 .description("desc 2")
                 .place("palce 2")
@@ -102,7 +102,7 @@ public class TeamServiceTest {
                 .build();
 
         teamDto3 = TeamDto.builder()
-                .idTeam(3L)
+                .id(3L)
                 .name("team 3")
                 .description("desc 3")
                 .place("palce 3")
@@ -111,7 +111,7 @@ public class TeamServiceTest {
                 .build();
 
         newTeamDto4 = TeamDto.builder()
-                .idTeam(4L)
+                .id(4L)
                 .name("team 4")
                 .description("desc 4")
                 .place("palce 4")

@@ -11,7 +11,7 @@ import java.util.Date;
 @Setter
 public class TeamDto {
 
-    private Long idTeam;
+    private Long id;
     private String name;
     private String description;
     private String place;
@@ -22,7 +22,7 @@ public class TeamDto {
     @Override
     public String toString() {
         return "TeamDto{" +
-                "idTeam=" + idTeam +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", place='" + place + '\'' +

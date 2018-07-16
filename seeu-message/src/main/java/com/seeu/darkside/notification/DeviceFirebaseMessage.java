@@ -4,8 +4,8 @@ import lombok.*;
 
 import java.util.Map;
 
-@Getter(AccessLevel.PROTECTED)
-@Setter(AccessLevel.PROTECTED)
+@Getter
+@Setter
 public class DeviceFirebaseMessage extends FirebaseMessage {
 
 	private String token;

@@ -65,11 +65,6 @@ public class TeamController {
 		}
 
 		return teamService.createTeam(teamCreationRoot.getTeam(), teamCreationRoot.getProfilePicture());
-
-		// TODO: Save the base64 picture to AWS and get the s3 bucket name...
-		//String url = "";
-
-		//return teamService.createTeam(teamCreationRoot.getTeam(), url);
 	}
 
 	@PostMapping("/addTeammates")

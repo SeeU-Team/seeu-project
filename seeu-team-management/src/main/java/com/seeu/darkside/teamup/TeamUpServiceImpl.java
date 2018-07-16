@@ -1,8 +1,11 @@
 package com.seeu.darkside.teamup;
 
+import com.seeu.darkside.notification.MessagingServiceProxy;
+import com.seeu.darkside.notification.TeamsBody;
 import com.seeu.darkside.rs.dto.TeamLike;
 import com.seeu.darkside.rs.dto.TeamMerge;
 import com.seeu.darkside.rs.dto.TeamProfile;
+import com.seeu.darkside.team.TeamDto;
 import com.seeu.darkside.team.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,13 +22,18 @@ public class TeamUpServiceImpl implements TeamUpService {
     private final TeamUpRepository teamUpRepository;
     private final MergeRepository mergeRepository;
     private final TeamService teamService;
+    private final MessagingServiceProxy messagingServiceProxy;
 
     @Autowired
-    public TeamUpServiceImpl(TeamUpRepository teamUpRepository, MergeRepository mergeRepository, TeamService teamService) {
+    public TeamUpServiceImpl(TeamUpRepository teamUpRepository,
+							 MergeRepository mergeRepository,
+							 TeamService teamService,
+							 MessagingServiceProxy messagingServiceProxy) {
         this.teamUpRepository = teamUpRepository;
         this.mergeRepository = mergeRepository;
         this.teamService = teamService;
-    }
+		this.messagingServiceProxy = messagingServiceProxy;
+	}
 
     @Override
 	@Transactional(readOnly = true)
@@ -101,8 +109,20 @@ public class TeamUpServiceImpl implements TeamUpService {
 
         teamUpEntity = teamUpRepository.save(teamUpEntity);
 
+		TeamDto firstTeam = teamService.getTeamDto(teamUpEntity.getIdLike());
+
 		if (isReciprocalLike(teamLike)) {
-			// TODO: send notif via notification micro service to the leader of each team
+			// Send notif to all members of each team of the mutually liked
+			TeamDto secondTeam = teamService.getTeamDto(teamUpEntity.getIdLiked());
+
+			TeamsBody teamsBody = TeamsBody.builder()
+					.firstTeam(firstTeam)
+					.secondTeam(secondTeam)
+					.build();
+			messagingServiceProxy.sendReciprocalTeamUpNotification(teamsBody);
+		} else {
+			// Send notif to all members of the liked team
+			messagingServiceProxy.sendTeamUpNotification(firstTeam, teamUpEntity.getIdLiked());
 		}
 
         return teamUpEntity;
@@ -125,8 +145,15 @@ public class TeamUpServiceImpl implements TeamUpService {
 		mergeEntity = mergeRepository.save(mergeEntity);
 
 		if (isReciprocalMerge(teamMerge)) {
-			// TODO: Send notif to teams that they have mutually merged.
-			// TODO: Set merge status to yes for the teams ???
+			// Send notif to members of each team that they have mutually merged
+			TeamDto firstTeam = teamService.getTeamDto(mergeEntity.getIdFirst());
+			TeamDto secondTeam = teamService.getTeamDto(mergeEntity.getIdSecond());
+			TeamsBody teamsBody = TeamsBody.builder()
+					.firstTeam(firstTeam)
+					.secondTeam(secondTeam)
+					.build();
+
+			messagingServiceProxy.sendMergeNotification(teamsBody);
 		}
 
 		return mergeEntity;
