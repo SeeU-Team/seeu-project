@@ -60,3 +60,5 @@ services:
     image: oncletom77/seeu-message
     networks:
       - spring-cloud-network
+    env_file:
+      - .env
