@@ -62,3 +62,8 @@ services:
       - spring-cloud-network
     env_file:
       - .env
+    volumes:
+      - /home/ubuntu:/home/ubuntu
+    deploy:
+      placement:
+        constraints: [node.role == manager]
