@@ -84,12 +84,15 @@ public class TeamServiceImpl implements TeamService {
 	public List<TeamPicture> getAllTeamsPictures() {
 		List<TeamEntity> teamEntities = teamRepository.findAll();
 		List<TeamPicture> teamPictures = new ArrayList<>();
+
 		for (TeamEntity teamEntity : teamEntities) {
 			String pictureKey = teamEntity.getProfilePhotoUrl();
 			URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, pictureKey);
-			TeamPicture teamPicture = new TeamPicture(teamEntity.getIdTeam(), pictureKey, url.toExternalForm());
-			if (teamEntity.getProfilePhotoUrl() != null)
+
+			if (null != url) {
+				TeamPicture teamPicture = new TeamPicture(teamEntity.getIdTeam(), pictureKey, url.toExternalForm());
 				teamPictures.add(teamPicture);
+			}
 		}
 		return teamPictures;
 	}

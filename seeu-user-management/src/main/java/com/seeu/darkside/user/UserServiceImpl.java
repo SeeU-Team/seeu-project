@@ -220,9 +220,11 @@ public class UserServiceImpl implements UserService {
 		for (UserEntity userEntity : userEntities) {
 			String pictureKey = userEntity.getProfilePhotoUrl();
 			URL url = GenerateFileUrl.generateUrlFromFile(amazonS3, BUCKET_SOURCE, pictureKey);
-			UserPicture userPicture = new UserPicture(userEntity.getId(), pictureKey, url.toExternalForm());
-			if (userEntity.getProfilePhotoUrl() != null)
+
+			if (null != url) {
+				UserPicture userPicture = new UserPicture(userEntity.getId(), pictureKey, url.toExternalForm());
 				userPictures.add(userPicture);
+			}
 		}
 		return userPictures;
 	}
