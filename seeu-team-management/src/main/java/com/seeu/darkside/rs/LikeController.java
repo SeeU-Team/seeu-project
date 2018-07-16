@@ -74,8 +74,6 @@ public class LikeController {
 			throw new LikeValidationException();
         }
 
-        // TODO: if the user that liked the team is not the leader, send notification to the leader
-
         return teamUpService.likeTeam(teamLike);
     }
 

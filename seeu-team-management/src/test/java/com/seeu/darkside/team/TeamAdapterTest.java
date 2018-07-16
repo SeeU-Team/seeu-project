@@ -19,7 +19,7 @@ public class TeamAdapterTest {
     public void should_return_an_user_entity() {
         Date date = new Date();
         TeamDto teamDto = TeamDto.builder()
-                .idTeam(1L)
+                .id(1L)
                 .name("My Test Team")
                 .description("description")
                 .place("Paris")
@@ -29,7 +29,7 @@ public class TeamAdapterTest {
 
         TeamEntity teamEntity = teamAdapter.dtoToEntity(teamDto);
 
-        assertThat(teamEntity.getIdTeam()).isEqualTo(teamDto.getIdTeam());
+        assertThat(teamEntity.getIdTeam()).isEqualTo(teamDto.getId());
         assertThat(teamEntity.getName()).isEqualTo(teamDto.getName());
         assertThat(teamEntity.getDescription()).isEqualTo(teamDto.getDescription());
         assertThat(teamEntity.getPlace()).isEqualTo(teamDto.getPlace());
@@ -51,7 +51,7 @@ public class TeamAdapterTest {
 
         TeamDto teamDto = teamAdapter.entityToDto(teamEntity);
 
-        assertThat(teamDto.getIdTeam()).isEqualTo(teamEntity.getIdTeam());
+        assertThat(teamDto.getId()).isEqualTo(teamEntity.getIdTeam());
         assertThat(teamDto.getName()).isEqualTo(teamEntity.getName());
         assertThat(teamDto.getDescription()).isEqualTo(teamEntity.getDescription());
         assertThat(teamDto.getPlace()).isEqualTo(teamEntity.getPlace());

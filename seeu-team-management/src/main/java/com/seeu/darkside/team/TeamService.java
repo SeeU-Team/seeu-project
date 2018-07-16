@@ -13,6 +13,9 @@ public interface TeamService {
 	@Transactional(readOnly = true)
 	List<TeamPicture> getAllTeamsPictures();
 
+	@Transactional(readOnly = true)
+	TeamDto getTeamDto(Long idTeam);
+
 	TeamProfile getTeamProfile(Long idTeam);
 
 	TeamHasUser getTeamProfileOfMember(Long memberId);

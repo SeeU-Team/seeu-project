@@ -44,7 +44,7 @@ public class TeamEntity {
     @Override
     public String toString() {
         return "TeamEntity{" +
-                "idTeam=" + idTeam +
+                "id=" + idTeam +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", place='" + place + '\'' +

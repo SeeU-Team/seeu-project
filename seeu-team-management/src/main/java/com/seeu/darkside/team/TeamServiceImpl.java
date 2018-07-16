@@ -7,7 +7,7 @@ import com.seeu.darkside.asset.TeamHasAssetEntity;
 import com.seeu.darkside.category.CategoryEntity;
 import com.seeu.darkside.category.CategoryService;
 import com.seeu.darkside.category.TeamHasCategoryEntity;
-import com.seeu.darkside.notification.MessagingRegistrationServiceProxy;
+import com.seeu.darkside.notification.MessagingServiceProxy;
 import com.seeu.darkside.rs.dto.*;
 import com.seeu.darkside.tag.TagEntity;
 import com.seeu.darkside.tag.TagService;
@@ -47,7 +47,7 @@ public class TeamServiceImpl implements TeamService {
 	private final AssetService assetService;
 	private final CategoryService categoryService;
 	private final TeamUpService teamUpService;
-	private final MessagingRegistrationServiceProxy messagingRegistrationServiceProxy;
+	private final MessagingServiceProxy messagingServiceProxy;
 
 	@Autowired
 	public TeamServiceImpl(TeamRepository teamRepository,
@@ -58,7 +58,7 @@ public class TeamServiceImpl implements TeamService {
 						   CategoryService categoryService,
 						   AmazonS3 amazonS3,
 						   @Lazy TeamUpService teamUpService,
-						   MessagingRegistrationServiceProxy messagingRegistrationServiceProxy) {
+						   MessagingServiceProxy messagingServiceProxy) {
 		this.teamRepository = teamRepository;
 		this.teamAdapter = teamAdapter;
 		this.amazonS3 = amazonS3;
@@ -67,7 +67,7 @@ public class TeamServiceImpl implements TeamService {
 		this.assetService = assetService;
 		this.categoryService = categoryService;
 		this.teamUpService = teamUpService;
-		this.messagingRegistrationServiceProxy = messagingRegistrationServiceProxy;
+		this.messagingServiceProxy = messagingServiceProxy;
 	}
 
 	@Override
@@ -92,6 +92,16 @@ public class TeamServiceImpl implements TeamService {
 				teamPictures.add(teamPicture);
 		}
 		return teamPictures;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public TeamDto getTeamDto(Long idTeam) {
+		TeamEntity teamEntity = teamRepository
+				.findById(idTeam)
+				.orElseThrow(() -> new TeamNotFoundException(TEAM_NOT_FOUND_MSG + idTeam));
+
+		return teamAdapter.entityToDto(teamEntity);
 	}
 
 	@Override
@@ -321,7 +331,7 @@ public class TeamServiceImpl implements TeamService {
 				.map(UserEntity::getAppInstanceId)
 				.collect(toList());
 
-		messagingRegistrationServiceProxy.registerTeamTopic(registrationTokens, teamId);
+		messagingServiceProxy.registerTeamTopic(registrationTokens, teamId);
 
 		// Register the leader to the leader topic
 		teamHasUserToSave.stream()
@@ -330,6 +340,6 @@ public class TeamServiceImpl implements TeamService {
 				.ifPresent(teamHasUserEntity -> users.stream()
 						.filter(userEntity -> teamHasUserEntity.getUserId().equals(userEntity.getId()))
 						.findFirst()
-						.ifPresent(userEntity -> messagingRegistrationServiceProxy.registerLeaderTopic(userEntity.getAppInstanceId(), teamId)));
+						.ifPresent(userEntity -> messagingServiceProxy.registerLeaderTopic(userEntity.getAppInstanceId(), teamId)));
 	}
 }

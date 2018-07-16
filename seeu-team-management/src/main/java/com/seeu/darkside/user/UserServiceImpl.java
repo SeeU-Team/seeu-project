@@ -1,6 +1,6 @@
 package com.seeu.darkside.user;
 
-import com.seeu.darkside.notification.MessagingRegistrationServiceProxy;
+import com.seeu.darkside.notification.MessagingServiceProxy;
 import feign.FeignException;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +19,14 @@ public class UserServiceImpl implements UserService {
 
 	private final TeamHasUserRepository teamHasUserRepository;
 	private final UserServiceProxy userServiceProxy;
-	private final MessagingRegistrationServiceProxy messagingRegistrationServiceProxy;
+	private final MessagingServiceProxy messagingServiceProxy;
 
 	public UserServiceImpl(TeamHasUserRepository teamHasUserRepository,
 						   UserServiceProxy userServiceProxy,
-						   MessagingRegistrationServiceProxy messagingRegistrationServiceProxy) {
+						   MessagingServiceProxy messagingServiceProxy) {
 		this.teamHasUserRepository = teamHasUserRepository;
 		this.userServiceProxy = userServiceProxy;
-		this.messagingRegistrationServiceProxy = messagingRegistrationServiceProxy;
+		this.messagingServiceProxy = messagingServiceProxy;
 	}
 
 	@Override
@@ -132,7 +132,7 @@ public class UserServiceImpl implements UserService {
 				.collect(toList());
 
 		try {
-			messagingRegistrationServiceProxy.unregisterMembersFromTeamTopic(unregistrationTokens, membersToRemove.get(0).getTeamId());
+			messagingServiceProxy.unregisterMembersFromTeamTopic(unregistrationTokens, membersToRemove.get(0).getTeamId());
 		} catch (FeignException e) {
 			Logger logger = Logger.getLogger(this.getClass().getName());
 			logger.warning("Update team : Remove members from team topic failed");
@@ -152,7 +152,7 @@ public class UserServiceImpl implements UserService {
 				.collect(toList());
 
 		try {
-			messagingRegistrationServiceProxy.registerTeamTopic(registrationTokens, membersToAdd.get(0).getTeamId());
+			messagingServiceProxy.registerTeamTopic(registrationTokens, membersToAdd.get(0).getTeamId());
 		} catch (FeignException e) {
 			Logger logger = Logger.getLogger(this.getClass().getName());
 			logger.warning("Update team : Add members to team topic failed");
