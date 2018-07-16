@@ -141,6 +141,7 @@ public class TeamServiceImpl implements TeamService {
 		// TODO: maybe introduce algorithm to order the result with the more interesting teams first (all teams that liked this one) ??
 		final List<TeamUpEntity> allTeamsLikedByCurrentTeam = teamUpService.getAllTeamsLikedByTeam(teamId);
 
+
 		return categoryService.findAllByCategoryId(categoryId)
 				.stream()
 				// remove all teams already liked by the current team
