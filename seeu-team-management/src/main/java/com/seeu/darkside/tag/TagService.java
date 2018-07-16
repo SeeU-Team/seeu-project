@@ -16,4 +16,6 @@ public interface TagService {
 	List<TeamHasTagEntity> extractTags(List<Tag> tags, Long idTeam);
 
 	List<TeamHasTagEntity> findAllByTeamId(Long idTeam);
+
+	void deleteTeamHasTag(Long id);
 }

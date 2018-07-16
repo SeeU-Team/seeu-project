@@ -57,4 +57,10 @@ public class TagServiceImpl implements TagService {
 	public List<TeamHasTagEntity> findAllByTeamId(Long idTeam) {
 		return teamHasTagRepository.findAllByTeamId(idTeam);
 	}
+
+	@Override
+	public void deleteTeamHasTag(Long id) {
+		List<TeamHasTagEntity> teamHasTagEntities = teamHasTagRepository.findAllByTagId(id);
+		teamHasTagRepository.deleteAll(teamHasTagEntities);
+	}
 }

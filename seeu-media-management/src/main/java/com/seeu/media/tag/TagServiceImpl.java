@@ -11,10 +11,12 @@ import java.util.List;
 public class TagServiceImpl implements TagService {
 
     private TagRepository tagRepository;
+    private TeamHasTagServiceProxy teamHasTagServiceProxy;
 
     @Autowired
-    public TagServiceImpl(TagRepository tagRepository) {
+    public TagServiceImpl(TagRepository tagRepository, TeamHasTagServiceProxy teamHasTagServiceProxy) {
         this.tagRepository = tagRepository;
+        this.teamHasTagServiceProxy = teamHasTagServiceProxy;
     }
 
     @Override
@@ -78,5 +80,6 @@ public class TagServiceImpl implements TagService {
         if (tagToDelete == null)
             throw new TagNotFoundException("Tag not found exception");
         tagRepository.delete(tagToDelete);
+        teamHasTagServiceProxy.deleteTagTeam(tagId);
     }
 }
